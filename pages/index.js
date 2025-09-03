@@ -49,7 +49,7 @@ export default function Home({ events }) {
         </div>
 
         {/* Nav Links */}
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', justifyContent: 'center' }}>
           <a href="/events" style={{ color: '#6e5084', textDecoration: 'none' }}>Events</a>
           <a href="/host" style={{ color: '#6e5084', textDecoration: 'none' }}>Host</a>
           <a href="/faq" style={{ color: '#6e5084', textDecoration: 'none' }}>FAQ</a>
@@ -59,7 +59,7 @@ export default function Home({ events }) {
         <a
           href="/join"
           style={{
-            background: 'linear-gradient(90deg, ##6e5084, ##6e5065)',
+            background: 'linear-gradient(90deg, #6e5084, #6e5065)',
             color: '#fff',
             padding: '0.6rem 1.2rem',
             borderRadius: '8px',
@@ -76,12 +76,12 @@ export default function Home({ events }) {
         style={{
           background: '#6e5084',
           color: '#fff',
-          padding: '2rem 1rem',
+          padding: '0.1rem 0.1rem',
           textAlign: 'center',
           marginBottom: '2rem',
         }}
       >
-        <h2 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Why Say Salams?</h2>
+        <h2 style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>Why Say Salams?</h2>
         <p style={{ maxWidth: '600px', margin: '0 auto 0.5rem auto', lineHeight: '1.6' }}>
           Saying <strong>Assalamu alaykum</strong> is more than a greeting — it’s a prayer of peace.
         </p>
@@ -89,14 +89,14 @@ export default function Home({ events }) {
           It builds connection, spreads peace & unites our community.
         </p>
         <p style={{ maxWidth: '600px', margin: '0 auto 0.5rem auto', lineHeight: '1.6' }}>
-          Say Salams.
+          <strong>Say Salams.</strong>
         </p>
         <p style={{ fontWeight: 'bold', fontSize: '2rem' }}>Because peace begins with you. ✨</p>
       </section>
 
       {/* Events Section */}
       <section
-        style={{ maxWidth: '1100px', margin: '0 auto 4rem auto', padding: '0 1rem', flex: 1 }}
+        style={{ maxWidth: '1100px', margin: '0 auto 4rem ', padding: '0rem 0rem auto', flex: 1 }}
       >
         <h2
           style={{
@@ -216,34 +216,131 @@ export default function Home({ events }) {
         </div>
       </section>
 
-      {/* Hosting an Event Section */}
+      {/* What You Can Expect with Say Salams Section */}
+      <section
+        style={{
+          maxWidth: '1100px',
+          margin: '0 auto',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '2rem',
+          padding: '2rem',
+          background: '#6e5084',
+          borderRadius: '12px',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+          color: '#fff',
+          marginBottom: '3rem',
+        }}
+      >
+        <div
+          style={{
+            flex: '1',
+            minWidth: '300px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <h2
+            style={{
+              fontSize: '3.2rem',
+              fontWeight: '700',
+              margin: 0,
+              letterSpacing: '1px',
+            }}
+          >
+            Why <strong>Say Salams</strong> Matters
+          </h2>
+        </div>
+        <div
+          style={{
+            flex: '1',
+            minWidth: '300px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            lineHeight: '1.8',
+            color: '#fff',
+          }}
+        >
+          <p style={{ marginBottom: '1rem' }}>
+            🌟 <strong>Connect with friends</strong> — build your circle, strengthen bonds, and share in gatherings rooted in faith.
+          </p>
+          <p style={{ marginBottom: '1rem' }}>
+            🎉 <strong>Belong to something bigger</strong> — see who’s going, join in, and never feel like you’re attending alone.
+          </p>
+          <p style={{ marginBottom: '1rem' }}>
+            📍 <strong>Discover what’s near you</strong> — find Muslim-friendly events, classes, and opportunities to connect in your local area.
+          </p>
+          <p style={{ marginBottom: '1rem' }}>
+            🕌 <strong>Strengthen our ummah</strong> — every event is more than a meetup; it’s a step toward unity, peace, and spreading barakah.
+          </p>
+        </div>
+      </section>
+
+      {/* How to Become a Host Section */}
       <section
         style={{
           background: '#f6f4fa',
+          color: '#5a3c91',
           padding: '2rem 1rem',
-          textAlign: 'center',
+          textAlign: 'left',
+          marginBottom: '2rem',
+          maxWidth: '900px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          borderRadius: '12px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+          border: '2px solid #f6f4fa',
         }}
       >
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: '#5a3c91' }}>
-          Hosting an Event?
+        <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#6e5084', textAlign: 'center' }}>
+          Want to Host an Event with Say Salams?
         </h2>
-        <p style={{ marginBottom: '2rem', color: '#555' }}>
-          Let people Say Salams — share your event with the Muslim community ✨
-        </p>
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <iframe
-            className="airtable-embed"
-            src="https://airtable.com/embed/appTagC9VpvWx3nGF/pagdaYe9zcHdWqgpR/form"
-            frameBorder="0"
-            width="100%"
-            height="800"
+
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Here’s who can:</h3>
+          <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.6' }}>
+            <li><strong>Individuals</strong> — Host game nights, study circles, or creative workshops (arts & crafts, cooking, calligraphy).</li>
+            <li><strong>Organisations</strong> — Mosques, youth groups, and community associations running events that uplift and connect.</li>
+            <li><strong>Businesses</strong> — Use your space to run networking nights, offer exclusive discounts, or showcase Muslim-friendly services.</li>
+          </ul>
+        </div>
+
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Here’s why you should:</h3>
+          <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.6' }}>
+            <li><strong>Amplify your reach</strong> — We’ll market your event across the Say Salams network, helping you find the right audience.</li>
+            <li><strong>Bring barakah</strong> — Hosting isn’t just about events, it’s about creating spaces of peace, knowledge, and joy for the community.</li>
+            <li><strong>Build credibility</strong> — Position yourself or your organisation as a trusted part of the Muslim community.</li>
+          </ul>
+        </div>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Here’s how it works:</h3>
+          <ol style={{ paddingLeft: '1.5rem', lineHeight: '1.6' }}>
+            <li><strong>Fill out the 'Become a Host' Form</strong> — tell us about yourself, your organisation, or business.</li>
+            <li><strong>Become an approved host</strong> — join the Say Salams network of trusted organisers.</li>
+            <li><strong>Submit your event</strong> — share it through our events form and join the Say Salams host community.</li>
+          </ol>
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <a
+            href="/host"
             style={{
-              background: 'transparent',
-              border: '1px solid #ccc',
-              borderRadius: '12px',
+              background: 'linear-gradient(90deg, #6e5084, #6e5065)',
+              color: '#fff',
+              padding: '0.8rem 2rem',
+              borderRadius: '8px',
+              fontWeight: '600',
+              textDecoration: 'none',
+              fontSize: '1.1rem',
+              textAlign: 'center',
             }}
-            title="Say Salams Event Form"
-          ></iframe>
+          >
+            Become a Host
+          </a>
         </div>
       </section>
 
