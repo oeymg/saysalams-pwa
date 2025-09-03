@@ -19,29 +19,66 @@ export default function Home({ events }) {
         flexDirection: 'column',
       }}
     >
-      {/* Hero Header */}
-      <header style={{ textAlign: 'center', padding: '1rem' }}>
-        <img
-          src="/icons/longlogo.png"
-          alt="Say Salams logo"
-          style={{ height: '120px', margin: '0 auto 0.0rem auto' }}
-        />
-        <h1 style={{ color: '#6a4caf', fontSize: '2.5rem', marginBottom: '0rem' }}>
-        
-        </h1>
-        <p style={{ color: '#7d6db3', fontSize: '1.0rem' }}>
-          Connections | Events | Community
-        </p>
-      </header>
+      {/* Navbar */}
+      <nav
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '1rem 2rem',
+          background: '#fff',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+        }}
+      >
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <img
+            src="/icons/longlogo.png"
+            alt="Say Salams logo"
+            style={{ height: '60px' }}
+          />
+          <span
+            style={{
+              fontFamily: "'Archivo Black', sans-serif",
+              fontSize: '1.5rem',
+              color: '#6a4caf',
+            }}
+          >
+            
+          </span>
+        </div>
+
+        {/* Nav Links */}
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <a href="/events" style={{ color: '#6e5084', textDecoration: 'none' }}>Events</a>
+          <a href="/host" style={{ color: '#6e5084', textDecoration: 'none' }}>Host</a>
+          <a href="/faq" style={{ color: '#6e5084', textDecoration: 'none' }}>FAQ</a>
+        </div>
+
+        {/* CTA Button */}
+        <a
+          href="/join"
+          style={{
+            background: 'linear-gradient(90deg, ##6e5084, ##6e5065)',
+            color: '#fff',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '8px',
+            fontWeight: '600',
+            textDecoration: 'none',
+          }}
+        >
+          Join Us
+        </a>
+      </nav>
 
       {/* Why Say Salams Section */}
       <section
         style={{
-          background: '#6a4caf',
+          background: '#6e5084',
           color: '#fff',
-          padding: '1.5rem 1rem',
+          padding: '2rem 1rem',
           textAlign: 'center',
-          marginBottom: '1.5rem',
+          marginBottom: '2rem',
         }}
       >
         <h2 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Why Say Salams?</h2>
@@ -50,6 +87,9 @@ export default function Home({ events }) {
         </p>
         <p style={{ maxWidth: '600px', margin: '0 auto 0.5rem auto', lineHeight: '1.6' }}>
           It builds connection, spreads peace & unites our community.
+        </p>
+        <p style={{ maxWidth: '600px', margin: '0 auto 0.5rem auto', lineHeight: '1.6' }}>
+          Say Salams.
         </p>
         <p style={{ fontWeight: 'bold', fontSize: '2rem' }}>Because peace begins with you. ✨</p>
       </section>
@@ -63,7 +103,7 @@ export default function Home({ events }) {
             textAlign: 'center',
             marginBottom: '2rem',
             fontSize: '2.2rem',
-            color: '#5a3c91',
+            color: '#6e5084',
           }}
         >
           Our Upcoming Events
@@ -75,9 +115,7 @@ export default function Home({ events }) {
           </p>
         )}
 
-        {/* ✅ Proper grid for events */}
         <div
-          className="events-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
@@ -212,7 +250,7 @@ export default function Home({ events }) {
       {/* Footer */}
       <footer
         style={{
-          background: '#6a4caf',
+          background: '#6e5084',
           color: '#fff',
           textAlign: 'center',
           padding: '2rem 1rem',
@@ -220,9 +258,9 @@ export default function Home({ events }) {
         }}
       >
         <img
-          src="/icons/logo.png"
+          src="/icons/invertlogo.png"
           alt="Say Salams logo"
-          style={{ height: '40px', margin: '0 auto 1rem auto' }}
+          style={{ height: '60px', margin: '0 auto 1rem auto' }}
         />
         <p style={{ margin: '0.3rem 0' }}>📍 Brisbane, QLD, 4000</p>
         <p style={{ margin: '0.3rem 0' }}>
