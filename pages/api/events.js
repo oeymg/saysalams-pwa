@@ -21,7 +21,6 @@ export default async function handler(req, res) {
 
     const rows = records.map((r) => {
       const f = r.fields || {};
-      console.log("Airtable fields:", f);
       return {
         id: r.id,
         public_id: f['Event ID'] || r.id,
@@ -29,7 +28,7 @@ export default async function handler(req, res) {
         start_at: f['Event Date'] || null,
         venue: f['Location'] || null,
         description: f['Event Description'] || null,
-        summary: f['Summary']?.value || null,
+        summary: f['Summary'] || null,
         image_url:
           Array.isArray(f['Event Photo']) && f['Event Photo'][0]?.url
             ? f['Event Photo'][0].url

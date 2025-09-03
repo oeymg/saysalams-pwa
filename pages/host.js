@@ -1,5 +1,8 @@
 // pages/host.js
 
+import Link from 'next/link';
+import Image from 'next/image';
+
 export default function Host() {
   return (
     <div style={{ background: '#f6f4fa', minHeight: '100vh', padding: '2rem' }}>
@@ -9,7 +12,7 @@ export default function Host() {
         </h1>
 
         <p style={{ marginBottom: '2rem', color: '#444', lineHeight: '1.6' }}>
-          You can set up an event with Say Salams anytime, anywhere. Whether you’re an
+          You can set up an event with Say Salams anytime, anywhere. Whether you&apos;re an
           individual, an organisation, or a business, we welcome you to bring your ideas
           and connect with the Muslim community through meaningful events.
         </p>
@@ -17,7 +20,7 @@ export default function Host() {
         <h2 style={{ color: '#5a3c91', marginBottom: '1rem' }}>Who can be a host?</h2>
         <ul style={{ marginBottom: '2rem', lineHeight: '1.6', color: '#333' }}>
           <li>
-            <strong>Individuals:</strong> If you'd like to host a games night, an educational
+            <strong>Individuals:</strong> If you&apos;d like to host a games night, an educational
             class (like cooking, engraving, arts &amp; crafts), or anything fun and engaging.
           </li>
           <li>

@@ -1,5 +1,7 @@
 // pages/event/[id].js
 
+import Image from 'next/image';
+
 export async function getServerSideProps(context) {
   const id = context.params.id;
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
@@ -24,9 +26,11 @@ export default function EventPage({ ev }) {
     <div className="container" style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
       {/* Event image */}
       {ev.image_url && (
-        <img
+        <Image
           src={ev.image_url}
           alt={ev.title}
+          width={900}
+          height={400}
           style={{
             width: '100%',
             borderRadius: '12px',
@@ -128,7 +132,7 @@ export default function EventPage({ ev }) {
             fontWeight: '600',
           }}
         >
-          I’m Going
+          I&apos;m Going
         </a> */}
       </div>
     </div>
