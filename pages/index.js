@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import Layout from '../components/layout';
 
 export async function getServerSideProps(context) {
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
@@ -14,67 +15,7 @@ export async function getServerSideProps(context) {
 
 export default function Home({ events }) {
   return (
-    <div
-      style={{
-        background: '#f6f4fa',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* Navbar */}
-      <nav
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '1rem 2rem',
-          background: '#fff',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-        }}
-      >
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Image
-            src="/icons/longlogo.png"
-            alt="Say Salams logo"
-            width={160}
-            height={60}
-          />
-          <span
-            style={{
-              fontFamily: "'Archivo Black', sans-serif",
-              fontSize: '1.5rem',
-              color: '#6a4caf',
-            }}
-          >
-            
-          </span>
-        </div>
-
-        {/* Nav Links */}
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', justifyContent: 'center' }}>
-          <Link href="/events" style={{ color: '#6e5084', textDecoration: 'none' }}>Events</Link>
-          <Link href="/host" style={{ color: '#6e5084', textDecoration: 'none' }}>Host</Link>
-          <Link href="/faq" style={{ color: '#6e5084', textDecoration: 'none' }}>FAQ</Link>
-        </div>
-
-        {/* CTA Button */}
-        <Link
-          href="/join"
-          style={{
-            background: 'linear-gradient(90deg, #6e5084, #6e5065)',
-            color: '#fff',
-            padding: '0.6rem 1.2rem',
-            borderRadius: '8px',
-            fontWeight: '600',
-            textDecoration: 'none',
-          }}
-        >
-          Join Us
-        </Link>
-      </nav>
-
+    <Layout>
       {/* Why Say Salams Section */}
       <section
         style={{
@@ -145,7 +86,7 @@ export default function Home({ events }) {
                   alt={ev.title}
                   width={400}
                   height={180}
-                  style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', borderRadius: '12px' }}
                 />
               )}
               <div style={{ flex: 1, padding: '1rem' }}>
@@ -349,38 +290,6 @@ export default function Home({ events }) {
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer
-        style={{
-          background: '#6e5084',
-          color: '#fff',
-          textAlign: 'center',
-          padding: '2rem 1rem',
-          marginTop: '3rem',
-        }}
-      >
-        <Image
-          src="/icons/invertlogo.png"
-          alt="Say Salams logo"
-          width={180}
-          height={60}
-          style={{ margin: '0 auto 1rem auto' }}
-        />
-        <p style={{ margin: '0.3rem 0' }}>📍 Brisbane, QLD, 4000</p>
-        <p style={{ margin: '0.3rem 0' }}>
-          📧{' '}
-          <a
-            href="mailto:contact@saysalams.com"
-            style={{ color: '#fff', textDecoration: 'underline' }}
-          >
-            contact@saysalams.com
-          </a>
-        </p>
-        <p style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: 0.8 }}>
-          © {new Date().getFullYear()} Say Salams. All rights reserved.
-        </p>
-      </footer>
-    </div>
+    </Layout>
   );
 }

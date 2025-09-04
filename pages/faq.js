@@ -1,0 +1,39 @@
+import Layout from '../components/layout.js';
+
+export default function FAQ() {
+  return (
+    <Layout>
+      <section style={{ backgroundColor: '#f6f4fa', padding: '4rem 2rem', textAlign: 'center' }}>
+        <h1 style={{ color: '#6e5084', fontSize: '2.5rem', marginBottom: '0.5rem' }}>Frequently Asked Questions</h1>
+      </section>
+      <section style={{ backgroundColor: '#f6f4fa', padding: '1rem 4rem' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', color: '#333', lineHeight: '1.6' }}>
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>What is Say Salams?</h2>
+            <p>Say Salams is a community platform that connects people through events to foster friendship, understanding, and cultural exchange.</p>
+          </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>How do I attend an event?</h2>
+            <p>You can browse upcoming events on our platform and register for those that interest you. Attendance is usually free and open to all.</p>
+          </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>How do I become a host?</h2>
+            <p>To become a host, sign up on our website and submit your event details for approval. We support hosts with resources to make your event successful.</p>
+          </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>Does it cost to host or attend events?</h2>
+            <p>No, Say Salams does not charge fees for hosting or attending events. We aim to keep community engagement accessible to everyone.</p>
+          </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>Can businesses benefit from hosting with Say Salams?</h2>
+            <p>Yes, businesses can connect with the community, increase visibility, and foster goodwill by hosting events through Say Salams.</p>
+          </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>How do I stay updated on new events?</h2>
+            <p>Subscribe to our newsletter and follow us on social media to get the latest updates on upcoming events and community news.</p>
+          </div>
+        </div>
+      </section>
+    </Layout>
+  );
+}

@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         summary: f['Summary'] || null,
         image_url:
           Array.isArray(f['Event Photo']) && f['Event Photo'][0]?.url
-            ? f['Event Photo'][0].url
+            ? `${f['Event Photo'][0].url}?w=800&h=400&fit=crop`
             : null,
         tickets_url: f['Event Link'] || null,
         cost: f['Cost'] || null,

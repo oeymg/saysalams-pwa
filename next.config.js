@@ -7,4 +7,10 @@ const withPWA = require('next-pwa')({
 
 module.exports = withPWA({
   reactStrictMode: true,
+  images: {
+    domains: [
+      'v5.airtableusercontent.com',
+      'dl.airtable.com',
+    ],
+  },
 });
