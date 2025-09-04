@@ -49,15 +49,15 @@ export default function Layout({ children }) {
             alignItems: 'center',
           }}
         >
-          <Link href="/events" style={{ color: '#6e5084', textDecoration: 'none' }}>Events</Link>
-          <Link href="/host" style={{ color: '#6e5084', textDecoration: 'none' }}>Host</Link>
-          <Link href="/faq" style={{ color: '#6e5084', textDecoration: 'none' }}>FAQ</Link>
+          <Link href="/events" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Events</Link>
+          <Link href="/host" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Host</Link>
+          <Link href="/faq" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>FAQ</Link>
         </div>
 
         {/* CTA */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
           <Link
-            href="/join"
+            href="/sign-up"
             style={{
               background: 'linear-gradient(90deg, #6e5084, #6e5065)',
               color: '#fff',
