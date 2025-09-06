@@ -59,7 +59,7 @@ export default function ProfilePage({ user, rsvps }) {
     return (
       <div style={containerStyle}>
         <h2>User not found</h2>
-        <p>Sorry, we couldn't find that user profile.</p>
+        <p>Sorry, we couldn&apos;t find that user profile.</p>
       </div>
     );
   }

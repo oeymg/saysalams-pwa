@@ -19,6 +19,12 @@ export async function getServerSideProps(context) {
 export default function EventPage({ ev }) {
   const { user, isSignedIn } = useUser();
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    if (showToast._t) window.clearTimeout(showToast._t);
+    showToast._t = window.setTimeout(() => setToast(null), 2400);
+  };
 
   if (!ev) {
     return (
@@ -29,13 +35,6 @@ export default function EventPage({ ev }) {
       </Layout>
     );
   }
-
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    window.clearTimeout(showToast?._t);
-    showToast._t = window.setTimeout(() => setToast(null), 2400);
-  };
 
   const handleRSVP = async () => {
     if (!isSignedIn) {
