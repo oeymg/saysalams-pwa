@@ -38,26 +38,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
-
-## Environment & Airtable Setup
-
-Configure the following in `Code/saysalams-pwa/.env.local` and restart the dev server after changes:
-
-Required
-- `AIRTABLE_TOKEN`: Airtable Personal Access Token with scopes `data.records:read`, `data.records:write` and access to the bases used below.
-- `AIRTABLE_USERS_BASE_ID`: Base ID for your Users table.
-- `AIRTABLE_USERS_TABLE`: Users table name (default `Users`).
-
-RSVPs
-- `AIRTABLE_RSVP_TABLE`: RSVPs table name (e.g., `RSVPs`).
-- `AIRTABLE_RSVP_BASE_ID` (optional): Base ID if the RSVPs table lives in a different base. If unset, the Users base is used.
-
-Schema expectations
-- Users table has fields `ClerkID`, `Full Name`, `Email` (others optional).
-- RSVPs table has fields:
-  - `User`: Linked record to Users table
-  - `Event ID`: text (matches your event `public_id`)
-  - `Status`: text or single select
-
-Notes
-- If you change `.env.local`, run `npm run dev` again to reload environment variables.

@@ -21,12 +21,15 @@ export default async function handler(req, res) {
 
     const rows = records.map((r) => {
       const f = r.fields || {};
+      const eventId = f['EventID'] || r.id;
       return {
-        id: r.id,
-        public_id: f['Event ID'] || r.id,
+        id: eventId,
+        public_id: eventId,
         title: f['Event Name'] || 'Untitled',
         start_at: f['Event Date'] || null,
         venue: f['Location'] || null,
+        suburb: f['Suburb'] || null,
+        city: f['City'] || null,
         description: f['Event Description'] || null,
         summary: f['Summary'] || null,
         image_url:
@@ -36,6 +39,8 @@ export default async function handler(req, res) {
         tickets_url: f['Event Link'] || null,
         cost: f['Cost'] || null,
         audience: f['Audience'] || null,
+        tags: Array.isArray(f['Tags']) ? f['Tags'] : (typeof f['Tags'] === 'string' ? f['Tags'].split(',').map(s => s.trim()).filter(Boolean) : []),
+        halal_notes: f['Halal Notes'] || f['Halal'] || null,
         going_count: f['Going Count'] ?? 0,
       };
     });

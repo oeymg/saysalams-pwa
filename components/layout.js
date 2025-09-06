@@ -1,11 +1,11 @@
-
-
 // components/Layout.js
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 
 export default function Layout({ children }) {
+  const { isSignedIn } = useUser();
   return (
     <div
       style={{
@@ -25,6 +25,7 @@ export default function Layout({ children }) {
           background: '#fff',
           boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
         }}
+        className="nav-bar"
       >
         {/* Logo */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -48,6 +49,7 @@ export default function Layout({ children }) {
             gap: '2rem',
             alignItems: 'center',
           }}
+          className="nav-links"
         >
           <Link href="/events" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Events</Link>
           <Link href="/host" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Host</Link>
@@ -55,19 +57,43 @@ export default function Layout({ children }) {
         </div>
 
         {/* CTA */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }} className="cta">
+          {isSignedIn ? (
+            <UserButton afterSignOutUrl="/" userProfileUrl="/profile" userProfileMode="navigation" />
+          ) : (
+            <SignInButton mode="modal">
+              <button
+                style={{
+                  background: 'linear-gradient(90deg, #6e5084, #6e5065)',
+                  color: '#fff',
+                  padding: '0.6rem 1.2rem',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  textDecoration: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Join Us
+              </button>
+            </SignInButton>
+          )}
           <Link
-            href="/sign-up"
+            href="/profile"
+            className="profile-link"
             style={{
-              background: 'linear-gradient(90deg, #6e5084, #6e5065)',
-              color: '#fff',
-              padding: '0.6rem 1.2rem',
+              background: '#ede8f7',
+              color: '#5a3c91',
+              padding: '0.5rem 1rem',
               borderRadius: '8px',
               fontWeight: '600',
               textDecoration: 'none',
+              border: '1px solid #d9d6e3',
+              fontSize: '1.0rem',
+              display: 'inline-block',
             }}
           >
-            Join Us
+            My Profile
           </Link>
         </div>
       </nav>
