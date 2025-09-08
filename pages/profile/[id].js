@@ -59,6 +59,10 @@ import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 
 export default function ProfilePage({ user, rsvps, recordId }) {
+  // Hooks must be called unconditionally at the top level
+  const { isSignedIn } = useUser();
+  const [connStatus, setConnStatus] = useState('idle');
+
   if (!user) {
     return (
       <div style={containerStyle}>
@@ -67,8 +71,6 @@ export default function ProfilePage({ user, rsvps, recordId }) {
       </div>
     );
   }
-  const { isSignedIn } = useUser();
-  const [connStatus, setConnStatus] = useState('idle');
 
   const requestConnection = async () => {
     if (!isSignedIn) {
