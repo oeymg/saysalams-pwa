@@ -135,7 +135,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
             sizes="(max-width: 900px) 100vw, 900px"
             style={{
               width: '100%',
-              height: '400px',
+              height: 'auto',
               borderRadius: '12px',
               marginBottom: '1.5rem',
               objectFit: 'cover',

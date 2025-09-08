@@ -17,6 +17,7 @@ export default function Layout({ children }) {
     >
       {/* Navbar */}
       <nav
+        className="nav-bar"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -24,6 +25,9 @@ export default function Layout({ children }) {
           padding: '1rem 2rem',
           background: '#fff',
           boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
         }}
       >
         {/* Logo */}
@@ -41,6 +45,7 @@ export default function Layout({ children }) {
 
         {/* Nav Links */}
         <div
+          className="nav-links"
           style={{
             flex: 1,
             display: 'flex',
@@ -57,7 +62,7 @@ export default function Layout({ children }) {
         </div>
 
         {/* CTA */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+        <div className="cta" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
           {isSignedIn ? (
             <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (

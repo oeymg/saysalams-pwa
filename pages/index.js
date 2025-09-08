@@ -101,7 +101,7 @@ export default function Home({ events }) {
                   alt={ev.title}
                   width={600}
                   height={220}
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', height: 'auto', width: '100%' }}
                 />
               )}
               <div style={{ flex: 1, padding: '1rem' }}>

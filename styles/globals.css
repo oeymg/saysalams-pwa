@@ -8,6 +8,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%; /* Prevents iOS auto-zoomed text */
+  background: #f6f4fa;
 }
 
 *, *::before, *::after {
@@ -83,7 +84,7 @@ p, li {
 }
 @media (max-width: 640px) {
   .events-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 16px;
   }
 }
@@ -96,3 +97,24 @@ p, li {
   transform: translateY(-4px);
   box-shadow: 0 10px 28px rgba(110, 80, 132, 0.25) !important;
 }
+
+/* Mobile improvements */
+@media (max-width: 640px) {
+  h1 { font-size: 1.8rem !important; }
+  h2 { font-size: 1.4rem !important; }
+  h3 { font-size: 1.1rem !important; }
+  p  { font-size: 1rem; }
+  button, .btn {
+    min-height: 44px; /* comfortable tap target */
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+  img { border-radius: 10px; }
+}
+
+/* iOS safe area support for sticky/footer sections */
+:root {
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+.nav-bar { padding-top: calc(1rem + var(--safe-top)); }
+footer { padding-bottom: calc(2rem + var(--safe-bottom)); }
