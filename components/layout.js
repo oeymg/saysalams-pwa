@@ -2,10 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 
 export default function Layout({ children }) {
   const { isSignedIn } = useUser();
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <div
       style={{
@@ -45,7 +47,7 @@ export default function Layout({ children }) {
 
         {/* Nav Links */}
         <div
-          className="nav-links"
+          className="nav-links desktop-only"
           style={{
             flex: 1,
             display: 'flex',
@@ -61,15 +63,35 @@ export default function Layout({ children }) {
           <Link href="/profile" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Profile</Link>
         </div>
 
+        {/* Mobile menu toggle */}
+        <button
+          className="mobile-only"
+          aria-label="Open menu"
+          aria-controls="mobile-menu"
+          aria-expanded={mobileOpen ? 'true' : 'false'}
+          onClick={() => setMobileOpen(v => !v)}
+          style={{
+            background: '#f6f4fa',
+            color: '#6e5084',
+            border: '1px solid #ded7ef',
+            borderRadius: 8,
+            padding: '0.5rem 0.8rem',
+            fontWeight: 700,
+            display: 'none', // hidden on desktop; shown via CSS on mobile
+          }}
+        >
+          ☰ Menu
+        </button>
+
         {/* CTA */}
-        <div className="cta" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+        <div className="cta" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
           {isSignedIn ? (
             <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (
             <SignInButton mode="modal">
               <button
                 style={{
-                  background: 'linear-gradient(90deg, #6e5084, #6e5065)',
+                  background: '#6e5084',
                   color: '#fff',
                   padding: '0.6rem 1.2rem',
                   borderRadius: '8px',
@@ -85,6 +107,30 @@ export default function Layout({ children }) {
           )}
         </div>
       </nav>
+
+      {/* Mobile dropdown menu */}
+      {mobileOpen && (
+        <div
+          id="mobile-menu"
+          className="mobile-only hover-pop"
+          style={{
+            background: '#fff',
+            margin: '0.5rem 1rem 0',
+            border: '1px solid #eee',
+            borderRadius: 12,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+            padding: '0.5rem',
+          }}
+        >
+          <div style={{ display: 'grid', gap: '0.25rem' }} onClick={() => setMobileOpen(false)}>
+            <Link href="/events" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Events</Link>
+            <Link href="/host" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Host</Link>
+            <Link href="/faq" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>FAQ</Link>
+            <Link href="/connections" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Connections</Link>
+            <Link href="/profile" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Profile</Link>
+          </div>
+        </div>
+      )}
 
       {/* Page Content */}
       <main style={{ flex: 1 }}>{children}</main>

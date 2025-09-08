@@ -47,9 +47,9 @@ img, video {
   .nav-bar {
     padding: 0.75rem 1rem !important;
   }
-  .nav-links {
-    display: none !important; /* Hide busy center links on phones */
-  }
+  .nav-links { display: none !important; } /* Hide center links on phones */
+  .mobile-only { display: inline-flex !important; }
+  .desktop-only { display: none !important; }
   .cta {
     gap: 0.75rem !important;
   }
