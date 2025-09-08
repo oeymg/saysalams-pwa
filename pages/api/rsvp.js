@@ -1,105 +1,231 @@
 import Airtable from 'airtable';
 
 const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
-const AIRTABLE_USERS_BASE_ID = process.env.AIRTABLE_USERS_BASE_ID;
-const AIRTABLE_RSVP_BASE_ID = process.env.AIRTABLE_RSVP_BASE_ID || AIRTABLE_USERS_BASE_ID;
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID; // unified base for Events/Users/RSVPs
 const USERS_TABLE = process.env.AIRTABLE_USERS_TABLE || 'Users';
 const RSVP_TABLE = process.env.AIRTABLE_RSVP_TABLE || 'RSVPs';
-const RSVP_USERS_TABLE = process.env.AIRTABLE_RSVP_USERS_TABLE || USERS_TABLE; // Users table name inside the RSVP base
-const RSVP_USER_FIELDS = (process.env.AIRTABLE_RSVP_USER_FIELDS || 'User,Users,Attendee,Attendees,Participant,Participants,Member,Members,Profile,Profiles,User Link,User Record').split(',').map(s => s.trim()).filter(Boolean);
+const EVENTS_TABLE = process.env.AIRTABLE_TABLE || 'Events';
+const OCCURRENCES_TABLE = process.env.AIRTABLE_OCCURRENCES_TABLE || 'Occurrences';
 
-if (!AIRTABLE_TOKEN || !AIRTABLE_USERS_BASE_ID) {
+if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) {
   throw new Error('Missing Airtable environment variables');
 }
 
-const usersBase = new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_USERS_BASE_ID);
-const rsvpBase = new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_RSVP_BASE_ID);
+const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID);
+
+// Try a select with a formula; return first record or null.
+async function selectOneSafe(table, formula) {
+  try {
+    const p = await base(table).select({ maxRecords: 1, filterByFormula: formula }).firstPage();
+    return p && p[0] ? p[0] : null;
+  } catch (e) {
+    if (e?.statusCode === 422) return null; // unknown field names
+    throw e;
+  }
+}
+
+// Try multiple formulas until one works (no 422) and optionally matches.
+async function findOneByAnyFormula(table, formulas) {
+  for (const f of formulas) {
+    const rec = await selectOneSafe(table, f);
+    if (rec) return rec;
+  }
+  return null;
+}
+
+// Create RSVP with tolerant field names for Event and Occurrence IDs.
+async function createRsvpTolerant(table, data) {
+  const eventFieldCandidates = ['EventID', 'Event ID', 'Event Id'];
+  const occFieldCandidates = ['Occurrence ID', 'OccurrenceID', 'OccurenceID'];
+
+  // Build candidate payloads trying different field name variants
+  const payloads = [];
+  for (const efn of eventFieldCandidates) {
+    const baseFields = { [efn]: data.eventId, 'UserID': data.userId, 'Status': data.status, 'Created At': data.createdAt };
+    if (data.occurrenceId) {
+      for (const ofn of occFieldCandidates) {
+        payloads.push({ ...baseFields, [ofn]: data.occurrenceId });
+      }
+    } else {
+      payloads.push(baseFields);
+    }
+  }
+
+  let lastErr = null;
+  for (const fields of payloads) {
+    try {
+      const rec = await base(table).create(fields);
+      return rec;
+    } catch (e) {
+      if (e?.statusCode === 422) {
+        lastErr = e; // try next variant
+        continue;
+      }
+      throw e;
+    }
+  }
+  if (lastErr) throw lastErr;
+  throw new Error('Failed to create RSVP with any known field variants');
+}
 
 // Resolve an Airtable User record ID, preferring the RSVP base so linked IDs match that base
 async function resolveAirtableUserRecordId(userId) {
-  // Try ClerkID match in RSVP base Users table
-  if (String(userId).startsWith('user_')) {
-    try {
-      const page = await rsvpBase(RSVP_USERS_TABLE)
-        .select({ maxRecords: 1, filterByFormula: `OR({ClerkID}='${userId}', {Clerk ID}='${userId}')` })
-        .firstPage();
-      if (page && page.length) return page[0].id;
-    } catch (_) {}
+  if (String(userId).startsWith('rec')) {
+    return userId;
   }
-  // Try direct record lookup in RSVP base Users table
+  // Helper: try matching by a single field name (skips 422 when field doesn't exist)
+  const tryField = async (field, value) => {
+    try {
+      const page = await base(USERS_TABLE)
+        .select({ maxRecords: 1, filterByFormula: `{${field}}='${value}'` })
+        .firstPage();
+      return page && page.length ? page[0].id : null;
+    } catch (e) {
+      if (e?.statusCode === 422) return null; // unknown field
+      throw e;
+    }
+  };
+
+  // Try ClerkID variants if a Clerk user id
+  if (String(userId).startsWith('user_')) {
+    for (const f of ['ClerkID', 'Clerk ID']) {
+      const rid = await tryField(f, userId);
+      if (rid) return rid;
+    }
+  }
+
+  // Try direct record id
   try {
-    const rec = await rsvpBase(RSVP_USERS_TABLE).find(String(userId));
+    const rec = await base(USERS_TABLE).find(String(userId));
     if (rec?.id) return rec.id;
   } catch (_) {}
-  // Fallback: resolve in Users base
-  if (String(userId).startsWith('user_')) {
-    try {
-      const page = await usersBase(USERS_TABLE)
-        .select({ maxRecords: 1, filterByFormula: `OR({ClerkID}='${userId}', {Clerk ID}='${userId}')` })
-        .firstPage();
-      if (page && page.length) return page[0].id;
-    } catch (_) {}
+
+  // Try UserID text variants
+  for (const f of ['UserID', 'User ID']) {
+    const rid = await tryField(f, userId);
+    if (rid) return rid;
   }
-  try {
-    const rec = await usersBase(USERS_TABLE).find(String(userId));
-    if (rec?.id) return rec.id;
-  } catch (_) {}
-  try {
-    const page = await usersBase(USERS_TABLE)
-      .select({ maxRecords: 1, filterByFormula: `OR({UserID}='${userId}', {User ID}='${userId}')` })
-      .firstPage();
-    if (page && page.length) return page[0].id;
-  } catch (_) {}
+
   return null;
+}
+
+async function getUserNumericIdFromClerkId(clerkId) {
+  if (!clerkId) return null;
+  try {
+    const page = await base(USERS_TABLE)
+      .select({
+        maxRecords: 1,
+        filterByFormula: `OR({ClerkID}='${clerkId}', {Clerk ID}='${clerkId}')`,
+      })
+      .firstPage();
+    const rec = page && page[0] ? page[0] : null;
+    return rec?.fields?.['UserID'] || rec?.fields?.['User ID'] || null;
+  } catch {
+    return null;
+  }
+}
+
+// Resolve an occurrence by public id (OccurrenceID) or Airtable rec id, and infer the series event public id
+async function resolveOccurrenceAndEvent(occurrenceId) {
+  if (!occurrenceId) return { occRecordId: null, eventPublicId: null };
+
+  // try by record id
+  const tryFindByRecordId = async (rid) => {
+    try {
+      const rec = await base(OCCURRENCES_TABLE).find(String(rid));
+      return rec || null;
+    } catch (_) {
+      return null;
+    }
+  };
+
+  // try by OccurrenceID text
+  const tryFindByOccId = async (oid) => {
+    try {
+      const page = await base(OCCURRENCES_TABLE)
+        .select({ maxRecords: 1, filterByFormula: `OR({OccurrenceID}='${oid}', {OccurenceID}='${oid}', {Occurrence ID}='${oid}')` })
+        .firstPage();
+      return page?.[0] || null;
+    } catch (e) {
+      if (e?.statusCode === 422) return null;
+      throw e;
+    }
+  };
+
+  let occRec = null;
+  if (String(occurrenceId).startsWith('rec')) {
+    occRec = await tryFindByRecordId(occurrenceId);
+  }
+  if (!occRec) {
+    occRec = await tryFindByOccId(occurrenceId);
+  }
+  if (!occRec) return { occRecordId: null, eventPublicId: null };
+
+  const f = occRec.fields || {};
+  // Prefer explicit EventID on occurrence
+  let eventPublicId = f['EventID'] || f['Event ID'] || null;
+  // Else, follow Series/Event link to Events table to read EventID
+  if (!eventPublicId) {
+    const seriesLink = Array.isArray(f['Series']) ? f['Series'][0] : (Array.isArray(f['Event']) ? f['Event'][0] : null);
+    if (seriesLink) {
+      try {
+        const evRec = await base(EVENTS_TABLE).find(seriesLink);
+        const ef = evRec?.fields || {};
+        eventPublicId = ef['EventID'] || ef['Event ID'] || ef['Event Id'] || null;
+      } catch (_) {
+        // ignore
+      }
+    }
+  }
+
+  return { occRecordId: occRec.id, eventPublicId };
 }
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      const { userId, eventId, inspect } = req.query;
+      const { userId, eventId, occurrenceId, inspect } = req.query;
 
       // Debug utility: resolve a user id into Airtable record ids in both bases
       if (inspect === 'resolve' && userId) {
-        let rsvpRid = null;
         let usersRid = null;
-        // RSVP base resolution
-        try {
-          if (String(userId).startsWith('user_')) {
-            const page = await rsvpBase(RSVP_USERS_TABLE)
-              .select({ maxRecords: 1, filterByFormula: `OR({ClerkID}='${userId}', {Clerk ID}='${userId}')` })
+        const tryField = async (field, value) => {
+          try {
+            const page = await base(USERS_TABLE)
+              .select({ maxRecords: 1, filterByFormula: `{${field}}='${value}'` })
               .firstPage();
-            rsvpRid = page?.[0]?.id || null;
+            return page && page.length ? page[0].id : null;
+          } catch (e) {
+            if (e?.statusCode === 422) return null;
+            throw e;
           }
-          if (!rsvpRid) {
-            try { const rec = await rsvpBase(RSVP_USERS_TABLE).find(String(userId)); rsvpRid = rec?.id || null; } catch (_) {}
+        };
+        if (String(userId).startsWith('user_')) {
+          for (const f of ['ClerkID', 'Clerk ID']) {
+            usersRid = await tryField(f, userId);
+            if (usersRid) break;
           }
-        } catch (_) {}
-        // Users base resolution
-        try {
-          if (String(userId).startsWith('user_')) {
-            const page = await usersBase(USERS_TABLE)
-              .select({ maxRecords: 1, filterByFormula: `OR({ClerkID}='${userId}', {Clerk ID}='${userId}')` })
-              .firstPage();
-            usersRid = page?.[0]?.id || null;
+        }
+        if (!usersRid) {
+          try { const rec = await base(USERS_TABLE).find(String(userId)); usersRid = rec?.id || null; } catch (_) {}
+        }
+        if (!usersRid) {
+          for (const f of ['UserID', 'User ID']) {
+            usersRid = await tryField(f, userId);
+            if (usersRid) break;
           }
-          if (!usersRid) {
-            try { const rec = await usersBase(USERS_TABLE).find(String(userId)); usersRid = rec?.id || null; } catch (_) {}
-          }
-        } catch (_) {}
+        }
         return res.status(200).json({
           input: userId,
-          rsvpBase: AIRTABLE_RSVP_BASE_ID,
-          rsvpUsersTable: RSVP_USERS_TABLE,
-          ridInRsvpBase: rsvpRid,
-          usersBase: AIRTABLE_USERS_BASE_ID,
+          baseId: AIRTABLE_BASE_ID,
           usersTable: USERS_TABLE,
-          ridInUsersBase: usersRid,
+          resolvedUserRecordId: usersRid,
         });
       }
 
       // Debug utility: list detected field names and likely user fields
       if (inspect === 'fields') {
-        const sample = await rsvpBase(RSVP_TABLE).select({ maxRecords: 20 }).firstPage();
+        const sample = await base(RSVP_TABLE).select({ maxRecords: 20 }).firstPage();
         const fieldSet = new Set();
         const linkedGuesses = new Set();
         const textGuesses = new Set();
@@ -117,35 +243,81 @@ export default async function handler(req, res) {
         }
         return res.status(200).json({
           table: RSVP_TABLE,
-          configuredLinkedCandidates: RSVP_USER_FIELDS,
           detectedFields: Array.from(fieldSet),
           probableLinkedUserFields: Array.from(linkedGuesses),
           probableTextUserFields: Array.from(textGuesses),
         });
       }
-      // For linked records, compare by searching the recId within ARRAYJOIN across candidate fields
-      const byLinked = userId ? `OR(${RSVP_USER_FIELDS.map(f => `FIND('${userId}', ARRAYJOIN({${f}}))`).join(', ')})` : '';
-      // If caller passed a Clerk user id, also allow matching a text ClerkID column in RSVPs
-      const byClerkText = userId && String(userId).startsWith('user_') ? `OR({ClerkID} = '${userId}', {Clerk ID} = '${userId}')` : '';
-      const byUser = userId ? (byClerkText ? `OR(${byLinked}, ${byClerkText})` : byLinked) : '';
-      const byEvent = eventId ? `{Event ID} = '${eventId}'` : '';
-      let filterByFormula = '';
-      if (byUser && byEvent) filterByFormula = `AND(${byUser}, ${byEvent})`;
-      else if (byUser) filterByFormula = byUser;
-      else if (byEvent) filterByFormula = byEvent;
 
-      const records = [];
-      await rsvpBase(RSVP_TABLE)
-        .select({
-          filterByFormula: filterByFormula || undefined,
-        })
-        .eachPage((fetched, fetchNextPage) => {
-          records.push(...fetched.map(r => ({
-            id: r.id,
-            fields: r.fields,
-          })));
-          fetchNextPage();
+      // Build user filter supporting: UserID text with Clerk fallback
+      let userFilter = '';
+      if (userId) {
+        let userNumeric = null;
+        if (String(userId).startsWith('user_')) {
+          userNumeric = await getUserNumericIdFromClerkId(userId);
+          if (!userNumeric) userNumeric = userId;
+        } else {
+          userNumeric = userId;
+        }
+        userFilter = `{UserID}='${userNumeric}'`;
+      }
+
+      // Tolerant filtering: try possible field-name variants to avoid 422
+      const candidates = [];
+      if (occurrenceId) {
+        const occOnly = [
+          `{Occurrence ID}='${occurrenceId}'`,
+          `{OccurrenceID}='${occurrenceId}'`,
+          `{OccurenceID}='${occurrenceId}'`,
+        ];
+        if (userFilter) {
+          occOnly.forEach(f => candidates.push(`AND(${userFilter}, ${f})`));
+        } else {
+          candidates.push(...occOnly);
+        }
+      } else if (eventId) {
+        const evtOnly = [
+          `{EventID}='${eventId}'`,
+          `{Event ID}='${eventId}'`,
+          `{Event Id}='${eventId}'`,
+        ];
+        if (userFilter) {
+          evtOnly.forEach(f => candidates.push(`AND(${userFilter}, ${f})`));
+        } else {
+          candidates.push(...evtOnly);
+        }
+      } else if (userFilter) {
+        candidates.push(userFilter);
+      }
+
+      let records = [];
+      const trySelectAll = async (formula) => {
+        try {
+          const out = [];
+          await base(RSVP_TABLE).select({ filterByFormula: formula }).eachPage((fetched, next) => {
+            out.push(...fetched.map(r => ({ id: r.id, fields: r.fields })));
+            next();
+          });
+          return out;
+        } catch (e) {
+          if (e?.statusCode === 422) return null; // try next variant
+          throw e;
+        }
+      };
+
+      if (candidates.length) {
+        for (const f of candidates) {
+          const out = await trySelectAll(f);
+          if (out) { records = out; break; }
+        }
+      } else {
+        // No filters: return all (bounded by Airtable default pagination)
+        await base(RSVP_TABLE).select().eachPage((fetched, next) => {
+          records.push(...fetched.map(r => ({ id: r.id, fields: r.fields })));
+          next();
         });
+      }
+
       return res.status(200).json({ rsvps: records });
     } catch (err) {
       return res.status(500).json({ error: err.message || 'Failed to fetch RSVPs' });
@@ -153,103 +325,98 @@ export default async function handler(req, res) {
   }
   if (req.method === 'PATCH') {
     try {
-      const { userId, eventId, status } = req.body || {};
-      if (!userId || !eventId || !status) {
-        return res.status(400).json({ error: 'Missing userId, eventId or status' });
+      const { userId, eventId, occurrenceId, status } = req.body || {};
+      if (!userId || !status || (!eventId && !occurrenceId)) {
+        return res.status(400).json({ error: 'Missing userId, status and one of eventId or occurrenceId' });
       }
-      // Resolve Airtable user record id from ClerkID/record id, preferring RSVP base
-      const airtableUserId = await resolveAirtableUserRecordId(userId);
-      if (!airtableUserId) return res.status(404).json({ error: 'User not found in Airtable' });
-      // Find existing RSVP for this user + event across possible linked field names
-      const orLinked = RSVP_USER_FIELDS
-        .map((f) => `FIND('${airtableUserId}', ARRAYJOIN({${f}}))`)
-        .join(', ');
-      const found = await rsvpBase(RSVP_TABLE)
-        .select({
-          filterByFormula: `AND(OR(${orLinked}), {Event ID} = '${eventId}')`,
-          maxRecords: 1,
-        })
-        .firstPage();
 
-      if (found && found.length > 0) {
-        const updated = await rsvpBase(RSVP_TABLE).update(found[0].id, {
+      // Resolve ClerkID → UserID (text). If none, fallback to using ClerkID string (consistent with GET).
+      let userNumeric = null;
+      if (String(userId).startsWith('user_')) {
+        userNumeric = await getUserNumericIdFromClerkId(userId);
+        if (!userNumeric) {
+          // Fallback: store ClerkID in UserID text field so RSVP still works
+          userNumeric = userId;
+        }
+      } else {
+        userNumeric = userId;
+      }
+
+      // Resolve occurrence if provided, and ensure/derive eventId
+      let derivedEventId = eventId || null;
+      let occRecordId = null;
+      if (occurrenceId) {
+        const occ = await resolveOccurrenceAndEvent(occurrenceId);
+        occRecordId = occ.occRecordId;
+        if (!derivedEventId) derivedEventId = occ.eventPublicId;
+        // Fallback: parse event id from occurrence key like EVENTID-YYYY-MM-DDTHH:MM
+        if (!derivedEventId) {
+          const m = String(occurrenceId).match(/^(.+?)-\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/);
+          if (m && m[1]) {
+            derivedEventId = m[1];
+          }
+        }
+        if (!derivedEventId) return res.status(400).json({ error: 'Could not infer event id from occurrence' });
+      }
+
+      // Validate event exists by EventID text (single known field to avoid 422)
+      const evtPage = await base(EVENTS_TABLE)
+        .select({ maxRecords: 1, filterByFormula: `{EventID}='${derivedEventId}'` })
+        .firstPage();
+      const airtableEventId = evtPage?.[0]?.id || null;
+      if (!airtableEventId) return res.status(404).json({ error: 'Event not found in Airtable' });
+
+      // Find existing RSVP by UserID text and Event ID text
+      let found = null;
+      const tryFilter = async (formula) => {
+        try {
+          const p = await base(RSVP_TABLE).select({ maxRecords: 1, filterByFormula: formula }).firstPage();
+          return p && p[0] ? p[0] : null;
+        } catch (e) {
+          if (e?.statusCode === 422) return null;
+          throw e;
+        }
+      };
+
+      const userFilter = `{UserID}='${userNumeric}'`;
+      if (occurrenceId) {
+        const occCandidates = [
+          `AND(${userFilter}, {Occurrence ID}='${occurrenceId}')`,
+          `AND(${userFilter}, {OccurrenceID}='${occurrenceId}')`,
+          `AND(${userFilter}, {OccurenceID}='${occurrenceId}')`,
+        ];
+        found = await findOneByAnyFormula(RSVP_TABLE, occCandidates);
+      } else {
+        const evtCandidates = [
+          `AND(${userFilter}, {EventID}='${derivedEventId}')`,
+          `AND(${userFilter}, {Event ID}='${derivedEventId}')`,
+          `AND(${userFilter}, {Event Id}='${derivedEventId}')`,
+        ];
+        found = await findOneByAnyFormula(RSVP_TABLE, evtCandidates);
+      }
+
+      if (found) {
+        const updated = await base(RSVP_TABLE).update(found.id, {
           'Status': status,
           'Updated At': new Date().toISOString(),
         });
         return res.status(200).json({ id: updated.id, fields: updated.fields });
       }
-      // If none found, create new (robust to different field names)
-      const tryCreate = async () => {
-        for (const field of RSVP_USER_FIELDS) {
-          try {
-            // Try with array of recordIds
-            const rec = await rsvpBase(RSVP_TABLE).create({
-              [field]: [airtableUserId],
-              'Event ID': eventId,
-              'Status': status,
-              'Created At': new Date().toISOString(),
-            });
-            return rec;
-          } catch (e1) {
-            if (e1?.statusCode && e1.statusCode !== 422) throw e1;
-            try {
-              // Try with array of objects: [{ id: recId }]
-              const rec2 = await rsvpBase(RSVP_TABLE).create({
-                [field]: [{ id: airtableUserId }],
-                'Event ID': eventId,
-                'Status': status,
-                'Created At': new Date().toISOString(),
-              });
-              return rec2;
-            } catch (e2) {
-              if (e2?.statusCode && e2.statusCode !== 422) throw e2;
-            }
-          }
-        }
-        // Fallback to text id field if present
-        const u = await usersBase(USERS_TABLE).find(airtableUserId);
-        const userNumericId = u?.fields?.['UserID'] || u?.fields?.['User ID'] || null;
-        if (userNumericId) {
-          const candidateText = ['UserID','User Id','User ID','Airtable UserID','Airtable User ID'];
-          for (const field of candidateText) {
-            try {
-              const rec = await rsvpBase(RSVP_TABLE).create({
-                [field]: userNumericId,
-                'Event ID': eventId,
-                'Status': status,
-                'Created At': new Date().toISOString(),
-              });
-              return rec;
-            } catch (e) {
-              if (e?.statusCode !== 422) throw e;
-            }
-          }
-        }
-        // Fallback to storing ClerkID directly if RSVP table has such a field
-        const candidateClerk = ['ClerkID','Clerk ID'];
-        for (const field of candidateClerk) {
-          try {
-            const rec = await rsvpBase(RSVP_TABLE).create({
-              [field]: userId,
-              'Event ID': eventId,
-              'Status': status,
-              'Created At': new Date().toISOString(),
-            });
-            return rec;
-          } catch (e) {
-            if (e?.statusCode !== 422) throw e;
-          }
-        }
-        throw new Error('No acceptable User field found on RSVP table');
-      };
-      const created = await tryCreate();
+
+      // Create new RSVP record with tolerant field names
+      const created = await createRsvpTolerant(RSVP_TABLE, {
+        eventId: derivedEventId,
+        userId: userNumeric,
+        status,
+        occurrenceId: occurrenceId || null,
+        createdAt: new Date().toISOString(),
+      });
       return res.status(201).json({ id: created.id, fields: created.fields });
     } catch (err) {
       console.error('RSVP PATCH error', {
         message: err?.message,
         statusCode: err?.statusCode,
-        usersBase: AIRTABLE_USERS_BASE_ID,
-        rsvpBase: AIRTABLE_RSVP_BASE_ID,
+        baseId: AIRTABLE_BASE_ID,
         table: RSVP_TABLE,
       });
       return res.status(500).json({ error: err.message || 'Failed to update RSVP' });
@@ -258,89 +425,96 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       console.log("RSVP POST body:", req.body);
-      const { userId, eventId, status } = req.body;
-      if (!userId || !eventId) {
-        return res.status(400).json({ error: 'Missing userId or eventId' });
+      const { userId, eventId, occurrenceId, status } = req.body;
+      if (!userId || (!eventId && !occurrenceId)) {
+        return res.status(400).json({ error: 'Missing userId and one of eventId or occurrenceId' });
       }
-      // Resolve in RSVP base first so linked ids match that base
-      const rid = await resolveAirtableUserRecordId(userId);
-      if (!rid) return res.status(404).json({ error: 'User not found in Airtable' });
-      const userRecord = { id: rid, fields: {} };
-      const rsvpId = `RSVP_${Date.now()}`;
-      // Create robustly across possible schema differences
-      const tryCreate = async () => {
-        for (const field of RSVP_USER_FIELDS) {
-          try {
-            // Try with array of recordIds
-            const rec = await rsvpBase(RSVP_TABLE).create({
-              [field]: [userRecord.id],
-              'Event ID': eventId,
-              'Status': status || 'Going',
-              'Created At': new Date().toISOString(),
-              'RSVP_ID': rsvpId,
-            });
-            return rec;
-          } catch (e1) {
-            if (e1?.statusCode && e1.statusCode !== 422) throw e1;
-            try {
-              // Try with array of objects
-              const rec2 = await rsvpBase(RSVP_TABLE).create({
-                [field]: [{ id: userRecord.id }],
-                'Event ID': eventId,
-                'Status': status || 'Going',
-                'Created At': new Date().toISOString(),
-                'RSVP_ID': rsvpId,
-              });
-              return rec2;
-            } catch (e2) {
-              if (e2?.statusCode && e2.statusCode !== 422) throw e2;
-            }
+
+      // Resolve ClerkID → UserID (text). If none, fallback to ClerkID string (consistent with GET route behavior).
+      let userNumeric = null;
+      if (String(userId).startsWith('user_')) {
+        userNumeric = await getUserNumericIdFromClerkId(userId);
+        if (!userNumeric) {
+          userNumeric = userId;
+        }
+      } else {
+        userNumeric = userId;
+      }
+
+      // Resolve occurrence if provided and derive event id when missing
+      let derivedEventId = eventId || null;
+      let occRecordId = null;
+      if (occurrenceId) {
+        const occ = await resolveOccurrenceAndEvent(occurrenceId);
+        occRecordId = occ.occRecordId;
+        if (!derivedEventId) derivedEventId = occ.eventPublicId;
+        // Fallback: parse event id from occurrence key like EVENTID-YYYY-MM-DDTHH:MM
+        if (!derivedEventId) {
+          const m = String(occurrenceId).match(/^(.+?)-\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/);
+          if (m && m[1]) {
+            derivedEventId = m[1];
           }
         }
-        const userNumericId = userRecord.fields?.['UserID'] || userRecord.fields?.['User ID'] || null;
-        if (userNumericId) {
-          const candidateText = ['UserID','User Id','User ID','Airtable UserID','Airtable User ID'];
-          for (const field of candidateText) {
-            try {
-              const rec = await rsvpBase(RSVP_TABLE).create({
-                [field]: userNumericId,
-                'Event ID': eventId,
-                'Status': status || 'Going',
-                'Created At': new Date().toISOString(),
-                'RSVP_ID': rsvpId,
-              });
-              return rec;
-            } catch (e) {
-              if (e?.statusCode !== 422) throw e;
-            }
-          }
+        if (!derivedEventId) return res.status(400).json({ error: 'Could not infer event id from occurrence' });
+      }
+
+      const evtPage = await base(EVENTS_TABLE)
+        .select({ maxRecords: 1, filterByFormula: `{EventID}='${derivedEventId}'` })
+        .firstPage();
+      const eid = evtPage?.[0]?.id || null;
+      if (!eid) return res.status(404).json({ error: 'Event not found in Airtable' });
+
+      // Upsert: check existing for (user,event) with UserID text and EventID text
+      let existing = null;
+      const tryFilter = async (formula) => {
+        try {
+          const p = await base(RSVP_TABLE).select({ maxRecords: 1, filterByFormula: formula }).firstPage();
+          return p && p[0] ? p[0] : null;
+        } catch (e) {
+          if (e?.statusCode === 422) return null;
+          throw e;
         }
-        const candidateClerk = ['ClerkID','Clerk ID'];
-        for (const field of candidateClerk) {
-          try {
-            const rec = await rsvpBase(RSVP_TABLE).create({
-              [field]: userId,
-              'Event ID': eventId,
-              'Status': status || 'Going',
-              'Created At': new Date().toISOString(),
-              'RSVP_ID': rsvpId,
-            });
-            return rec;
-          } catch (e) {
-            if (e?.statusCode !== 422) throw e;
-          }
-        }
-        throw new Error('No acceptable User field found on RSVP table');
       };
-      const record = await tryCreate();
+      const userFilter = `{UserID}='${userNumeric}'`;
+      if (occurrenceId) {
+        const occCandidates = [
+          `AND(${userFilter}, {Occurrence ID}='${occurrenceId}')`,
+          `AND(${userFilter}, {OccurrenceID}='${occurrenceId}')`,
+          `AND(${userFilter}, {OccurenceID}='${occurrenceId}')`,
+        ];
+        existing = await findOneByAnyFormula(RSVP_TABLE, occCandidates);
+      } else {
+        const evtCandidates = [
+          `AND(${userFilter}, {EventID}='${derivedEventId}')`,
+          `AND(${userFilter}, {Event ID}='${derivedEventId}')`,
+          `AND(${userFilter}, {Event Id}='${derivedEventId}')`,
+        ];
+        existing = await findOneByAnyFormula(RSVP_TABLE, evtCandidates);
+      }
+
+      if (existing) {
+        const updated = await base(RSVP_TABLE).update(existing.id, {
+          'Status': status || 'Going',
+          'Updated At': new Date().toISOString(),
+        });
+        return res.status(200).json({ id: updated.id, fields: updated.fields });
+      }
+
+      console.log('RSVP POST resolve:', { clerkId: userId, resolvedUserID: userNumeric, eventId: derivedEventId, occurrenceId });
+      const record = await createRsvpTolerant(RSVP_TABLE, {
+        eventId: derivedEventId,
+        userId: userNumeric,
+        status: status || 'Going',
+        occurrenceId: occurrenceId || null,
+        createdAt: new Date().toISOString(),
+      });
       return res.status(201).json({ id: record.id, fields: record.fields });
     } catch (err) {
       console.error("RSVP POST error:", {
         message: err?.message,
         statusCode: err?.statusCode,
-        usersBase: AIRTABLE_USERS_BASE_ID,
+        baseId: AIRTABLE_BASE_ID,
         usersTable: USERS_TABLE,
-        rsvpBase: AIRTABLE_RSVP_BASE_ID,
         rsvpTable: RSVP_TABLE,
       });
       return res.status(500).json({ error: err.message || 'Failed to create RSVP' });

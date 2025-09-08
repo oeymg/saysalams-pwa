@@ -18,8 +18,8 @@ export async function getServerSideProps(context) {
   const user = usersJson?.user || null;
   if (!user) return { redirect: { destination: "/sign-up", permanent: false } };
 
-  // Fetch RSVPs for this Airtable user
-  const rsvpRes = await fetch(`${base}/api/rsvp?userId=${encodeURIComponent(user.record_id)}`);
+  // Fetch RSVPs for this user by canonical UserID (e.g., USR_xxx)
+  const rsvpRes = await fetch(`${base}/api/rsvp?userId=${encodeURIComponent(user.id)}`);
   const rsvpJson = await rsvpRes.json();
   const rsvps = rsvpJson?.rsvps || [];
 
@@ -31,12 +31,13 @@ export async function getServerSideProps(context) {
 
   // Normalize RSVP rows
   const rows = rsvps.map((r) => {
-    const eventId = r?.fields?.["Event ID"] || r?.fields?.eventId;
+    // Always use text EventID stored in RSVPs
+    const eventId = typeof r?.fields?.["EventID"] === 'string' ? r.fields["EventID"] : null;
     const ev = eventId ? eventsById[eventId] : null;
     return {
       id: r.id,
-      eventId,
-      status: r?.fields?.Status || r?.fields?.status || "Unknown",
+      eventId: eventId,
+      status: r?.fields?.Status || "Unknown",
       eventName: ev?.title || "Untitled",
       eventDate: ev?.start_at || null,
     };
@@ -56,10 +57,38 @@ const card = {
 
 export default function ProfilePage({ user, rows }) {
   const [toast, setToast] = useState(null);
+  const [cons, setCons] = useState({ accepted: [], pending: [] });
+  const [loadingCons, setLoadingCons] = useState(false);
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     window.clearTimeout(showToast._t);
     showToast._t = window.setTimeout(() => setToast(null), 2400);
+  };
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoadingCons(true);
+        const acc = await fetch('/api/connections?status=Accepted').then(r=>r.json());
+        const pen = await fetch('/api/connections?status=Pending').then(r=>r.json());
+        setCons({ accepted: acc?.connections || [], pending: pen?.connections || [] });
+      } catch (_) {
+      } finally {
+        setLoadingCons(false);
+      }
+    };
+    load();
+  }, []);
+
+  const actOn = async (id, action) => {
+    try {
+      const res = await fetch('/api/connections', { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, action })});
+      if (!res.ok) throw new Error('Failed to update connection');
+      const acc = await fetch('/api/connections?status=Accepted').then(r=>r.json());
+      const pen = await fetch('/api/connections?status=Pending').then(r=>r.json());
+      setCons({ accepted: acc?.connections || [], pending: pen?.connections || [] });
+    } catch (e) {
+      showToast(e.message || 'Update failed', 'error');
+    }
   };
 
   return (
@@ -79,6 +108,51 @@ export default function ProfilePage({ user, rows }) {
             <Info label="How Heard About" value={user.heard_about || "N/A"} />
             <Info label="Member Since" value={user.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"} />
           </div>
+        </section>
+        <section style={{ marginTop: '2rem' }}>
+          <h2 style={{ color: '#6e5084', marginBottom: '0.75rem' }}>Connections</h2>
+          {loadingCons ? (
+            <p>Loading connections…</p>
+          ) : (
+            <div style={{ display:'grid', gap:'1rem' }}>
+              <div>
+                <h3 style={{ marginBottom: '0.5rem', color:'#5a3c91' }}>Accepted</h3>
+                {cons.accepted.length === 0 ? (
+                  <p style={{ margin:0 }}>No connections yet.</p>
+                ) : (
+                  <ul style={{ listStyle:'none', padding:0, margin:0 }}>
+                    {cons.accepted.map(c => (
+                      <li key={c.id} style={{ background:'#f8f6fc', border:'1px solid #e7e2f0', borderRadius:8, padding:'0.6rem 0.8rem' }}>
+                        <strong>{c.other?.name || 'User'}</strong>
+                        <span style={{ color:'#666' }}> {c.other?.email ? `· ${c.other.email}` : ''}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <h3 style={{ marginBottom: '0.5rem', color:'#5a3c91' }}>Requests</h3>
+                {cons.pending.length === 0 ? (
+                  <p style={{ margin:0 }}>No pending requests.</p>
+                ) : (
+                  <ul style={{ listStyle:'none', padding:0, margin:0 }}>
+                    {cons.pending.map(c => (
+                      <li key={c.id} style={{ background:'#fff7ed', border:'1px solid #fed7aa', borderRadius:8, padding:'0.6rem 0.8rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                        <span>
+                          <strong>{c.other?.name || 'User'}</strong>
+                          <span style={{ color:'#92400e' }}>  · Pending</span>
+                        </span>
+                        <span style={{ display:'flex', gap:'0.5rem' }}>
+                          <button onClick={() => actOn(c.id,'accept')} style={{ background:'#16a34a', color:'#fff', border:'none', borderRadius:6, padding:'0.35rem 0.6rem', cursor:'pointer' }}>Accept</button>
+                          <button onClick={() => actOn(c.id,'decline')} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:6, padding:'0.35rem 0.6rem', cursor:'pointer' }}>Decline</button>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* RSVPs Table */}
@@ -105,7 +179,7 @@ function Info({ label, value }) {
   );
 }
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function RSVPTable({ rows, userId, onToast }) {
   const [data, setData] = useState(rows);

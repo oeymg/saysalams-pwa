@@ -21,27 +21,47 @@ export default function Home({ events }) {
         style={{
           background: '#6e5084',
           color: '#fff',
-          padding: '0.1rem 0.1rem',
+          padding: '2.5rem 1rem',
           textAlign: 'center',
-          marginBottom: '2rem',
+          marginBottom: '2.5rem',
         }}
       >
-        <h2 style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>Why Say Salams?</h2>
-        <p style={{ maxWidth: '600px', margin: '0 auto 0.5rem auto', lineHeight: '1.6' }}>
+        <h2
+          style={{
+            fontSize: '3rem',
+            marginBottom: '0.75rem',
+            fontWeight: 900,
+            letterSpacing: '0.5px',
+            background: 'linear-gradient(90deg, #ffffff, #e6d7ff)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          Why Say Salams?
+        </h2>
+        <p style={{ maxWidth: '760px', margin: '0 auto 0.75rem auto', lineHeight: '1.75', fontSize: '1.05rem' }}>
           Saying <strong>Assalamu alaykum</strong> is more than a greeting — it&apos;s a prayer of peace.
         </p>
-        <p style={{ maxWidth: '600px', margin: '0 auto 0.5rem auto', lineHeight: '1.6' }}>
-          It builds connection, spreads peace &amp; unites our community.
+        <p
+          style={{
+            maxWidth: '840px',
+            margin: '0 auto 0.75rem auto',
+            lineHeight: '1.8',
+            fontWeight: 700,
+            fontSize: '1.15rem',
+          }}
+        >
+          Say Salams is where Muslims come together — to discover events, build friendships, and share barakah.
         </p>
-        <p style={{ maxWidth: '600px', margin: '0 auto 0.5rem auto', lineHeight: '1.6' }}>
-          <strong>Say Salams.</strong>
+        <p style={{ maxWidth: '760px', margin: '0 auto 0.75rem auto', lineHeight: '1.7' }}>
+          <strong>Every Salam spreads peace. Every connection strengthens our Ummah.</strong>
         </p>
-        <p style={{ fontWeight: 'bold', fontSize: '2rem' }}>Because peace begins with you. ✨</p>
+        <p style={{ fontWeight: 800, fontSize: '1.4rem', margin: 0 }}>✨ Peace begins with you.</p>
       </section>
 
       {/* Events Section */}
       <section
-        style={{ maxWidth: '1100px', margin: '0 auto 4rem ', padding: '0rem 0rem auto', flex: 1 }}
+        style={{ maxWidth: '1100px', margin: '0 auto 4rem', padding: '0 1rem', flex: 1 }}
       >
         <h2
           style={{
@@ -60,18 +80,12 @@ export default function Home({ events }) {
           </p>
         )}
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '24px',
-          }}
-        >
+        <div className="events-grid">
           {events.map(ev => (
             <article
               key={ev.id}
               style={{
-                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
                 border: '1px solid #eee',
                 borderRadius: '12px',
                 overflow: 'hidden',
@@ -79,18 +93,26 @@ export default function Home({ events }) {
                 display: 'flex',
                 flexDirection: 'column',
               }}
+              className="hover-pop"
             >
               {ev.image_url && (
                 <Image
                   src={ev.image_url}
                   alt={ev.title}
-                  width={400}
-                  height={180}
-                  style={{ objectFit: 'cover', borderRadius: '12px' }}
+                  width={600}
+                  height={220}
+                  style={{ objectFit: 'cover' }}
                 />
               )}
               <div style={{ flex: 1, padding: '1rem' }}>
-                <h3 style={{ margin: '0 0 0.5rem 0', color: '#6a4caf' }}>{ev.title}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <h3 style={{ margin: '0 0 0.5rem 0', color: '#6e5084', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</h3>
+                  {ev.is_recurring && (
+                    <span style={{ background: '#fef3c7', color: '#92400e', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 600 }}>
+                      Recurring
+                    </span>
+                  )}
+                </div>
                 <p style={{ marginBottom: '0.5rem', color: '#555' }}>
                   {ev.start_at
                     ? new Date(ev.start_at).toLocaleDateString('en-AU', {
@@ -102,11 +124,10 @@ export default function Home({ events }) {
                         minute: 'numeric',
                       })
                     : 'TBA'}
-                  {ev.suburb ? ` · ${ev.suburb}` : ''}
-                  {ev.city ? `, ${ev.city}` : ''}
+                  {ev.city_region ? ` · ${ev.city_region}` : ''}
                 </p>
                 <div style={{ marginBottom: '0.5rem' }}>
-                  {(ev.tags || []).slice(0, 3).map(t => (
+                  {(ev.category || []).slice(0, 3).map(t => (
                     <span
                       key={t}
                       style={{
@@ -122,9 +143,11 @@ export default function Home({ events }) {
                     </span>
                   ))}
                 </div>
-                <p style={{ marginBottom: '0.8rem', color: '#666' }}>
-                  👍 {ev.going_count ?? 0} going
-                </p>
+                {typeof ev.going_count === 'number' && (
+                  <p style={{ marginBottom: '0.8rem', color: '#666' }}>
+                    👍 {ev.going_count} going
+                  </p>
+                )}
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {ev.tickets_url && (
                     <a
@@ -138,6 +161,7 @@ export default function Home({ events }) {
                         borderRadius: '8px',
                         textDecoration: 'none',
                         fontSize: '0.9rem',
+                        fontWeight: 700,
                       }}
                     >
                       Tickets
@@ -152,6 +176,7 @@ export default function Home({ events }) {
                       borderRadius: '8px',
                       textDecoration: 'none',
                       fontSize: '0.9rem',
+                      fontWeight: 700,
                     }}
                   >
                     Details
@@ -178,6 +203,7 @@ export default function Home({ events }) {
           color: '#fff',
           marginBottom: '3rem',
         }}
+        className="hover-pop"
       >
         <div
           style={{
@@ -223,23 +249,46 @@ export default function Home({ events }) {
             🕌 <strong>Strengthen our ummah</strong> — every event is more than a meetup; it&apos;s a step toward unity, peace, and spreading barakah.
           </p>
         </div>
+
+        {/* CTA: Go to sign-up flow (handles Clerk + Airtable) */}
+        <div style={{ flexBasis: '100%', textAlign: 'center' }}>
+          <Link
+            href="/sign-up"
+            style={{
+              background: '#f6f4fa',
+              color: '#6e5084',
+              padding: '0.8rem 2rem',
+              borderRadius: '8px',
+              fontWeight: 700,
+              textDecoration: 'none',
+              fontSize: '1.05rem',
+              display: 'inline-block',
+              marginTop: '0.5rem',
+              border: '1px solid #d9d6e3',
+              boxShadow: '0 4px 12px rgba(110, 80, 132, 0.15)'
+            }}
+          >
+            Join Say Salams
+          </Link>
+        </div>
       </section>
 
       {/* How to Become a Host Section */}
       <section
         style={{
           background: '#f6f4fa',
-          color: '#5a3c91',
+          color: '#6e5084',
           padding: '2rem 1rem',
           textAlign: 'left',
           marginBottom: '2rem',
-          maxWidth: '900px',
+          maxWidth: '1100px',
           marginLeft: 'auto',
           marginRight: 'auto',
           borderRadius: '12px',
           boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
           border: '2px solid #f6f4fa',
         }}
+        className="hover-pop"
       >
         <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#6e5084', textAlign: 'center' }}>
           Want to Host an Event with Say Salams?
@@ -276,7 +325,7 @@ export default function Home({ events }) {
           <Link
             href="/host"
             style={{
-              background: 'linear-gradient(90deg, #6e5084, #6e5065)',
+              background: '#6e5084',
               color: '#fff',
               padding: '0.8rem 2rem',
               borderRadius: '8px',
@@ -284,6 +333,55 @@ export default function Home({ events }) {
               textDecoration: 'none',
               fontSize: '1.1rem',
               textAlign: 'center',
+            }}
+          >
+            Become a Host
+          </Link>
+        </div>
+      </section>
+
+      {/* Bottom CTA Section (moved to the very bottom) */}
+      <section
+        style={{
+          maxWidth: '1100px',
+          margin: '0 auto 3rem',
+          padding: '1.75rem',
+          border: '1px solid #eee',
+          borderRadius: '12px',
+          background: '#f6f4fa',
+          textAlign: 'center',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
+        }}
+        className="hover-pop"
+      >
+        <h3 style={{ color: '#6e5084', margin: '0 0 0.75rem 0', fontSize: '1.6rem' }}>Ready to get involved?</h3>
+        <p style={{ color: '#555', margin: '0 0 1rem 0' }}>
+          Browse the latest events or become a host and bring people together.
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <Link
+            href="/events"
+            style={{
+              background: '#f6f4fa',
+              color: '#6e5084',
+              padding: '0.6rem 1.2rem',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontWeight: 700,
+              border: '1px solid #ded7ef'
+            }}
+          >
+            Browse Events
+          </Link>
+          <Link
+            href="/host"
+            style={{
+              background: '#6e5084',
+              color: '#fff',
+              padding: '0.6rem 1.2rem',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontWeight: 700,
             }}
           >
             Become a Host

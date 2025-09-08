@@ -23,13 +23,14 @@ export default async function handler(req, res) {
       const f = r.fields || {};
       const eventId = f['EventID'] || r.id;
       return {
+        record_id: r.id,
         id: eventId,
         public_id: eventId,
-        title: f['Event Name'] || 'Untitled',
+        title: f['Title'] || f['Event Name'] || 'Untitled',
         start_at: f['Event Date'] || null,
+        duration: f['Duration'] || null,
         venue: f['Location'] || null,
-        suburb: f['Suburb'] || null,
-        city: f['City'] || null,
+        city_region: f['City/Region'] || f['City'] || null,
         description: f['Event Description'] || null,
         summary: f['Summary'] || null,
         image_url:
@@ -38,10 +39,20 @@ export default async function handler(req, res) {
             : null,
         tickets_url: f['Event Link'] || null,
         cost: f['Cost'] || null,
-        audience: f['Audience'] || null,
-        tags: Array.isArray(f['Tags']) ? f['Tags'] : (typeof f['Tags'] === 'string' ? f['Tags'].split(',').map(s => s.trim()).filter(Boolean) : []),
-        halal_notes: f['Halal Notes'] || f['Halal'] || null,
-        going_count: f['Going Count'] ?? 0,
+        audience: Array.isArray(f['Audience'])
+          ? f['Audience']
+          : (typeof f['Audience'] === 'string' ? f['Audience'].split(',').map(s => s.trim()).filter(Boolean) : []),
+        category: Array.isArray(f['Category'])
+          ? f['Category']
+          : (typeof f['Category'] === 'string' ? f['Category'].split(',').map(s => s.trim()).filter(Boolean) : []),
+        repeat: f['Repeat'] || 'None',
+        repeat_interval: f['Repeat Interval'] || null,
+        by_day: Array.isArray(f['By Day']) ? f['By Day'] : [],
+        repeat_until: f['Repeat Until'] || null,
+        is_recurring: !!(f['Repeat'] && String(f['Repeat']).toLowerCase() !== 'none'),
+        approval_status: f['Approval Status'] || null,
+        organiser: Array.isArray(f['Organiser']) ? f['Organiser'][0] : null,
+        organiser_name: f['Organiser Name'] || null,
       };
     });
 

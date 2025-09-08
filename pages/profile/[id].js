@@ -15,6 +15,7 @@ export async function getServerSideProps(context) {
     props: {
       user: userData?.user || null,
       rsvps: rsvpData?.rsvps || [],
+      recordId: id || null,
     },
   };
 }
@@ -54,7 +55,10 @@ const rsvpItemStyle = {
   alignItems: "center",
 };
 
-export default function ProfilePage({ user, rsvps }) {
+import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+
+export default function ProfilePage({ user, rsvps, recordId }) {
   if (!user) {
     return (
       <div style={containerStyle}>
@@ -63,9 +67,44 @@ export default function ProfilePage({ user, rsvps }) {
       </div>
     );
   }
+  const { isSignedIn } = useUser();
+  const [connStatus, setConnStatus] = useState('idle');
+
+  const requestConnection = async () => {
+    if (!isSignedIn) {
+      alert('Please sign in to connect.');
+      return;
+    }
+    try {
+      setConnStatus('loading');
+      const res = await fetch('/api/connections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toRecordId: recordId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to send request');
+      setConnStatus((data?.status || 'Pending').toLowerCase());
+    } catch (e) {
+      alert(e.message || 'Failed to send request');
+      setConnStatus('idle');
+    }
+  };
+
   return (
     <div style={containerStyle}>
       <h1 style={{marginBottom: "1rem"}}>Profile</h1>
+      <div style={{ marginBottom: '1rem' }}>
+        {connStatus === 'accepted' ? (
+          <span style={{ background:'#e8faf0', color:'#166534', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Connected</span>
+        ) : connStatus === 'pending' ? (
+          <span style={{ background:'#fef3c7', color:'#92400e', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Request sent</span>
+        ) : (
+          <button onClick={requestConnection} style={{ background:'#6e5084', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor:'pointer' }}>
+            Connect
+          </button>
+        )}
+      </div>
       <section style={sectionStyle}>
         <div style={{marginBottom: "0.5rem"}}>
           <span style={labelStyle}>Name:</span>

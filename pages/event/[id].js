@@ -13,17 +13,70 @@ export async function getServerSideProps(context) {
   const res = await fetch(`${base}/api/events`);
   const data = await res.json();
   const ev = (data.events || []).find(e => e.public_id === id) || null;
-  return { props: { ev } };
+  // Fetch occurrences for this event
+  let occurrences = [];
+  try {
+    const occRes = await fetch(`${base}/api/occurrences?eventId=${encodeURIComponent(id)}`);
+    const occJson = await occRes.json();
+    occurrences = occJson?.occurrences || [];
+  } catch (_) {}
+
+  // Fetch per-occurrence going counts
+  let occurrenceCounts = {};
+  try {
+    const counts = await Promise.all(
+      (occurrences || []).map(async (o) => {
+        try {
+          const rr = await fetch(`${base}/api/rsvp?occurrenceId=${encodeURIComponent(o.occurrence_id)}`);
+          const rj = await rr.json();
+          const rsvps = rj?.rsvps || [];
+          const going = rsvps.filter(r => (r.fields?.Status || '').toLowerCase() === 'going').length;
+          return [o.occurrence_id, going];
+        } catch (_) {
+          return [o.occurrence_id, 0];
+        }
+      })
+    );
+    counts.forEach(([oid, c]) => { occurrenceCounts[oid] = c; });
+  } catch (_) {}
+
+  return { props: { ev, occurrences, occurrenceCounts } };
 }
 
-export default function EventPage({ ev }) {
+export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} }) {
   const { user, isSignedIn } = useUser();
-  const [saving, setSaving] = useState(false);
+  const [savingMap, setSavingMap] = useState({}); // by occurrenceId
+  const [counts, setCounts] = useState(occurrenceCounts);
+  const [savingSeries, setSavingSeries] = useState(false);
   const [toast, setToast] = useState(null);
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     if (showToast._t) window.clearTimeout(showToast._t);
     showToast._t = window.setTimeout(() => setToast(null), 2400);
+  };
+
+  const handleSeriesRSVP = async () => {
+    if (!isSignedIn) {
+      showToast('Please sign in to RSVP.', 'error');
+      return;
+    }
+    try {
+      setSavingSeries(true);
+      const response = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, eventId: ev.public_id, status: 'Going' }),
+      });
+      if (response.ok) {
+        showToast('RSVP saved! 👍', 'success');
+      } else {
+        showToast('Failed to save RSVP.', 'error');
+      }
+    } catch (_) {
+      showToast('Failed to save RSVP.', 'error');
+    } finally {
+      setSavingSeries(false);
+    }
   };
 
   if (!ev) {
@@ -36,13 +89,13 @@ export default function EventPage({ ev }) {
     );
   }
 
-  const handleRSVP = async () => {
+  const handleRSVP = async (occurrenceId) => {
     if (!isSignedIn) {
       showToast('Please sign in to RSVP.', 'error');
       return;
     }
     try {
-      setSaving(true);
+      setSavingMap((m) => ({ ...m, [occurrenceId]: true }));
       const response = await fetch('/api/rsvp', {
         method: 'POST',
         headers: {
@@ -51,10 +104,12 @@ export default function EventPage({ ev }) {
         body: JSON.stringify({
           userId: user.id,
           eventId: ev.public_id,
+          occurrenceId,
           status: 'Going',
         }),
       });
       if (response.ok) {
+        setCounts((c) => ({ ...c, [occurrenceId]: (c[occurrenceId] || 0) + 1 }));
         showToast('RSVP saved! 👍', 'success');
       } else {
         showToast('Failed to save RSVP.', 'error');
@@ -62,7 +117,7 @@ export default function EventPage({ ev }) {
     } catch (error) {
       showToast('Failed to save RSVP.', 'error');
     } finally {
-      setSaving(false);
+      setSavingMap((m) => ({ ...m, [occurrenceId]: false }));
     }
   };
 
@@ -76,36 +131,64 @@ export default function EventPage({ ev }) {
             alt={ev.title}
             width={900}
             height={400}
+            quality={90}
+            sizes="(max-width: 900px) 100vw, 900px"
             style={{
               width: '100%',
+              height: '400px',
               borderRadius: '12px',
               marginBottom: '1.5rem',
-              maxHeight: '400px',
               objectFit: 'cover',
             }}
           />
         )}
 
-        {/* Title */}
-        <h1 style={{ color: '#6a4caf', marginBottom: '0.5rem' }}>{ev.title}</h1>
+        {/* Title + badges + tickets */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <h1 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>{ev.title}</h1>
+            {ev.is_recurring && (
+              <span style={{ background: '#fef3c7', color: '#92400e', padding: '0.2rem 0.5rem', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600 }}>
+                Recurring
+              </span>
+            )}
+          </div>
+          {ev.tickets_url && (
+            <a
+              href={ev.tickets_url}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                background: '#6e5084',
+                color: '#fff',
+                padding: '0.5rem 0.9rem',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Tickets
+            </a>
+          )}
+        </div>
 
         {/* Meta info */}
         <p style={{ color: '#555', marginBottom: '1rem' }}>
           {ev.start_at ? new Date(ev.start_at).toLocaleString('en-AU') : 'TBA'}
           {ev.venue ? ` · ${ev.venue}` : ''}
-          {ev.suburb ? ` · ${ev.suburb}` : ''}
-          {ev.city ? `, ${ev.city}` : ''}
+          {ev.city_region ? ` · ${ev.city_region}` : ''}
         </p>
 
         {/* Tags */}
-        {(ev.tags || []).length > 0 && (
-          <p style={{ marginBottom: '1rem' }}>
-            {ev.tags.map((t) => (
+        {(ev.category || []).length > 0 && (
+          <p style={{ marginBottom: '0.75rem' }}>
+            {ev.category.map((t) => (
               <span
                 key={t}
                 style={{
-                  background: '#ede8f7',
-                  color: '#5a3c91',
+                  background: '#6e5084', // light pink chip
+                  color: '#f6f4fa',
                   padding: '0.2rem 0.6rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
@@ -118,6 +201,16 @@ export default function EventPage({ ev }) {
           </p>
         )}
 
+        {/* Event Summary moved below tags */}
+        {ev.summary && (
+          <div style={{ marginBottom: '1.25rem' }}>
+            <h2 style={{ marginBottom: '0.5rem', color: '#6e5084' }}>Event Summary</h2>
+            <p style={{ lineHeight: '1.6', color: '#333' }}>
+              {typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')}
+            </p>
+          </div>
+        )}
+
         {/* Halal Notes (if exists) */}
         {ev.halal_notes && (
           <p style={{ color: '#777', fontStyle: 'italic', marginBottom: '1rem' }}>
@@ -125,95 +218,82 @@ export default function EventPage({ ev }) {
           </p>
         )}
 
-        {/* Going count */}
-        <p style={{ marginBottom: '1.5rem', color: '#444' }}>
-          <strong>👍 {ev.going_count ?? 0}</strong> going
-        </p>
-
-        {/* AI Event Summary */}
-        {ev.summary && (
-          <>
-            <h2 style={{ marginBottom: '0.5rem', color: '#5a3c91' }}>Event Summary</h2>
-            <p style={{ lineHeight: '1.6', marginBottom: '2rem', color: '#333' }}>
-              {typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')}
-            </p>
-          </>
+        {/* Occurrences list */}
+        {occurrences && occurrences.length > 0 && (
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ margin: '1rem 0 0.5rem', color: '#6e5084' }}>Upcoming in this Event</h2>
+            <div style={{ display: 'grid', gap: '0.5rem' }}>
+              {occurrences.map((o) => (
+                <div key={o.occurrence_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f4fa', border: '1px solid #eee', borderRadius: 8, padding: '0.6rem 0.8rem' }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#4f3a76' }}>
+                      {o.start_at ? new Date(o.start_at).toLocaleString('en-AU') : 'TBA'}
+                    </div>
+                    <div style={{ color: '#555', fontSize: '0.9rem' }}>
+                      {(o.venue || ev.venue) ? (o.venue || ev.venue) : ''}
+                      {o.city_region ? ` · ${o.city_region}` : (ev.city_region ? ` · ${ev.city_region}` : '')}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ color: '#444', fontSize: '0.9rem' }}>👍 {counts[o.occurrence_id] || 0}</div>
+                    <button
+                      onClick={() => handleRSVP(o.occurrence_id)}
+                      style={{
+                        background: '#6e5084',
+                        color: '#f6f4fa',
+                        padding: '0.5rem 0.9rem',
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                      disabled={!!savingMap[o.occurrence_id]}
+                    >
+                      {savingMap[o.occurrence_id] ? 'Saving...' : 'RSVP'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
-        {/* Full Description */}
-        {ev.description && (
-          <>
-            <h2 style={{ marginBottom: '0.5rem', color: '#5a3c91' }}>About This Event</h2>
-            <p style={{ lineHeight: '1.7', marginBottom: '2rem', color: '#333' }}>
-              {ev.description}
+        {/* Fallback: series-level RSVP when no occurrences */}
+        {(!occurrences || occurrences.length === 0) && (
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ margin: '1rem 0 0.5rem', color: '#6e5084' }}>RSVP</h2>
+            <p style={{ color: '#666', marginBottom: '0.75rem' }}>
+              No upcoming occurrences listed yet. RSVP to the event series.
             </p>
-          </>
-        )}
-
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          {ev.tickets_url && (
-            <a
-              href={ev.tickets_url}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={handleSeriesRSVP}
               style={{
-                background: '#6a4caf',
-                color: '#fff',
+                background: '#6e5084',
+                color: '#f6f4fa',
                 padding: '0.6rem 1.2rem',
                 borderRadius: '8px',
-                textDecoration: 'none',
                 fontWeight: '600',
+                border: 'none',
+                cursor: 'pointer',
               }}
+              disabled={savingSeries}
             >
-              Tickets
-            </a>
-          )}
+              {savingSeries ? 'Saving...' : 'RSVP'}
+            </button>
+          </div>
+        )}
 
-          <button
-            onClick={handleRSVP}
-            style={{
-              background: '#ede8f7',
-              color: '#5a3c91',
-              padding: '0.6rem 1.2rem',
-              borderRadius: '8px',
-              fontWeight: '600',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-            disabled={saving}
-          >
-            {saving ? 'Saving...' : 'RSVP'}
-          </button>
+        {/* Summary already shown above */}
 
-          {/* Example RSVP (optional later) */}
-          {/* <a
-            href={`https://tally.so/r/YOUR_FORM_ID?event_id=${encodeURIComponent(ev.public_id)}&status=going`}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              background: '#ede8f7',
-              color: '#5a3c91',
-              padding: '0.6rem 1.2rem',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: '600',
-            }}
-          >
-            I&apos;m Going
-          </a> */}
-        </div>
+        {/* Full Description removed as requested */}
+
+        {/* Action buttons removed (Tickets moved next to title) */}
 
         {/* Details list */}
         <div style={{ marginTop: '2rem', display: 'grid', gap: '0.5rem' }}>
-          {(ev.cost || ev.audience) && (
+          {ev.cost && (
             <div style={{ background: '#f6f0ff', padding: '0.75rem 1rem', borderRadius: 8 }}>
-              {ev.cost && (
-                <div style={{ color: '#4f3a76' }}><strong>Cost:</strong> {ev.cost}</div>
-              )}
-              {ev.audience && (
-                <div style={{ color: '#4f3a76' }}><strong>Audience:</strong> {ev.audience}</div>
-              )}
+              <div style={{ color: '#4f3a76' }}><strong>Cost:</strong> {ev.cost}</div>
             </div>
           )}
           {ev.halal_notes && (

@@ -1,7 +1,8 @@
 import Airtable from 'airtable';
 
-const base = process.env.AIRTABLE_TOKEN && process.env.AIRTABLE_USERS_BASE_ID
-  ? new Airtable({ apiKey: process.env.AIRTABLE_TOKEN }).base(process.env.AIRTABLE_USERS_BASE_ID)
+// Unified base: use AIRTABLE_BASE_ID for Users as well
+const base = process.env.AIRTABLE_TOKEN && process.env.AIRTABLE_BASE_ID
+  ? new Airtable({ apiKey: process.env.AIRTABLE_TOKEN }).base(process.env.AIRTABLE_BASE_ID)
   : null;
 
 export default async function handler(req, res) {

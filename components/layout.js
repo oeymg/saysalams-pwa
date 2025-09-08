@@ -25,7 +25,6 @@ export default function Layout({ children }) {
           background: '#fff',
           boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
         }}
-        className="nav-bar"
       >
         {/* Logo */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -49,17 +48,18 @@ export default function Layout({ children }) {
             gap: '2rem',
             alignItems: 'center',
           }}
-          className="nav-links"
         >
           <Link href="/events" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Events</Link>
           <Link href="/host" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Host</Link>
           <Link href="/faq" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>FAQ</Link>
+          <Link href="/connections" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Connections</Link>
+          <Link href="/profile" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Profile</Link>
         </div>
 
         {/* CTA */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }} className="cta">
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
           {isSignedIn ? (
-            <UserButton afterSignOutUrl="/" userProfileUrl="/profile" userProfileMode="navigation" />
+            <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (
             <SignInButton mode="modal">
               <button
@@ -78,23 +78,6 @@ export default function Layout({ children }) {
               </button>
             </SignInButton>
           )}
-          <Link
-            href="/profile"
-            className="profile-link"
-            style={{
-              background: '#ede8f7',
-              color: '#5a3c91',
-              padding: '0.5rem 1rem',
-              borderRadius: '8px',
-              fontWeight: '600',
-              textDecoration: 'none',
-              border: '1px solid #d9d6e3',
-              fontSize: '1.0rem',
-              display: 'inline-block',
-            }}
-          >
-            My Profile
-          </Link>
         </div>
       </nav>
 
