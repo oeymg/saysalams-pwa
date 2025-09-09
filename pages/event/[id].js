@@ -135,16 +135,17 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
             sizes="(max-width: 900px) 100vw, 900px"
             style={{
               width: '100%',
-              height: 'auto',
+              height: '300px',
               borderRadius: '12px',
-              marginBottom: '1.5rem',
+              marginBottom: '1rem',
               objectFit: 'cover',
             }}
+            data-reveal
           />
         )}
 
         {/* Title + badges + tickets */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }} data-reveal>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <h1 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>{ev.title}</h1>
             {ev.is_recurring && (
@@ -174,7 +175,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
         </div>
 
         {/* Meta info */}
-        <p style={{ color: '#555', marginBottom: '1rem' }}>
+        <p style={{ color: '#555', marginBottom: '1rem' }} data-reveal>
           {ev.start_at ? new Date(ev.start_at).toLocaleString('en-AU') : 'TBA'}
           {ev.venue ? ` · ${ev.venue}` : ''}
           {ev.city_region ? ` · ${ev.city_region}` : ''}
@@ -182,7 +183,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
 
         {/* Tags */}
         {(ev.category || []).length > 0 && (
-          <p style={{ marginBottom: '0.75rem' }}>
+          <p style={{ marginBottom: '0.75rem' }} data-reveal>
             {ev.category.map((t) => (
               <span
                 key={t}
@@ -203,7 +204,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
 
         {/* Event Summary moved below tags */}
         {ev.summary && (
-          <div style={{ marginBottom: '1.25rem' }}>
+          <div style={{ marginBottom: '1.25rem' }} data-reveal>
             <h2 style={{ marginBottom: '0.5rem', color: '#6e5084' }}>Event Summary</h2>
             <p style={{ lineHeight: '1.6', color: '#333' }}>
               {typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')}
@@ -220,11 +221,11 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
 
         {/* Occurrences list */}
         {occurrences && occurrences.length > 0 && (
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1.5rem' }} data-reveal>
             <h2 style={{ margin: '1rem 0 0.5rem', color: '#6e5084' }}>Upcoming in this Event</h2>
             <div style={{ display: 'grid', gap: '0.5rem' }}>
-              {occurrences.map((o) => (
-                <div key={o.occurrence_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f4fa', border: '1px solid #eee', borderRadius: 8, padding: '0.6rem 0.8rem' }}>
+              {occurrences.map((o, idx) => (
+                <div key={o.occurrence_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f4fa', border: '1px solid #eee', borderRadius: 8, padding: '0.6rem 0.8rem', transitionDelay: `${idx * 60}ms` }} className="reveal">
                   <div>
                     <div style={{ fontWeight: 600, color: '#4f3a76' }}>
                       {o.start_at ? new Date(o.start_at).toLocaleString('en-AU') : 'TBA'}
@@ -260,7 +261,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
 
         {/* Fallback: series-level RSVP when no occurrences */}
         {(!occurrences || occurrences.length === 0) && (
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1.5rem' }} data-reveal>
             <h2 style={{ margin: '1rem 0 0.5rem', color: '#6e5084' }}>RSVP</h2>
             <p style={{ color: '#666', marginBottom: '0.75rem' }}>
               No upcoming occurrences listed yet. RSVP to the event series.

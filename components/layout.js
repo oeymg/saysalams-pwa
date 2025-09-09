@@ -2,12 +2,49 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 
 export default function Layout({ children }) {
   const { isSignedIn } = useUser();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const ioRef = useRef(null);
+  const bindReveals = () => {
+    if (typeof window === 'undefined') return;
+    const all = Array.from(document.querySelectorAll('[data-reveal], .reveal'));
+    if (all.length === 0) return;
+    all.forEach(el => el.classList.add('reveal'));
+
+    if (!('IntersectionObserver' in window)) {
+      all.forEach(el => el.classList.add('inview'));
+      return;
+    }
+
+    if (!ioRef.current) {
+      ioRef.current = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('inview');
+            ioRef.current && ioRef.current.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -8% 0px' });
+    }
+    const io = ioRef.current;
+    all.forEach(el => io.observe(el));
+
+    // Safety: if something remains hidden after 1.2s, show it
+    setTimeout(() => {
+      all.forEach(el => {
+        if (!el.classList.contains('inview')) el.classList.add('inview');
+      });
+    }, 1200);
+  };
+
+  useEffect(() => { bindReveals(); }, []);
+  useEffect(() => { bindReveals(); }, [router.asPath]);
   return (
     <div
       style={{
@@ -52,15 +89,13 @@ export default function Layout({ children }) {
             flex: 1,
             display: 'flex',
             justifyContent: 'center',
-            gap: '2rem',
+            gap: '0.75rem',
             alignItems: 'center',
           }}
         >
-          <Link href="/events" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Events</Link>
-          <Link href="/host" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Host</Link>
-          <Link href="/faq" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>FAQ</Link>
-          <Link href="/connections" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Connections</Link>
-          <Link href="/profile" style={{ color: '#6e5084', textDecoration: 'none', fontWeight: '600', fontSize: '1.3rem' }}>Profile</Link>
+          <Link href="/events" legacyBehavior><a className="nav-pill">Events</a></Link>
+          <Link href="/host" legacyBehavior><a className="nav-pill">Host</a></Link>
+          <Link href="/connections" legacyBehavior><a className="nav-pill">Connections</a></Link>
         </div>
 
         {/* Mobile menu toggle */}
@@ -84,7 +119,8 @@ export default function Layout({ children }) {
         </button>
 
         {/* CTA */}
-        <div className="cta" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+        <div className="cta" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem' }}>
+          <Link href="/profile" legacyBehavior><a className="nav-pill">Profile</a></Link>
           {isSignedIn ? (
             <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (
@@ -123,48 +159,90 @@ export default function Layout({ children }) {
           }}
         >
           <div style={{ display: 'grid', gap: '0.25rem' }} onClick={() => setMobileOpen(false)}>
-            <Link href="/events" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Events</Link>
-            <Link href="/host" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Host</Link>
-            <Link href="/faq" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>FAQ</Link>
-            <Link href="/connections" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Connections</Link>
-            <Link href="/profile" style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Profile</Link>
+            <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
+            <Link href="/host" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Host</a></Link>
+            <Link href="/connections" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Connections</a></Link>
+            <Link href="/profile" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Profile</a></Link>
           </div>
         </div>
       )}
 
       {/* Page Content */}
-      <main style={{ flex: 1 }}>{children}</main>
+      <main style={{ flex: 1, paddingBottom: 'calc(56px + var(--safe-bottom))' }}>{children}</main>
 
-      {/* Footer */}
-      <footer
+      {/* Bottom mobile tab bar */}
+      <nav
+        className="mobile-only bottom-nav"
         style={{
-          background: '#6e5084',
-          color: '#fff',
-          textAlign: 'center',
-          padding: '2rem 1rem',
-          marginTop: '3rem',
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: '#fff',
+          borderTop: '1px solid #eee',
+          boxShadow: '0 -4px 18px rgba(0,0,0,0.06)',
+          zIndex: 60,
+          paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
-        <Image
-          src="/icons/invertlogo.png"
-          alt="Say Salams logo"
-          width={180}
-          height={60}
-          style={{ margin: '0 auto 1rem auto', height: 'auto', width: 'auto' }}
-        />
-        <p style={{ margin: '0.3rem 0' }}>📍 Brisbane, QLD, 4000</p>
-        <p style={{ margin: '0.3rem 0' }}>
-          📧{' '}
-          <a
-            href="mailto:contact@saysalams.com"
-            style={{ color: '#fff', textDecoration: 'underline' }}
-          >
-            contact@saysalams.com
-          </a>
-        </p>
-        <p style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: 0.8 }}>
-          © {new Date().getFullYear()} Say Salams. All rights reserved.
-        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.25rem', padding: '0.4rem 0.6rem' }}>
+          <Link href="/events" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>🗓️</div><div style={{ fontSize: 12 }}>Events</div></a></Link>
+          <Link href="/host" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>📣</div><div style={{ fontSize: 12 }}>Host</div></a></Link>
+          <Link href="/connections" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>🤝</div><div style={{ fontSize: 12 }}>Connect</div></a></Link>
+          <Link href="/profile" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>👤</div><div style={{ fontSize: 12 }}>Profile</div></a></Link>
+        </div>
+      </nav>
+
+      {/* Footer */}
+      <footer className="site-footer" data-reveal>
+        <div className="footer-inner">
+          {/* Brand + blurb */}
+          <div className="footer-col footer-brand">
+            <Image
+              src="/icons/invertlogo.png"
+              alt="Say Salams logo"
+              width={180}
+              height={180}
+              style={{ height: 'auto', width: 'auto' }}
+            />
+            <p className="footer-blurb">Community | Connections | Celebration</p>
+          </div>
+
+          {/* Quick links */}
+          <div className="footer-col">
+            <h4 className="footer-title">Explore</h4>
+            <ul className="footer-links">
+              <li><Link href="/events" legacyBehavior><a>See our upcoming Events</a></Link></li>
+              <li><Link href="/host" legacyBehavior><a>Become a Host</a></Link></li>
+              <li><Link href="/connections" legacyBehavior><a>Discover Connection</a></Link></li>
+              <li><Link href="/profile" legacyBehavior><a>View your Profile</a></Link></li>
+              <li><Link href="/faq" legacyBehavior><a>Frequently Asked Questions</a></Link></li>
+            </ul>
+          </div>
+
+          {/* Contact + social */}
+          <div className="footer-col">
+            <h4 className="footer-title">Contact</h4>
+            <ul className="footer-contact">
+              <li><a href="mailto:contact@saysalams.com">contact@saysalams.com</a></li>
+              <li>Brisbane, QLD, 4000</li>
+            </ul>
+            <div className="footer-social">
+              <a href="#" aria-label="Instagram">📷</a>
+              <a href="#" aria-label="TikTok">🎵</a>
+              <a href="#" aria-label="LinkedIn">💼</a>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span>
+            © 2025 Say Salams. All rights reserved.
+            {' '}·{' '}
+            <Link href="/privacy" legacyBehavior><a style={{ color: '#fff', textDecoration: 'underline' }}>Privacy Policy</a></Link>
+            {' '}·{' '}
+            <Link href="/terms" legacyBehavior><a style={{ color: '#fff', textDecoration: 'underline' }}>Terms & Conditions</a></Link>
+          </span>
+        </div>
       </footer>
     </div>
   );

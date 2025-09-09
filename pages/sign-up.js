@@ -30,7 +30,7 @@ export default function Signup() {
   const { isSignedIn, user } = useUser();
 
   const embedUrl = useMemo(() => {
-    const formBase = process.env.NEXT_PUBLIC_AIRTABLE_SIGNUP_EMBED_URL || 'https://airtable.com/embed/app5sdftDqu5gpJBg/pag4I3x7P9cdYi0pl/form';
+    const formBase = process.env.NEXT_PUBLIC_AIRTABLE_SIGNUP_EMBED_URL || 'https://airtable.com/embed/appTagC9VpvWx3nGF/pagxbxiUYixjmFRA0/form';
     if (!isSignedIn || !user) return base;
     const fullName = user.fullName || [user.firstName, user.lastName].filter(Boolean).join(' ');
     const email = user.primaryEmailAddress?.emailAddress || user.emailAddresses?.[0]?.emailAddress || '';

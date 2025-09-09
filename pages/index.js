@@ -25,6 +25,7 @@ export default function Home({ events }) {
           textAlign: 'center',
           marginBottom: '2.5rem',
         }}
+        data-reveal
       >
         <h2
           style={{
@@ -62,6 +63,7 @@ export default function Home({ events }) {
       {/* Events Section */}
       <section
         style={{ maxWidth: '1100px', margin: '0 auto 4rem', padding: '0 1rem', flex: 1 }}
+        data-reveal
       >
         <h2
           style={{
@@ -81,7 +83,7 @@ export default function Home({ events }) {
         )}
 
         <div className="events-grid">
-          {events.map(ev => (
+          {events.map((ev, idx) => (
             <article
               key={ev.id}
               style={{
@@ -92,8 +94,9 @@ export default function Home({ events }) {
                 background: '#fff',
                 display: 'flex',
                 flexDirection: 'column',
+                transitionDelay: `${idx * 60}ms`,
               }}
-              className="hover-pop"
+              className="hover-pop reveal"
             >
               {ev.image_url && (
                 <Image
@@ -204,6 +207,7 @@ export default function Home({ events }) {
           marginBottom: '3rem',
         }}
         className="hover-pop"
+        data-reveal
       >
         <div
           style={{
@@ -289,6 +293,7 @@ export default function Home({ events }) {
           border: '2px solid #f6f4fa',
         }}
         className="hover-pop"
+        data-reveal
       >
         <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#6e5084', textAlign: 'center' }}>
           Want to Host an Event with Say Salams?
@@ -353,6 +358,7 @@ export default function Home({ events }) {
           boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
         }}
         className="hover-pop"
+        data-reveal
       >
         <h3 style={{ color: '#6e5084', margin: '0 0 0.75rem 0', fontSize: '1.6rem' }}>Ready to get involved?</h3>
         <p style={{ color: '#555', margin: '0 0 1rem 0' }}>

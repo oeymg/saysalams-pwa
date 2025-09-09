@@ -15,9 +15,17 @@ const base =
 export default async function handler(req, res) {
   try {
     if (!base) throw new Error('Airtable not configured');
-    const records = await base(AIRTABLE_TABLE)
-      .select({ view: AIRTABLE_VIEW })
-      .all();
+    let records;
+    try {
+      records = await base(AIRTABLE_TABLE).select({ view: AIRTABLE_VIEW }).all();
+    } catch (e) {
+      // Fallback when the view doesn't exist or is misnamed
+      if (e?.statusCode === 422) {
+        records = await base(AIRTABLE_TABLE).select().all();
+      } else {
+        throw e;
+      }
+    }
 
     const rows = records.map((r) => {
       const f = r.fields || {};
