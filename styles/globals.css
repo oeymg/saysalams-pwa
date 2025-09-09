@@ -66,19 +66,24 @@ img, video {
 
 @media (max-width: 640px) {
   .nav-bar {
-    padding: 0.75rem 1rem !important;
+    padding: 0.5rem 0.75rem !important;
   }
   .nav-links { display: none !important; } /* Hide center links on phones */
   .mobile-only { display: inline-flex !important; }
+  .mobile-hidden { display: none !important; }
   .desktop-only { display: none !important; }
+  /* Ensure bottom nav spans full width; override mobile-only inline-flex */
+  .bottom-nav { display: block !important; width: 100vw !important; }
+  .bottom-nav > div { width: 100% !important; margin: 0 !important; }
   .cta {
     gap: 0.75rem !important;
   }
   .cta .profile-link,
   .cta button {
-    padding: 0.45rem 0.85rem !important;
-    font-size: 0.95rem !important;
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.9rem !important;
   }
+  .logo-img { width: 140px !important; height: auto !important; }
 }
 
 /* Improve text rendering consistency */
@@ -108,6 +113,11 @@ p, li {
     grid-template-columns: 1fr;
     gap: 16px;
   }
+  .host-container { padding: 1rem !important; }
+  .host-container h1 { font-size: 1.6rem !important; }
+  .stack-mobile { flex-direction: column !important; }
+  .stack-mobile > * { width: 100% !important; }
+  .site-footer { margin-bottom: 72px; }
 }
 /* Subtle hover pop for cards/sections */
 .hover-pop {
@@ -164,12 +174,24 @@ button:active { transform: translateY(1px); }
 footer { padding-bottom: calc(2rem + var(--safe-bottom)); }
 
 /* Bottom mobile tab bar spacing */
-.bottom-nav a {
-  padding: 6px 4px;
-}
+.bottom-nav a { padding: 0; }
 .bottom-nav a div:first-child {
   line-height: 1;
 }
+.bn-item {
+  text-align: center; 
+  color: #6e5084; 
+  text-decoration: none; 
+  font-weight: 800; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  width: 100%;
+  height: 100%;
+}
+.bn-icon { font-size: 1.3rem; line-height: 1; }
+.bn-label { font-size: 13px; margin-top: 2px; }
 
 /* Footer redesign */
 .footer-grid {

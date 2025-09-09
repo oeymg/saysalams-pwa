@@ -77,6 +77,7 @@ export default function Layout({ children }) {
               alt="Say Salams logo"
               width={160}
               height={60}
+              className="logo-img"
               style={{ height: 'auto', width: 'auto' }}
             />
           </Link>
@@ -100,7 +101,7 @@ export default function Layout({ children }) {
 
         {/* Mobile menu toggle */}
         <button
-          className="mobile-only"
+          className="mobile-only mobile-hidden"
           aria-label="Open menu"
           aria-controls="mobile-menu"
           aria-expanded={mobileOpen ? 'true' : 'false'}
@@ -120,7 +121,7 @@ export default function Layout({ children }) {
 
         {/* CTA */}
         <div className="cta" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem' }}>
-          <Link href="/profile" legacyBehavior><a className="nav-pill">Profile</a></Link>
+          <Link href="/profile" legacyBehavior><a className="nav-pill desktop-only">Profile</a></Link>
           {isSignedIn ? (
             <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (
@@ -168,7 +169,7 @@ export default function Layout({ children }) {
       )}
 
       {/* Page Content */}
-      <main style={{ flex: 1, paddingBottom: 'calc(56px + var(--safe-bottom))' }}>{children}</main>
+      <main style={{ flex: 1, paddingBottom: 'calc(84px + var(--safe-bottom))' }}>{children}</main>
 
       {/* Bottom mobile tab bar */}
       <nav
@@ -180,16 +181,16 @@ export default function Layout({ children }) {
           bottom: 0,
           background: '#fff',
           borderTop: '1px solid #eee',
-          boxShadow: '0 -4px 18px rgba(0,0,0,0.06)',
+          boxShadow: '0 -6px 22px rgba(0,0,0,0.08)',
           zIndex: 60,
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.25rem', padding: '0.4rem 0.6rem' }}>
-          <Link href="/events" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>🗓️</div><div style={{ fontSize: 12 }}>Events</div></a></Link>
-          <Link href="/host" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>📣</div><div style={{ fontSize: 12 }}>Host</div></a></Link>
-          <Link href="/connections" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>🤝</div><div style={{ fontSize: 12 }}>Connect</div></a></Link>
-          <Link href="/profile" legacyBehavior><a style={{ textAlign: 'center', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}><div>👤</div><div style={{ fontSize: 12 }}>Profile</div></a></Link>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0px', padding: '0.65rem 0' }}>
+          <Link href="/events" legacyBehavior><a className="bn-item"><div className="bn-icon">🗓️</div><div className="bn-label">Events</div></a></Link>
+          <Link href="/host" legacyBehavior><a className="bn-item"><div className="bn-icon">📣</div><div className="bn-label">Host</div></a></Link>
+          <Link href="/connections" legacyBehavior><a className="bn-item"><div className="bn-icon">🤝</div><div className="bn-label">Connect</div></a></Link>
+          <Link href="/profile" legacyBehavior><a className="bn-item"><div className="bn-icon">👤</div><div className="bn-label">Profile</div></a></Link>
         </div>
       </nav>
 

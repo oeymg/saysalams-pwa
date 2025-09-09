@@ -16,6 +16,7 @@ export default function EventsPage({ events }) {
   return (
     <Layout>
       <section
+        className="stack-mobile"
         style={{
           display: 'flex',
           gap: '3rem',
@@ -104,13 +105,7 @@ export default function EventsPage({ events }) {
           </p>
         )}
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '24px',
-          }}
-        >
+        <div className="events-grid">
           {events.map((ev) => (
             <article
               key={ev.id}

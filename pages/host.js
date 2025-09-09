@@ -7,7 +7,7 @@ import Layout from '../components/layout.js';
 export default function Host() {
   return (
     <Layout>
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
+      <div className="host-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
         <h1 style={{ color: '#6e5084', fontSize: '2.5rem', marginBottom: '1.5rem' }}>
           Turn Your Idea, Organisation, or Business into a Community Hub ✨
         </h1>
@@ -18,7 +18,7 @@ export default function Host() {
         </p>
 
         <h2 style={{ color: '#5a3c91', marginBottom: '1rem' }}>Why Host with Say Salams?</h2>
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+        <div className="stack-mobile" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
           <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
             <h3 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>Individuals</h3>
