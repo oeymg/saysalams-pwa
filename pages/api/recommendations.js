@@ -7,11 +7,9 @@ const USERS_TABLE = process.env.AIRTABLE_USERS_TABLE || 'Users';
 const RSVP_TABLE = process.env.AIRTABLE_RSVP_TABLE || 'RSVPs';
 const CONNECTIONS_TABLE = process.env.AIRTABLE_CONNECTIONS_TABLE || 'Connections';
 
-if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) {
-  throw new Error('Missing Airtable environment variables');
-}
-
-const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID);
+const base = (AIRTABLE_TOKEN && AIRTABLE_BASE_ID)
+  ? new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID)
+  : null;
 
 const normalizeText = (s) => String(s || '').trim();
 const normalizeCity = (s) => normalizeText(s).toLowerCase();
@@ -51,6 +49,7 @@ function mapUser(r) {
 
 export default async function handler(req, res) {
   try {
+    if (!base) return res.status(200).json({ recommendations: [] });
     const { userId: authedClerkId } = getAuth(req);
     if (!authedClerkId) return res.status(401).json({ error: 'Not authenticated' });
 
@@ -121,4 +120,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: e.message || 'Failed to build recommendations' });
   }
 }
-

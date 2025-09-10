@@ -7,11 +7,9 @@ const USERS_TABLE = process.env.AIRTABLE_USERS_TABLE || 'Users';
 const CONNECTIONS_TABLE = process.env.AIRTABLE_CONNECTIONS_TABLE || 'Connections';
 const RSVP_TABLE = process.env.AIRTABLE_RSVP_TABLE || 'RSVPs';
 
-if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) {
-  throw new Error('Missing Airtable environment variables');
-}
-
-const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID);
+const base = (AIRTABLE_TOKEN && AIRTABLE_BASE_ID)
+  ? new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID)
+  : null;
 
 async function resolveUserRecordId(clerkId) {
   for (const f of ['ClerkID', 'Clerk ID']) {
@@ -52,6 +50,7 @@ async function getUserIdText(recId) {
 
 export default async function handler(req, res) {
   try {
+    if (!base) return res.status(200).json({ events: [] });
     const { userId: clerkId } = getAuth(req);
     if (!clerkId) return res.status(401).json({ error: 'Not authenticated' });
     const me = await resolveUserRecordId(clerkId);
@@ -108,4 +107,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: e.message || 'Server error' });
   }
 }
-

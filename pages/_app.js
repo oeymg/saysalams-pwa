@@ -7,7 +7,7 @@ function MyApp({ Component, pageProps }) {
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || process.env.CLERK_PUBLISHABLE_KEY || "";
 
   return (
-    <ClerkProvider publishableKey={publishableKey}>
+    <ClerkProvider publishableKey={publishableKey} {...pageProps}>
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

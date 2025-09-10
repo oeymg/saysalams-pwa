@@ -7,11 +7,9 @@ const RSVP_TABLE = process.env.AIRTABLE_RSVP_TABLE || 'RSVPs';
 const EVENTS_TABLE = process.env.AIRTABLE_TABLE || 'Events';
 const OCCURRENCES_TABLE = process.env.AIRTABLE_OCCURRENCES_TABLE || 'Occurrences';
 
-if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) {
-  throw new Error('Missing Airtable environment variables');
-}
-
-const base = new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID);
+const base = (AIRTABLE_TOKEN && AIRTABLE_BASE_ID)
+  ? new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID)
+  : null;
 
 // Try a select with a formula; return first record or null.
 async function selectOneSafe(table, formula) {
@@ -182,6 +180,9 @@ async function resolveOccurrenceAndEvent(occurrenceId) {
 }
 
 export default async function handler(req, res) {
+  if (!base) {
+    return res.status(500).json({ error: 'Airtable not configured' });
+  }
   if (req.method === 'GET') {
     try {
       const { userId, eventId, occurrenceId, inspect } = req.query;
