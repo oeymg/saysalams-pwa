@@ -1,15 +1,17 @@
 import { SignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
-import Layout from '../../components/layout';
 
 export default function SignInCatchAll() {
   const router = useRouter();
-  const redirectUrl = (router.query.redirect_url || '/sign-up');
+  const redirectUrl = router.query.redirect_url || '/';
   return (
-    <Layout>
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-        <SignIn redirectUrl={redirectUrl} />
-      </div>
-    </Layout>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <SignIn 
+        path="/sign-in" 
+        routing="path" 
+        signUpUrl="/sign-up" 
+        redirectUrl={redirectUrl} 
+      />
+    </div>
   );
 }

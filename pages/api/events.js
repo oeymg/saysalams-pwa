@@ -14,7 +14,10 @@ const base =
 
 export default async function handler(req, res) {
   try {
-    if (!base) throw new Error('Airtable not configured');
+    if (!base) {
+      // Fail soft: return empty list so the site can render without envs
+      return res.status(200).json({ events: [] });
+    }
     let records;
     try {
       records = await base(AIRTABLE_TABLE).select({ view: AIRTABLE_VIEW }).all();
