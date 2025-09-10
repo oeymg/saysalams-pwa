@@ -5,6 +5,8 @@ const {
   AIRTABLE_BASE_ID,
   AIRTABLE_TABLE = 'Events',
   AIRTABLE_VIEW = 'Published',
+  AIRTABLE_RSVP_TABLE = 'RSVPs',
+  AIRTABLE_OCCURRENCES_TABLE = 'Occurrences',
 } = process.env;
 
 const base =
@@ -64,12 +66,127 @@ export default async function handler(req, res) {
         approval_status: f['Approval Status'] || null,
         organiser: Array.isArray(f['Organiser']) ? f['Organiser'][0] : null,
         organiser_name: f['Organiser Name'] || null,
+        going_count: 0,
+        next_occurrence: null,
+        next_going_count: 0,
       };
     });
 
     rows.sort(
       (a, b) => new Date(a.start_at || 0) - new Date(b.start_at || 0)
     );
+
+    // Compute next occurrence per event and count 'Going' per next occurrence.
+    try {
+      if (rows.length > 0) {
+        const now = Date.now();
+        const byEventRecordId = new Map(records.map((r) => [r.id, (r.fields?.['EventID'] || r.id)]));
+        const eventsByPublicId = new Map(rows.map((e) => [e.public_id, e]));
+
+        // Load occurrences once
+        const occs = await base(AIRTABLE_OCCURRENCES_TABLE).select().all();
+        const occsByEvent = new Map(); // eventPublicId -> [occ]
+
+        for (const o of occs) {
+          const f = o.fields || {};
+          const occId = f['OccurrenceID'] || f['OccurenceID'] || o.id;
+          const start = f['Start'] || f['Date'] || null;
+          const startAt = start ? new Date(start).getTime() : null;
+          const seriesLink = Array.isArray(f['Series']) ? f['Series'][0] : (Array.isArray(f['Event']) ? f['Event'][0] : null);
+          let eventPublicId = f['Event ID'] || f['EventID'] || null;
+          if (!eventPublicId && seriesLink && byEventRecordId.has(seriesLink)) {
+            eventPublicId = byEventRecordId.get(seriesLink);
+          }
+          if (!eventPublicId) continue;
+          const arr = occsByEvent.get(eventPublicId) || [];
+          arr.push({ occurrence_id: occId, start_at: start, start_ts: startAt });
+          occsByEvent.set(eventPublicId, arr);
+        }
+
+        // Determine next occurrence per event
+        const selectedOccs = new Map(); // eventPublicId -> occurrence_id
+        for (const [eventId, list] of occsByEvent.entries()) {
+          if (!Array.isArray(list) || list.length === 0) continue;
+          // Prefer upcoming occurrences
+          const upcoming = list.filter(o => o.start_ts && o.start_ts >= now).sort((a, b) => a.start_ts - b.start_ts);
+          const chosen = (upcoming[0] || list.sort((a, b) => (a.start_ts || 0) - (b.start_ts || 0))[0]);
+          selectedOccs.set(eventId, chosen);
+          const ev = eventsByPublicId.get(eventId);
+          if (ev) ev.next_occurrence = { occurrence_id: chosen.occurrence_id, start_at: chosen.start_at };
+        }
+
+        // Count RSVPs per selected occurrence
+        const occIds = Array.from(selectedOccs.values()).map(o => o.occurrence_id);
+        if (occIds.length > 0) {
+          const statusOR = `OR(LOWER({Status})='going', {Status}='Going')`;
+          const trySelect = async (formula) => {
+            try {
+              const recs = await base(AIRTABLE_RSVP_TABLE).select({ filterByFormula: formula }).all();
+              return recs;
+            } catch (e) {
+              if (e?.statusCode === 422) return null; // field mismatch, try next
+              throw e;
+            }
+          };
+          const variants = ['Occurrence ID', 'OccurrenceID', 'OccurenceID'];
+          let got = null;
+          for (const field of variants) {
+            const orExpr = occIds.map((id) => `{${field}}='${id}'`).join(',');
+            const formula = `AND(OR(${orExpr}), ${statusOR})`;
+            const recs = await trySelect(formula);
+            if (recs) { got = { field, recs }; break; }
+          }
+          const countByOcc = new Map();
+          if (got) {
+            for (const r of got.recs) {
+              const f = r.fields || {};
+              const oid = f[got.field] || f['Occurrence ID'] || f['OccurrenceID'] || f['OccurenceID'];
+              if (!oid) continue;
+              countByOcc.set(oid, (countByOcc.get(oid) || 0) + 1);
+            }
+          }
+          for (const [eventId, occ] of selectedOccs.entries()) {
+            const ev = eventsByPublicId.get(eventId);
+            if (!ev) continue;
+            ev.next_going_count = countByOcc.get(occ.occurrence_id) || 0;
+          }
+        }
+
+        // As a fallback, also compute total-going per event if next occurrence not present
+        const ids = rows.map((e) => e.public_id).filter(Boolean);
+        const trySelectTotal = async (formula) => {
+          try {
+            const recs = await base(AIRTABLE_RSVP_TABLE).select({ filterByFormula: formula }).all();
+            return recs;
+          } catch (e) {
+            if (e?.statusCode === 422) return null;
+            throw e;
+          }
+        };
+        const statusOR2 = `OR(LOWER({Status})='going', {Status}='Going')`;
+        let gotTotal = null;
+        for (const field of ['EventID', 'Event ID', 'Event Id']) {
+          const orExpr = ids.map((id) => `{${field}}='${id}'`).join(',');
+          const formula = `AND(OR(${orExpr}), ${statusOR2})`;
+          const recs = await trySelectTotal(formula);
+          if (recs) { gotTotal = { field, recs }; break; }
+        }
+        if (gotTotal) {
+          const map = new Map();
+          for (const r of gotTotal.recs) {
+            const f = r.fields || {};
+            const eid = f[gotTotal.field];
+            if (!eid) continue;
+            map.set(eid, (map.get(eid) || 0) + 1);
+          }
+          for (const ev of rows) {
+            ev.going_count = map.get(ev.public_id) || 0;
+          }
+        }
+      }
+    } catch (_) {
+      // Fail soft: keep counts at 0
+    }
 
     res.status(200).json({ events: rows });
   } catch (e) {

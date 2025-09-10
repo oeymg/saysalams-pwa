@@ -41,10 +41,35 @@ export async function getServerSideProps(context) {
     counts.forEach(([oid, c]) => { occurrenceCounts[oid] = c; });
   } catch (_) {}
 
-  return { props: { ev, occurrences, occurrenceCounts, base, id } };
+  // Compute similar events by overlapping category and/or same city/region
+  let similar = [];
+  try {
+    const all = Array.isArray(data.events) ? data.events : [];
+    if (ev) {
+      const catSet = new Set((ev.category || []).map((c) => String(c).toLowerCase()));
+      const city = (ev.city_region || '').toLowerCase();
+      const scored = [];
+      for (const e of all) {
+        if (!e || e.public_id === ev.public_id) continue;
+        const eCats = new Set((e.category || []).map((c) => String(c).toLowerCase()));
+        let overlap = 0;
+        catSet.forEach((c) => { if (eCats.has(c)) overlap++; });
+        const sameCity = city && (String(e.city_region || '').toLowerCase() === city);
+        if (overlap > 0 || sameCity) {
+          const startTs = e.start_at ? new Date(e.start_at).getTime() : Number.MAX_SAFE_INTEGER;
+          const score = overlap * 10 + (sameCity ? 3 : 0) - startTs / 1e13; // prefer overlap + same city, then sooner date
+          scored.push({ e, score });
+        }
+      }
+      scored.sort((a, b) => b.score - a.score);
+      similar = scored.slice(0, 6).map((x) => x.e);
+    }
+  } catch (_) {}
+
+  return { props: { ev, occurrences, occurrenceCounts, base, id, similar } };
 }
 
-export default function EventPage({ ev, occurrences = [], occurrenceCounts = {}, base, id }) {
+export default function EventPage({ ev, occurrences = [], occurrenceCounts = {}, base, id, similar = [] }) {
   const { user, isSignedIn } = useUser();
   const [savingMap, setSavingMap] = useState({}); // by occurrenceId
   const [counts, setCounts] = useState(occurrenceCounts);
@@ -341,6 +366,80 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
           )}
         </div>
       </div>
+      {/* Similar events */}
+      {Array.isArray(similar) && similar.length > 0 && (
+        <div className="container" style={{ padding: '0 1rem 2rem', maxWidth: '1100px', margin: '0 auto' }}>
+          <h2 style={{ color: '#6e5084', margin: '1.5rem 0 1rem' }}>Discover other events like this</h2>
+          <div className="events-grid">
+            {similar.map((s) => (
+              <article
+                key={s.public_id}
+                className="hover-pop"
+                style={{
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  border: '1px solid #eee',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  background: '#fff',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {s.image_url && (
+                  <Image
+                    src={s.image_url}
+                    alt={s.title}
+                    width={600}
+                    height={220}
+                    style={{ objectFit: 'cover', height: 'auto', width: '100%' }}
+                  />
+                )}
+                <div style={{ padding: '1rem' }}>
+                  <h3 style={{ margin: '0 0 0.4rem', color: '#6e5084', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</h3>
+                  <p style={{ margin: '0 0 0.5rem', color: '#555' }}>
+                    {s.start_at ? new Date(s.start_at).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : 'TBA'}
+                    {s.city_region ? ` · ${s.city_region}` : ''}
+                  </p>
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    {(s.category || []).slice(0, 2).map((t) => (
+                      <span key={t} style={{ background: '#ede8f7', color: '#5a3c91', padding: '0.2rem 0.6rem', borderRadius: 6, fontSize: '0.8rem', marginRight: '0.3rem' }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <p style={{ margin: 0, color: '#666' }}>👍 {(typeof s.next_going_count === 'number' ? s.next_going_count : (s.going_count ?? 0))} going</p>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.7rem' }}>
+                    <a
+                      href={`/event/${encodeURIComponent(s.public_id)}`}
+                      style={{
+                        background: '#ede8f7',
+                        color: '#5a3c91',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        fontSize: '0.9rem',
+                        fontWeight: 700,
+                      }}
+                    >
+                      View
+                    </a>
+                    {s.tickets_url && (
+                      <a
+                        href={s.tickets_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ background: '#6e5084', color: '#fff', padding: '0.5rem 1rem', borderRadius: 8, textDecoration: 'none', fontSize: '0.9rem', fontWeight: 700 }}
+                      >
+                        Tickets
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
       {toast && (
         <div
           onClick={() => setToast(null)}

@@ -173,11 +173,9 @@ export default function Home({ events, base }) {
                     </span>
                   ))}
                 </div>
-                {typeof ev.going_count === 'number' && (
-                  <p style={{ marginBottom: '0.8rem', color: '#666' }}>
-                    👍 {ev.going_count} going
-                  </p>
-                )}
+                <p style={{ marginBottom: '0.8rem', color: '#666' }}>
+                  👍 {typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0)} going
+                </p>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {ev.tickets_url && (
                     <a

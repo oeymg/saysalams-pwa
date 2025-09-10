@@ -16,6 +16,7 @@ class MyDocument extends Document {
           {/* Performance hints */}
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
+          {/** no custom fonts */}
         </Head>
         <body>
           <Main />
@@ -27,4 +28,3 @@ class MyDocument extends Document {
 }
 
 export default MyDocument;
-

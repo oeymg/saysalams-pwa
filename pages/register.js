@@ -91,8 +91,7 @@ export default function RegisterPage() {
           </div>
           <div style={{ display: 'grid', placeItems: 'center', padding: '1rem' }}>
             <SignUp
-              path="/register"
-              routing="path"
+              routing="virtual"
               signInUrl={signInHref}
               // After Clerk sign-up, send users to our app sign-up page to finish profile
               redirectUrl={afterUrl}

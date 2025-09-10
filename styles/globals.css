@@ -285,3 +285,4 @@ footer { padding-bottom: calc(2rem + var(--safe-bottom)); }
 @media (max-width: 640px) {
   .footer-inner { grid-template-columns: 1fr; }
 }
+
