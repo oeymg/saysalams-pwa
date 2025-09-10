@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 import Layout from '../../components/layout';
+import SEO from '../../components/seo';
 
 export async function getServerSideProps(context) {
   const id = context.params.id;
@@ -40,10 +41,10 @@ export async function getServerSideProps(context) {
     counts.forEach(([oid, c]) => { occurrenceCounts[oid] = c; });
   } catch (_) {}
 
-  return { props: { ev, occurrences, occurrenceCounts } };
+  return { props: { ev, occurrences, occurrenceCounts, base, id } };
 }
 
-export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} }) {
+export default function EventPage({ ev, occurrences = [], occurrenceCounts = {}, base, id }) {
   const { user, isSignedIn } = useUser();
   const [savingMap, setSavingMap] = useState({}); // by occurrenceId
   const [counts, setCounts] = useState(occurrenceCounts);
@@ -123,6 +124,42 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {} 
 
   return (
     <Layout>
+      <SEO
+        url={`${base}/event/${encodeURIComponent(id)}`}
+        title={`${ev.title} — Say Salams`}
+        description={(typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')).slice(0, 280) || 'View event details on Say Salams.'}
+        image={ev.image_url || '/icons/longlogo.png'}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Event',
+          name: ev.title,
+          description: typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || ''),
+          image: ev.image_url ? [ev.image_url] : [`${base}/icons/logo.png`],
+          url: `${base}/event/${encodeURIComponent(id)}`,
+          startDate: ev.start_at || undefined,
+          eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+          eventStatus: 'https://schema.org/EventScheduled',
+          location: (ev.venue || ev.city_region) ? {
+            '@type': 'Place',
+            name: ev.venue || 'Venue',
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: ev.city_region || undefined,
+            },
+          } : undefined,
+          offers: ev.tickets_url ? {
+            '@type': 'Offer',
+            url: ev.tickets_url,
+            availability: 'https://schema.org/InStock',
+            price: ev.cost || undefined,
+          } : undefined,
+          organizer: ev.organiser_name ? {
+            '@type': 'Organization',
+            name: ev.organiser_name,
+          } : undefined,
+        }}
+      />
       <div className="container" style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
         {/* Event image */}
         {ev.image_url && (

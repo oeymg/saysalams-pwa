@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Layout from '../components/layout';
+import SEO from '../components/seo';
 
 export async function getServerSideProps(context) {
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
@@ -10,12 +11,38 @@ export async function getServerSideProps(context) {
   const base = `${proto}://${host}`;
   const res = await fetch(`${base}/api/events`).catch(() => null);
   const data = await res?.json();
-  return { props: { events: data?.events ?? [] } };
+  return { props: { events: data?.events ?? [], base } };
 }
 
-export default function Home({ events }) {
+export default function Home({ events, base }) {
   return (
     <Layout>
+      <SEO
+        url={base}
+        title="Say Salams — Discover Muslim Events Near You"
+        description="Say Salams brings Muslims together through events, connections, and community. Discover what's on, RSVP, and spread peace."
+        image="/icons/longlogo.png"
+        jsonLd={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Say Salams',
+            url: base,
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: `${base}/events?q={search_term_string}`,
+              'query-input': 'required name=search_term_string',
+            },
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Say Salams',
+            url: base,
+            logo: `${base}/icons/logo.png`,
+          },
+        ]}
+      />
       {/* Why Say Salams Section */}
       <section
         style={{

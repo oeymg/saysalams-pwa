@@ -1,5 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import Head from "next/head";
+import SEO from "../components/seo";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
@@ -9,6 +10,8 @@ function MyApp({ Component, pageProps }) {
   return (
     <ClerkProvider publishableKey={publishableKey} {...pageProps}>
       <>
+        {/* Default SEO (pages can override with their own <SEO/>) */}
+        <SEO />
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
           <link rel="manifest" href="/manifest.webmanifest" />

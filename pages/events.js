@@ -1,6 +1,7 @@
 // pages/events.js
 
 import Layout from '../components/layout.js';
+import SEO from '../components/seo';
 import Image from 'next/image';
 
 export async function getServerSideProps(context) {
@@ -9,12 +10,17 @@ export async function getServerSideProps(context) {
   const base = `${proto}://${host}`;
   const res = await fetch(`${base}/api/events`).catch(() => null);
   const data = await res?.json();
-  return { props: { events: data?.events ?? [] } };
+  return { props: { events: data?.events ?? [], base } };
 }
 
-export default function EventsPage({ events }) {
+export default function EventsPage({ events, base }) {
   return (
     <Layout>
+      <SEO
+        url={`${base}/events`}
+        title="Upcoming Muslim Events — Say Salams"
+        description="Browse upcoming Muslim events near you. Discover classes, socials, workshops, and more — connect with community on Say Salams."
+      />
       <section
         className="stack-mobile"
         style={{

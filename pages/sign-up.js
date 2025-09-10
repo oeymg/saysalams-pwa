@@ -9,19 +9,23 @@ export async function getServerSideProps(context) {
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
   const host = context.req.headers.host;
   const base = `${proto}://${host}`;
-  const redirectTo = context.query?.redirect ? String(context.query.redirect) : '/profile';
+  const redirectTo = (
+    context.query?.redirect ||
+    context.query?.redirectUrl ||
+    context.query?.redirect_url ||
+    '/profile'
+  );
 
   if (!userId) {
     return { redirect: { destination: '/sign-in?redirect_url=/sign-up', permanent: false } };
   }
 
   try {
-    const res = await fetch(`${base}/api/users`);
+    const res = await fetch(`${base}/api/users?clerkId=${encodeURIComponent(userId)}`);
     const json = await res.json();
-    const users = json?.users || [];
-    const found = users.find((u) => u.clerk_id === userId);
+    const found = json?.user || null;
     if (found) {
-      return { redirect: { destination: redirectTo, permanent: false } };
+      return { redirect: { destination: String(redirectTo), permanent: false } };
     }
   } catch (_) {}
 
@@ -31,7 +35,12 @@ export async function getServerSideProps(context) {
 export default function Signup() {
   const { isSignedIn, user } = useUser();
   const router = useRouter();
-  const redirectTo = (router.query.redirect ? String(router.query.redirect) : '/profile');
+  const redirectTo = (
+    router.query.redirect ||
+    router.query.redirectUrl ||
+    router.query.redirect_url ||
+    '/profile'
+  );
   const [checking, setChecking] = useState(false);
   const [found, setFound] = useState(false);
 

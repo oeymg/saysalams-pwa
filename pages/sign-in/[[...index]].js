@@ -3,7 +3,11 @@ import { useRouter } from 'next/router';
 
 export default function SignInCatchAll() {
   const router = useRouter();
-  const redirectUrl = router.query.redirect_url || '/';
+  const redirectUrl =
+    router.query.redirect_url ||
+    router.query.redirect ||
+    router.query.redirectUrl ||
+    '/';
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <SignIn 
