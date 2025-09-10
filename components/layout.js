@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
 
 export default function Layout({ children }) {
   const { isSignedIn } = useUser();
@@ -96,7 +96,9 @@ export default function Layout({ children }) {
         >
           <Link href="/events" legacyBehavior><a className="nav-pill">Events</a></Link>
           <Link href="/host" legacyBehavior><a className="nav-pill">Host</a></Link>
-          <Link href="/connections" legacyBehavior><a className="nav-pill">Connections</a></Link>
+          <Link href={isSignedIn ? "/connections" : "/sign-in?redirect_url=/connections"} legacyBehavior>
+            <a className="nav-pill">Connections</a>
+          </Link>
         </div>
 
         {/* Mobile menu toggle */}
@@ -121,12 +123,14 @@ export default function Layout({ children }) {
 
         {/* CTA */}
         <div className="cta" style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem' }}>
-          <Link href="/profile" legacyBehavior><a className="nav-pill desktop-only">Profile</a></Link>
+          {isSignedIn ? (
+            <Link href="/profile" legacyBehavior><a className="nav-pill desktop-only">Profile</a></Link>
+          ) : null}
           {isSignedIn ? (
             <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (
-            <SignInButton mode="modal">
-              <button
+            <Link href="/sign-up?redirectUrl=/profile" legacyBehavior>
+              <a
                 style={{
                   background: '#6e5084',
                   color: '#fff',
@@ -136,11 +140,12 @@ export default function Layout({ children }) {
                   textDecoration: 'none',
                   border: 'none',
                   cursor: 'pointer',
+                  display: 'inline-block',
                 }}
               >
                 Join Us
-              </button>
-            </SignInButton>
+              </a>
+            </Link>
           )}
         </div>
       </nav>
@@ -162,8 +167,12 @@ export default function Layout({ children }) {
           <div style={{ display: 'grid', gap: '0.25rem' }} onClick={() => setMobileOpen(false)}>
             <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
             <Link href="/host" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Host</a></Link>
-            <Link href="/connections" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Connections</a></Link>
-            <Link href="/profile" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Profile</a></Link>
+            <Link href={isSignedIn ? "/connections" : "/sign-in?redirect_url=/connections"} legacyBehavior>
+              <a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Connections</a>
+            </Link>
+            <Link href={isSignedIn ? "/profile" : "/sign-in?redirect_url=/profile"} legacyBehavior>
+              <a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Profile</a>
+            </Link>
           </div>
         </div>
       )}
@@ -189,8 +198,12 @@ export default function Layout({ children }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0px', padding: '0.65rem 0' }}>
           <Link href="/events" legacyBehavior><a className="bn-item"><div className="bn-icon">🗓️</div><div className="bn-label">Events</div></a></Link>
           <Link href="/host" legacyBehavior><a className="bn-item"><div className="bn-icon">📣</div><div className="bn-label">Host</div></a></Link>
-          <Link href="/connections" legacyBehavior><a className="bn-item"><div className="bn-icon">🤝</div><div className="bn-label">Connect</div></a></Link>
-          <Link href="/profile" legacyBehavior><a className="bn-item"><div className="bn-icon">👤</div><div className="bn-label">Profile</div></a></Link>
+          <Link href={isSignedIn ? "/connections" : "/sign-in?redirect_url=/connections"} legacyBehavior>
+            <a className="bn-item"><div className="bn-icon">🤝</div><div className="bn-label">Connect</div></a>
+          </Link>
+          <Link href={isSignedIn ? "/profile" : "/sign-in?redirect_url=/profile"} legacyBehavior>
+            <a className="bn-item"><div className="bn-icon">👤</div><div className="bn-label">Profile</div></a>
+          </Link>
         </div>
       </nav>
 
