@@ -141,6 +141,7 @@ export default function EventsPage({ events, base }) {
                   alt={ev.title}
                   width={400}
                   height={180}
+                  data-mobile-img="card"
                   style={{ objectFit: 'cover', width: '100%', height: '200px' }}
                 />
               )}

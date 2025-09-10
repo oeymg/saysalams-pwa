@@ -1,4 +1,5 @@
 import Layout from '../components/layout';
+import Collapsible from '../components/Collapsible';
 
 const sep = {
   height: 1,
@@ -22,8 +23,8 @@ export default function PrivacyPolicy() {
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>1. Information We Collect</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="1. Information We Collect">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>
             <strong>Personal Information You Provide:</strong>
             <div style={{ marginTop: 4 }}>
@@ -44,25 +45,27 @@ export default function PrivacyPolicy() {
             </div>
           </li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>2. How We Use Your Information</h2>
+        <Collapsible title="2. How We Use Your Information">
         <p style={{ color: '#444', lineHeight: 1.8 }}>
           We use the collected data to:
         </p>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <ul style={{ color: '#444', lineHeight: 1.8, marginTop: 0 }}>
           <li>Provide and improve the Platform (events, RSVPs, connections).</li>
           <li>Enable user-to-user features (friends, event sharing, visibility of RSVPs).</li>
           <li>Send confirmations, notifications, and service updates.</li>
           <li>For security, fraud prevention, and compliance with applicable law.</li>
           <li>With your consent, send newsletters, promotional materials, and updates.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>3. How We Share Information</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="3. How We Share Information">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>
             <strong>With Other Users:</strong> Limited details (e.g., name, interests, RSVP status) visible to connections and event hosts.
           </li>
@@ -76,61 +79,68 @@ export default function PrivacyPolicy() {
             <strong>In Business Transfers:</strong> If Say Salams merges, acquires, or transfers assets.
           </li>
         </ul>
-        <p style={{ color: '#444' }}>We do not sell your personal information to third parties.</p>
+        <p style={{ color: '#444', marginTop: '0.75rem' }}>We do not sell your personal information to third parties.</p>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>4. Your Choices & Rights</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="4. Your Choices & Rights">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>Access, update, or delete your account information.</li>
           <li>Manage visibility of your profile (e.g., restricting what others can see).</li>
           <li>Opt out of marketing communications.</li>
           <li>Request a copy of your personal data.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>5. Data Retention</h2>
-        <p style={{ color: '#444', lineHeight: 1.8 }}>
-          We retain data as long as your account is active, or as needed to provide services. We may also retain data to comply with legal obligations.
-        </p>
+        <Collapsible title="5. Data Retention">
+          <p style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
+            We retain data as long as your account is active, or as needed to provide services. We may also retain data to comply with legal obligations.
+          </p>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>6. Security</h2>
-        <p style={{ color: '#444', lineHeight: 1.8 }}>
-          We use reasonable technical and organisational measures (encryption, access controls) to protect your data. However, no system is 100% secure.
-        </p>
+        <Collapsible title="6. Security">
+          <p style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
+            We use reasonable technical and organisational measures (encryption, access controls) to protect your data. However, no system is 100% secure.
+          </p>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>7. Children’s Privacy</h2>
-        <p style={{ color: '#444', lineHeight: 1.8 }}>
-          Say Salams is not intended for individuals under 16. If we learn that a child has provided personal information, we will delete it promptly.
-        </p>
+        <Collapsible title="7. Children’s Privacy">
+          <p style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
+            Say Salams is not intended for individuals under 16. If we learn that a child has provided personal information, we will delete it promptly.
+          </p>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>8. International Data Transfers</h2>
-        <p style={{ color: '#444', lineHeight: 1.8 }}>
-          Data may be stored and processed in countries outside your own. By using Say Salams, you consent to these transfers.
-        </p>
+        <Collapsible title="8. International Data Transfers">
+          <p style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
+            Data may be stored and processed in countries outside your own. By using Say Salams, you consent to these transfers.
+          </p>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>9. Updates to This Policy</h2>
-        <p style={{ color: '#444', lineHeight: 1.8 }}>
-          We may update this policy from time to time. The latest version will always be available on our website.
-        </p>
+        <Collapsible title="9. Updates to This Policy">
+          <p style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
+            We may update this policy from time to time. The latest version will always be available on our website.
+          </p>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>10. Contact Us</h2>
-        <p style={{ color: '#444', lineHeight: 1.8 }}>
-          If you have questions, email us at: <a href="mailto:contact@saysalams.com">contact@saysalams.com</a>
-        </p>
+        <Collapsible title="10. Contact Us">
+          <p style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
+            If you have questions, email us at: <a href="mailto:contact@saysalams.com">contact@saysalams.com</a>
+          </p>
+        </Collapsible>
       </div>
     </Layout>
   );
 }
-

@@ -195,6 +195,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
             height={400}
             quality={90}
             sizes="(max-width: 900px) 100vw, 900px"
+            data-mobile-img="event-hero"
             style={{
               width: '100%',
               height: '300px',

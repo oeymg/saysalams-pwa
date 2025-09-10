@@ -141,6 +141,42 @@ p, li {
   transform: none;
 }
 
+/* Collapsible sections (mobile-first) */
+.collapsible { border: 1px solid #eee; border-radius: 10px; background: #fff; margin: 0.5rem 0; }
+.collapsible-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.9rem;
+  background: #f6f4fa;
+  color: #6e5084;
+  border: none;
+  border-bottom: 1px solid #eee;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.collapsible-header:focus { outline: 2px solid #d9d6e3; outline-offset: 2px; }
+.collapsible-title { text-align: left; }
+.collapsible-icon { transition: transform 160ms ease; }
+.collapsible-icon.open { transform: rotate(180deg); }
+.collapsible-content { padding: 0.9rem; }
+
+@media (min-width: 641px) {
+  /* Keep collapsibles expanded visually on desktop */
+  .collapsible-header { cursor: default; }
+}
+
+/* Larger subheadings for host section on homepage */
+.host-collapsible .collapsible-header {
+  font-size: 1.25rem;
+}
+@media (max-width: 640px) {
+  .host-collapsible .collapsible-header { font-size: 1.25rem; }
+}
+
 /* Softer hover transitions for links/buttons */
 a, button {
   transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
@@ -154,15 +190,30 @@ button:active { transform: translateY(1px); }
 
 /* Mobile improvements */
 @media (max-width: 640px) {
-  h1 { font-size: 1.8rem !important; }
-  h2 { font-size: 1.4rem !important; }
-  h3 { font-size: 1.1rem !important; }
-  p  { font-size: 1rem; }
+  h1 { font-size: 1.5rem !important; }
+  h2 { font-size: 1.25rem !important; }
+  h3 { font-size: 1rem !important; }
+  p, li { font-size: 0.95rem !important; }
   button, .btn {
     min-height: 44px; /* comfortable tap target */
     -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
   img { border-radius: 10px; }
+  /* Tighter card layout and images on mobile */
+  .events-grid article { border-radius: 10px !important; }
+  .events-grid article h3 { font-size: 1rem !important; margin-bottom: 0.35rem !important; }
+  .events-grid article p { font-size: 0.95rem !important; }
+  img[data-mobile-img="card"] { height: 140px !important; object-fit: cover !important; }
+  img[data-mobile-img="event-hero"] { height: 220px !important; object-fit: cover !important; }
+  /* More compact bottom nav for app-like feel */
+  .bn-icon { font-size: 1.1rem; }
+  .bn-label { font-size: 12px; }
+  /* Reduce default section paddings when inline styles aren't set */
+  section { padding-left: 1rem !important; padding-right: 1rem !important; }
+  /* Collapsible compaction on mobile */
+  .collapsible { border-radius: 12px; }
+  .collapsible-header { padding: 0.6rem 0.8rem; }
+  .collapsible-content { padding: 0.75rem; }
 }
 
 /* iOS safe area support for sticky/footer sections */
@@ -285,4 +336,3 @@ footer { padding-bottom: calc(2rem + var(--safe-bottom)); }
 @media (max-width: 640px) {
   .footer-inner { grid-template-columns: 1fr; }
 }
-

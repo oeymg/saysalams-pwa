@@ -1,4 +1,5 @@
 import Layout from '../components/layout';
+import Collapsible from '../components/Collapsible';
 
 const sep = { height: 1, background: '#eee', margin: '1.25rem 0' };
 
@@ -16,72 +17,79 @@ export default function Terms() {
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>1. Eligibility</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="1. Eligibility">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>You must be at least 16 years old.</li>
           <li>You must provide accurate, complete information when creating an account.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>2. Your Responsibilities</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="2. Your Responsibilities">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>Keep your account login secure.</li>
           <li>Do not misuse the Platform (e.g., spam, harassment, illegal activity).</li>
           <li>Respect the community guidelines and Islamic values of peace and respect.</li>
           <li>Only post events you are authorised to host.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>3. Platform Use</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="3. Platform Use">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>We provide tools for discovering events, RSVPs, and building connections.</li>
           <li>Features (e.g., RSVPs, messaging, connections) may change over time.</li>
           <li>We may suspend or terminate accounts that violate these Terms.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>4. Event Hosting</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="4. Event Hosting">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>Hosts are responsible for the accuracy of event details.</li>
           <li>Say Salams is not liable for issues arising from third-party or user-hosted events.</li>
           <li>Hosts must comply with applicable laws, health and safety, and community standards.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>5. Limitations of Liability</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="5. Limitations of Liability">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>Say Salams is not responsible for any damages arising from your use of the Platform or participation in events.</li>
           <li>We do not guarantee uninterrupted or error-free services.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>6. Intellectual Property</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="6. Intellectual Property">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>Content provided by Say Salams (logos, branding, platform design) is our property.</li>
           <li>Users retain ownership of content they submit but grant Say Salams a licence to display and share it within the Platform.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>7. Termination</h2>
-        <ul style={{ color: '#444', lineHeight: 1.8 }}>
+        <Collapsible title="7. Termination">
+        <ul style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
           <li>You may delete your account at any time.</li>
           <li>We may suspend or terminate accounts that violate these Terms.</li>
         </ul>
+        </Collapsible>
 
         <div style={sep} />
 
-        <h2 style={{ color: '#6e5084', margin: '1rem 0 0.5rem' }}>8. Governing Law</h2>
-        <p style={{ color: '#444', lineHeight: 1.8 }}>
-          These Terms are governed by the laws of Australia (Queensland).
-        </p>
+        <Collapsible title="8. Governing Law">
+          <p style={{ color: '#444', lineHeight: 1.8, margin: 0 }}>
+            These Terms are governed by the laws of Australia (Queensland).
+          </p>
+        </Collapsible>
       </div>
     </Layout>
   );
 }
-

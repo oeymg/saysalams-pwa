@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Layout from '../components/layout.js';
+import Collapsible from '../components/Collapsible';
 
 export default function Host() {
   return (
@@ -17,8 +18,9 @@ export default function Host() {
           individual, organisation, or business, hosting with us empowers you to build meaningful connections, showcase your unique offerings, and engage deeply with the Muslim community through impactful events.
         </p>
 
-        <h2 style={{ color: '#5a3c91', marginBottom: '1rem' }}>Why Host with Say Salams?</h2>
-        <div className="stack-mobile" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+        <div className="host-collapsible">
+        <Collapsible title="Who can host with Say Salams?">
+        <div className="stack-mobile" style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
           <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
             <h3 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>Individuals</h3>
@@ -41,9 +43,12 @@ export default function Host() {
             </p>
           </div>
         </div>
+        </Collapsible>
+        </div>
 
-        <h2 style={{ color: '#5a3c91', marginBottom: '1rem' }}>How it Works</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', color: '#333' }}>
+        <div className="host-collapsible">
+        <Collapsible title="How it works">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', color: '#333' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
             <div style={{
               minWidth: '30px',
@@ -95,6 +100,8 @@ export default function Host() {
             }}>3</div>
             <p>Your event is promoted across the Say Salams network, connecting you with a vibrant community.</p>
           </div>
+        </div>
+        </Collapsible>
         </div>
 
         <div style={{ marginTop: '3rem', textAlign: 'center' }}>

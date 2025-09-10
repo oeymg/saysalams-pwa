@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Layout from '../components/layout';
+import Collapsible from '../components/Collapsible';
 import SEO from '../components/seo';
 
 export async function getServerSideProps(context) {
@@ -131,6 +132,7 @@ export default function Home({ events, base }) {
                   alt={ev.title}
                   width={600}
                   height={220}
+                  data-mobile-img="card"
                   style={{ objectFit: 'cover', height: 'auto', width: '100%' }}
                 />
               )}
@@ -223,13 +225,13 @@ export default function Home({ events, base }) {
           margin: '0 auto',
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '2rem',
-          padding: '2rem',
+          gap: '1rem',
+          padding: '1.2rem',
           background: '#6e5084',
-          borderRadius: '12px',
-          boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+          borderRadius: '10px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.16)',
           color: '#fff',
-          marginBottom: '3rem',
+          marginBottom: '2rem',
         }}
         className="hover-pop"
         data-reveal
@@ -244,10 +246,10 @@ export default function Home({ events, base }) {
         >
           <h2
             style={{
-              fontSize: '3.2rem',
+              fontSize: '2rem',
               fontWeight: '700',
               margin: 0,
-              letterSpacing: '1px',
+              letterSpacing: '0.5px',
             }}
           >
             Why <strong>Say Salams</strong> Matters
@@ -260,21 +262,21 @@ export default function Home({ events, base }) {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            fontSize: '1.2rem',
-            lineHeight: '1.8',
+            fontSize: '1rem',
+            lineHeight: '1.6',
             color: '#fff',
           }}
         >
-          <p style={{ marginBottom: '1rem' }}>
+          <p style={{ marginBottom: '0.6rem' }}>
             🌟 <strong>Connect with friends</strong> — build your circle, strengthen bonds, and share in gatherings rooted in faith.
           </p>
-          <p style={{ marginBottom: '1rem' }}>
+          <p style={{ marginBottom: '0.6rem' }}>
             🎉 <strong>Belong to something bigger</strong> — see who&apos;s going, join in, and never feel like you&apos;re attending alone.
           </p>
-          <p style={{ marginBottom: '1rem' }}>
+          <p style={{ marginBottom: '0.6rem' }}>
             📍 <strong>Discover what&apos;s near you</strong> — find Muslim-friendly events, classes, and opportunities to connect in your local area.
           </p>
-          <p style={{ marginBottom: '1rem' }}>
+          <p style={{ marginBottom: '0.6rem' }}>
             🕌 <strong>Strengthen our ummah</strong> — every event is more than a meetup; it&apos;s a step toward unity, peace, and spreading barakah.
           </p>
         </div>
@@ -324,31 +326,34 @@ export default function Home({ events, base }) {
           Want to Host an Event with Say Salams?
         </h2>
 
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Here&apos;s who can:</h3>
-          <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.6' }}>
-            <li><strong>Individuals</strong> — Host game nights, study circles, or creative workshops (arts &amp; crafts, cooking, calligraphy).</li>
-            <li><strong>Organisations</strong> — Mosques, youth groups, and community associations running events that uplift and connect.</li>
-            <li><strong>Businesses</strong> — Use your space to run networking nights, offer exclusive discounts, or showcase Muslim-friendly services.</li>
-          </ul>
+        <div className="host-collapsible" style={{ marginBottom: '1.5rem' }}>
+          <Collapsible title="Here’s who can">
+            <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.6', margin: 0 }}>
+              <li><strong>Individuals</strong> — Host game nights, study circles, or creative workshops (arts &amp; crafts, cooking, calligraphy).</li>
+              <li><strong>Organisations</strong> — Mosques, youth groups, and community associations running events that uplift and connect.</li>
+              <li><strong>Businesses</strong> — Use your space to run networking nights, offer exclusive discounts, or showcase Muslim-friendly services.</li>
+            </ul>
+          </Collapsible>
         </div>
 
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Here&apos;s why you should:</h3>
-          <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.6' }}>
-            <li><strong>Amplify your reach</strong> — We&apos;ll market your event across the Say Salams network, helping you find the right audience.</li>
-            <li><strong>Bring barakah</strong> — Hosting isn&apos;t just about events, it&apos;s about creating spaces of peace, knowledge, and joy for the community.</li>
-            <li><strong>Build credibility</strong> — Position yourself or your organisation as a trusted part of the Muslim community.</li>
-          </ul>
+        <div className="host-collapsible" style={{ marginBottom: '1.5rem' }}>
+          <Collapsible title="Here’s why you should">
+            <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.6', margin: 0 }}>
+              <li><strong>Amplify your reach</strong> — We&apos;ll market your event across the Say Salams network, helping you find the right audience.</li>
+              <li><strong>Bring barakah</strong> — Hosting isn&apos;t just about events, it&apos;s about creating spaces of peace, knowledge, and joy for the community.</li>
+              <li><strong>Build credibility</strong> — Position yourself or your organisation as a trusted part of the Muslim community.</li>
+            </ul>
+          </Collapsible>
         </div>
 
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Here&apos;s how it works:</h3>
-          <ol style={{ paddingLeft: '1.5rem', lineHeight: '1.6' }}>
-            <li><strong>Fill out the &apos;Become a Host&apos; Form</strong> — tell us about yourself, your organisation, or business.</li>
-            <li><strong>Become an approved host</strong> — join the Say Salams network of trusted organisers.</li>
-            <li><strong>Submit your event</strong> — share it through our events form and join the Say Salams host community.</li>
-          </ol>
+        <div className="host-collapsible" style={{ marginBottom: '2rem' }}>
+          <Collapsible title="Here’s how it works">
+            <ol style={{ paddingLeft: '1.5rem', lineHeight: '1.6', margin: 0 }}>
+              <li><strong>Fill out the &apos;Become a Host&apos; Form</strong> — tell us about yourself, your organisation, or business.</li>
+              <li><strong>Become an approved host</strong> — join the Say Salams network of trusted organisers.</li>
+              <li><strong>Submit your event</strong> — share it through our events form and join the Say Salams host community.</li>
+            </ol>
+          </Collapsible>
         </div>
 
         <div style={{ textAlign: 'center' }}>
@@ -361,7 +366,7 @@ export default function Home({ events, base }) {
               borderRadius: '8px',
               fontWeight: '600',
               textDecoration: 'none',
-              fontSize: '1.1rem',
+              fontSize: '1.2rem',
               textAlign: 'center',
             }}
           >

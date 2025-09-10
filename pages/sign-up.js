@@ -1,4 +1,5 @@
 import Layout from '../components/layout';
+import Collapsible from '../components/Collapsible';
 import { useUser } from '@clerk/nextjs';
 import { getAuth } from '@clerk/nextjs/server';
 import { useEffect, useMemo, useState } from 'react';
@@ -141,21 +142,23 @@ export default function Signup() {
           }}
         >
           <h2 style={{ color: '#6e5084', marginBottom: '1rem', textAlign: 'center', flexWrap: 'wrap', fontSize: '1.8rem' }}>Why Say Salams? 🌙✨</h2>
-          <p style={{ marginBottom: '1.5rem' }}>
-            <strong>🕌 Say Salams strives to serve a vibrant community dedicated to personal growth, connections, and spreading salam. Experience the <em>barakah</em> that comes from strengthening the Ummah through meaningful connections and shared Islamic values.
-              Join us in fostering a supportive network that uplifts and inspires. 🤲</strong>
-          </p>
-          <ul style={{ paddingLeft: '1.25rem', color: '#6e5084', fontWeight: '600', marginBottom: '1rem' }}>
-            <li style={{ marginBottom: '0.75rem' }}>
-              <span style={{ color: '#6e5084' }}>Community 🤝:</span> Connect with like-minded individuals who share your values and vision.
-            </li>
-            <li style={{ marginBottom: '0.75rem' }}>
-              <span style={{ color: '#6e5084' }}>Events 🗓️:</span> Discover and participate in meaningful events that enrich your spiritual and social life.
-            </li>
-            <li>
-              <span style={{ color: '#6e5084' }}>Barakah ✨:</span> Gain blessings through building sincere and supportive relationships within the Ummah.
-            </li>
-          </ul>
+          <Collapsible title="What you’ll gain">
+            <p style={{ marginBottom: '1rem' }}>
+              <strong>🕌 Say Salams strives to serve a vibrant community dedicated to personal growth, connections, and spreading salam. Experience the <em>barakah</em> that comes from strengthening the Ummah through meaningful connections and shared Islamic values.
+                Join us in fostering a supportive network that uplifts and inspires. 🤲</strong>
+            </p>
+            <ul style={{ paddingLeft: '1.25rem', color: '#6e5084', fontWeight: '600', marginBottom: 0 }}>
+              <li style={{ marginBottom: '0.75rem' }}>
+                <span style={{ color: '#6e5084' }}>Community 🤝:</span> Connect with like-minded individuals who share your values and vision.
+              </li>
+              <li style={{ marginBottom: '0.75rem' }}>
+                <span style={{ color: '#6e5084' }}>Events 🗓️:</span> Discover and participate in meaningful events that enrich your spiritual and social life.
+              </li>
+              <li>
+                <span style={{ color: '#6e5084' }}>Barakah ✨:</span> Gain blessings through building sincere and supportive relationships within the Ummah.
+              </li>
+            </ul>
+          </Collapsible>
         </div>
         <div style={{ flex: 1.2, minWidth: '300px' }}>
           <iframe
