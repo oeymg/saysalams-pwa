@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 export async function getServerSideProps(context) {
   const { userId: clerkId } = getAuth(context.req);
   if (!clerkId) {
-    return { redirect: { destination: '/sign-in?redirect_url=/connections', permanent: false } };
+    return { redirect: { destination: '/sign-in?next=/connections', permanent: false } };
   }
 
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
@@ -18,7 +18,7 @@ export async function getServerSideProps(context) {
   const userJson = await userRes?.json();
   const me = userJson?.user || null;
   if (!me) {
-    return { redirect: { destination: '/sign-up?redirect=/connections', permanent: false } };
+    return { redirect: { destination: '/sign-up?next=/connections', permanent: false } };
   }
 
   return { props: { me } };

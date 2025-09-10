@@ -5,13 +5,40 @@ import Link from 'next/link';
 
 export default function SignInCatchAll() {
   const router = useRouter();
-  const redirectUrl =
-    router.query.redirect_url ||
-    router.query.redirect ||
-    router.query.redirectUrl ||
-    '/';
 
-  const signUpHref = `/register?redirect_url=${encodeURIComponent(redirectUrl)}`;
+  const raw = router.query.next || router.query.redirect_url || router.query.redirect || router.query.redirectUrl || '/profile';
+
+  const normalizePath = (val) => {
+    if (!val) return '/profile';
+    try {
+      if (typeof val === 'string' && /^https?:\/\//i.test(val)) {
+        const u = new URL(val);
+        return u.pathname + (u.search || '');
+      }
+    } catch (_) {}
+    return String(val);
+  };
+
+  // Final destination after auth
+  const dest = normalizePath(raw);
+
+  // If the destination itself is /sign-up?redirect=..., extract final target for our register link
+  const deriveNext = (val) => {
+    try {
+      const u = new URL(val, 'https://dummy.local');
+      if (u.pathname.startsWith('/sign-up')) {
+        const inner = u.searchParams.get('next') || u.searchParams.get('redirect');
+        if (inner) return normalizePath(inner);
+        return '/profile';
+      }
+    } catch (_) {}
+    return normalizePath(val);
+  };
+
+  const next = deriveNext(dest);
+
+  const redirectUrl = dest; // where Clerk sends users after sign-in
+  const signUpHref = `/register?next=${encodeURIComponent(next)}`;
 
   return (
     <div

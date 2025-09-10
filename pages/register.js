@@ -5,9 +5,41 @@ import Link from 'next/link';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const incoming = router.query.redirect_url || router.query.redirect || router.query.redirectUrl || '/profile';
-  const afterUrl = `/sign-up?redirect=${encodeURIComponent(String(incoming))}`;
-  const signInHref = `/sign-in?redirect_url=${encodeURIComponent(String(incoming))}`;
+
+  const normalizePath = (val) => {
+    if (!val) return '/profile';
+    try {
+      if (typeof val === 'string' && /^https?:\/\//i.test(val)) {
+        const u = new URL(val);
+        return u.pathname + (u.search || '');
+      }
+    } catch (_) {}
+    return String(val);
+  };
+
+  // Prefer explicit `next`, else try to unwrap redirect_url if it points to /sign-up?redirect=...
+  const rawNext = router.query.next || router.query.dest || router.query.to || null;
+  const fallback = router.query.redirect_url || router.query.redirect || router.query.redirectUrl || '/profile';
+
+  let next = normalizePath(String(rawNext || ''));
+  if (!rawNext) {
+    const f = normalizePath(String(fallback));
+    try {
+      const u = new URL(f, 'https://dummy.local');
+      if (u.pathname.startsWith('/sign-up')) {
+        const inner = u.searchParams.get('redirect');
+        next = normalizePath(inner || '/profile');
+      } else {
+        next = f;
+      }
+    } catch (_) {
+      next = f;
+    }
+  }
+
+  // After Clerk account creation, complete in-app profile, then go to `next`
+  const afterUrl = `/sign-up?next=${encodeURIComponent(next)}`;
+  const signInHref = `/sign-in?next=${encodeURIComponent(next)}`;
 
   return (
     <div

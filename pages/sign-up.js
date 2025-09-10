@@ -10,6 +10,7 @@ export async function getServerSideProps(context) {
   const host = context.req.headers.host;
   const base = `${proto}://${host}`;
   const redirectTo = (
+    context.query?.next ||
     context.query?.redirect ||
     context.query?.redirectUrl ||
     context.query?.redirect_url ||
@@ -17,7 +18,7 @@ export async function getServerSideProps(context) {
   );
 
   if (!userId) {
-    return { redirect: { destination: '/sign-in?redirect_url=/sign-up', permanent: false } };
+    return { redirect: { destination: '/sign-in?next=/sign-up', permanent: false } };
   }
 
   try {
@@ -36,6 +37,7 @@ export default function Signup() {
   const { isSignedIn, user } = useUser();
   const router = useRouter();
   const redirectTo = (
+    router.query.next ||
     router.query.redirect ||
     router.query.redirectUrl ||
     router.query.redirect_url ||

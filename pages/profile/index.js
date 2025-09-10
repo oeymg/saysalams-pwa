@@ -5,7 +5,7 @@ export async function getServerSideProps(context) {
   const { userId: clerkId } = getAuth(context.req);
 
   if (!clerkId) {
-    return { redirect: { destination: "/sign-in?redirect_url=/profile", permanent: false } };
+    return { redirect: { destination: "/sign-in?next=/profile", permanent: false } };
   }
 
   const proto = context.req.headers["x-forwarded-proto"] || "http";

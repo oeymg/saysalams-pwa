@@ -96,7 +96,7 @@ export default function Layout({ children }) {
         >
           <Link href="/events" legacyBehavior><a className="nav-pill">Events</a></Link>
           <Link href="/host" legacyBehavior><a className="nav-pill">Host</a></Link>
-          <Link href={isSignedIn ? "/connections" : "/sign-in?redirect_url=/connections"} legacyBehavior>
+          <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
             <a className="nav-pill">Connections</a>
           </Link>
         </div>
@@ -129,7 +129,7 @@ export default function Layout({ children }) {
           {isSignedIn ? (
             <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (
-            <Link href={`/sign-in?redirect_url=${encodeURIComponent('/sign-up?redirect=/profile')}`} legacyBehavior>
+            <Link href={`/register?next=${encodeURIComponent('/profile')}`} legacyBehavior>
               <a
                 style={{
                   background: '#6e5084',
@@ -167,10 +167,10 @@ export default function Layout({ children }) {
           <div style={{ display: 'grid', gap: '0.25rem' }} onClick={() => setMobileOpen(false)}>
             <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
             <Link href="/host" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Host</a></Link>
-            <Link href={isSignedIn ? "/connections" : "/sign-in?redirect_url=/connections"} legacyBehavior>
+            <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
               <a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Connections</a>
             </Link>
-            <Link href={isSignedIn ? "/profile" : "/sign-in?redirect_url=/profile"} legacyBehavior>
+            <Link href={isSignedIn ? "/profile" : "/sign-in?next=/profile"} legacyBehavior>
               <a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Profile</a>
             </Link>
           </div>
@@ -198,10 +198,10 @@ export default function Layout({ children }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0px', padding: '0.65rem 0' }}>
           <Link href="/events" legacyBehavior><a className="bn-item"><div className="bn-icon">🗓️</div><div className="bn-label">Events</div></a></Link>
           <Link href="/host" legacyBehavior><a className="bn-item"><div className="bn-icon">📣</div><div className="bn-label">Host</div></a></Link>
-          <Link href={isSignedIn ? "/connections" : "/sign-in?redirect_url=/connections"} legacyBehavior>
+          <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
             <a className="bn-item"><div className="bn-icon">🤝</div><div className="bn-label">Connect</div></a>
           </Link>
-          <Link href={isSignedIn ? "/profile" : "/sign-in?redirect_url=/profile"} legacyBehavior>
+          <Link href={isSignedIn ? "/profile" : "/sign-in?next=/profile"} legacyBehavior>
             <a className="bn-item"><div className="bn-icon">👤</div><div className="bn-label">Profile</div></a>
           </Link>
         </div>
