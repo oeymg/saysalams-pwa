@@ -129,7 +129,7 @@ export default function Layout({ children }) {
           {isSignedIn ? (
             <UserButton afterSignOutUrl="/" userProfileUrl="/profile" />
           ) : (
-            <Link href="/sign-up?redirect=/profile" legacyBehavior>
+            <Link href={`/sign-in?redirect_url=${encodeURIComponent('/sign-up?redirect=/profile')}`} legacyBehavior>
               <a
                 style={{
                   background: '#6e5084',
