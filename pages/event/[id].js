@@ -5,12 +5,14 @@ import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 import Layout from '../../components/layout';
 import SEO from '../../components/seo';
+import { getAuth } from '@clerk/nextjs/server';
 
 export async function getServerSideProps(context) {
   const id = context.params.id;
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
   const host = context.req.headers.host;
   const base = `${proto}://${host}`;
+  const { userId } = getAuth(context.req);
   const res = await fetch(`${base}/api/events`);
   const data = await res.json();
   const ev = (data.events || []).find(e => e.public_id === id) || null;
@@ -20,6 +22,18 @@ export async function getServerSideProps(context) {
     const occRes = await fetch(`${base}/api/occurrences?eventId=${encodeURIComponent(id)}`);
     const occJson = await occRes.json();
     occurrences = occJson?.occurrences || [];
+    // Show at most the next 4 upcoming occurrences (fallback to earliest past ones if fewer upcoming)
+    try {
+      const now = Date.now();
+      const sorted = (occurrences || []).slice().sort((a, b) => new Date(a.start_at || 0) - new Date(b.start_at || 0));
+      const upcoming = sorted.filter(o => o.start_at && new Date(o.start_at).getTime() >= now);
+      let limited = upcoming.slice(0, 4);
+      if (limited.length < 4) {
+        const past = sorted.filter(o => !o.start_at || new Date(o.start_at).getTime() < now).slice(0, 4 - limited.length);
+        limited = limited.concat(past);
+      }
+      occurrences = limited;
+    } catch (_) {}
   } catch (_) {}
 
   // Fetch per-occurrence going counts
@@ -63,6 +77,37 @@ export async function getServerSideProps(context) {
       }
       scored.sort((a, b) => b.score - a.score);
       similar = scored.slice(0, 6).map((x) => x.e);
+    }
+  } catch (_) {}
+
+  // Gender-based filtering for similar list as well
+  try {
+    if (userId) {
+      const meRes = await fetch(`${base}/api/users?clerkId=${encodeURIComponent(userId)}`);
+      const meJson = await meRes.json();
+      const myGender = String(meJson?.user?.gender || '').toLowerCase();
+      if (myGender === 'female' || myGender === 'male') {
+        const isSisters = (e) => Array.isArray(e?.audience) && e.audience.some((a) => /(sister|women|lad(y|ies))/i.test(String(a)));
+        const isBrothers = (e) => Array.isArray(e?.audience) && e.audience.some((a) => /(brother|men|gents?)/i.test(String(a)));
+        similar = (similar || []).filter((e) => {
+          if (myGender === 'female' && isBrothers(e)) return false;
+          if (myGender === 'male' && isSisters(e)) return false;
+          return true;
+        });
+      }
+    }
+  } catch (_) {}
+
+  try {
+    if (userId && ev && Array.isArray(ev.audience)) {
+      const myRes = await fetch(`${base}/api/users?clerkId=${encodeURIComponent(userId)}`);
+      const me = await myRes.json();
+      const g = String(me?.user?.gender || '').toLowerCase();
+      const isSisters = ev.audience.some((a) => /(sister|women|lad(y|ies))/i.test(String(a)));
+      const isBrothers = ev.audience.some((a) => /(brother|men|gents?)/i.test(String(a)));
+      if ((g === 'male' && isSisters) || (g === 'female' && isBrothers)) {
+        return { redirect: { destination: '/events', permanent: false } };
+      }
     }
   } catch (_) {}
 
@@ -251,7 +296,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
               <span
                 key={t}
                 style={{
-                  background: '#6e5084', // light pink chip
+                  background: '#9b8bbd', // light pink chip
                   color: '#f6f4fa',
                   padding: '0.2rem 0.6rem',
                   borderRadius: '6px',
@@ -396,7 +441,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
                   />
                 )}
                 <div style={{ padding: '1rem' }}>
-                  <h3 style={{ margin: '0 0 0.4rem', color: '#6e5084', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</h3>
+                  <h3 style={{ margin: '0 0 0.4rem', color: '#9b8bbd', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</h3>
                   <p style={{ margin: '0 0 0.5rem', color: '#555' }}>
                     {s.start_at ? new Date(s.start_at).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : 'TBA'}
                     {s.city_region ? ` · ${s.city_region}` : ''}
@@ -429,7 +474,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
                         href={s.tickets_url}
                         target="_blank"
                         rel="noreferrer"
-                        style={{ background: '#6e5084', color: '#fff', padding: '0.5rem 1rem', borderRadius: 8, textDecoration: 'none', fontSize: '0.9rem', fontWeight: 700 }}
+                      style={{ background: '#6e5084', color: '#fff', padding: '0.5rem 1rem', borderRadius: 8, textDecoration: 'none', fontSize: '0.9rem', fontWeight: 700 }}
                       >
                         Tickets
                       </a>

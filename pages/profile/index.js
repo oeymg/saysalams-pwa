@@ -173,7 +173,7 @@ export default function ProfilePage({ user, rows }) {
 function Info({ label, value }) {
   return (
     <div style={{ flex: "1 1 250px", background: "#f8f6fc", padding: "0.75rem 1rem", borderRadius: 8 }}>
-      <div style={{ color: "#6e5084", fontWeight: 700, marginBottom: 4 }}>{label}</div>
+      <div style={{ color: "#9b8bbd", fontWeight: 700, marginBottom: 4 }}>{label}</div>
       <div style={{ color: "#333" }}>{value}</div>
     </div>
   );
@@ -228,7 +228,7 @@ function RSVPTable({ rows, userId, onToast }) {
               <td style={{ padding: "0.75rem", display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{
                   display: 'inline-block', width: 10, height: 10, borderRadius: '50%',
-                  background: r.status === 'Going' ? '#6e5084' : r.status === 'Interested' ? '#f59e0b' : '#9ca3af'
+                  background: r.status === 'Going' ? '#9b8bbd' : r.status === 'Interested' ? '#f59e0b' : '#9ca3af'
                 }} />
                 <select
                   value={r.status}
@@ -245,7 +245,7 @@ function RSVPTable({ rows, userId, onToast }) {
                   onClick={() => onSave(r.eventId)}
                   disabled={saving === r.eventId}
                   style={{
-                    background: "linear-gradient(90deg, #6e5084, #6e5065)",
+                    background: "linear-gradient(90deg, #9b8bbd, #6e5065)",
                     color: "#fff",
                     padding: "0.45rem 0.9rem",
                     borderRadius: 8,

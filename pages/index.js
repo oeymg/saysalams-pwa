@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Layout from '../components/layout';
+import { getAuth } from '@clerk/nextjs/server';
 import Collapsible from '../components/Collapsible';
 import SEO from '../components/seo';
 
@@ -10,12 +11,39 @@ export async function getServerSideProps(context) {
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
   const host = context.req.headers.host;
   const base = `${proto}://${host}`;
+  const { userId } = getAuth(context.req);
   const res = await fetch(`${base}/api/events`).catch(() => null);
   const data = await res?.json();
-  return { props: { events: data?.events ?? [], base } };
+  let events = data?.events ?? [];
+  if (userId) {
+    try {
+      const meRes = await fetch(`${base}/api/users?clerkId=${encodeURIComponent(userId)}`);
+      const meJson = await meRes.json();
+      const myGender = String(meJson?.user?.gender || '').toLowerCase();
+      if (myGender === 'female' || myGender === 'male') {
+        const isSisters = (ev) => Array.isArray(ev?.audience) && ev.audience.some((a) => /(sister|women|lad(y|ies))/i.test(String(a)));
+        const isBrothers = (ev) => Array.isArray(ev?.audience) && ev.audience.some((a) => /(brother|men|gents?)/i.test(String(a)));
+        events = events.filter((ev) => {
+          if (myGender === 'female' && isBrothers(ev)) return false;
+          if (myGender === 'male' && isSisters(ev)) return false;
+          return true;
+        });
+      }
+    } catch (_) {}
+  }
+  return { props: { events, base } };
 }
 
 export default function Home({ events, base }) {
+  // Derive simple hero stats and a small preview list
+  const now = Date.now();
+  const in7 = now + 7 * 24 * 60 * 60 * 1000;
+  const eventsThisWeek = (events || []).filter(e => {
+    const t = e?.start_at ? new Date(e.start_at).getTime() : null;
+    return t && t >= now && t <= in7;
+  }).length;
+  const cities = new Set((events || []).map(e => e.city_region).filter(Boolean));
+  const mini = (events || []).slice(0, 3);
   return (
     <Layout>
       <SEO
@@ -44,49 +72,66 @@ export default function Home({ events, base }) {
           },
         ]}
       />
-      {/* Why Say Salams Section */}
-      <section
-        style={{
-          background: '#6e5084',
-          color: '#fff',
-          padding: '2.5rem 1rem',
-          textAlign: 'center',
-          marginBottom: '2.5rem',
-        }}
-        data-reveal
-      >
-        <h2
-          style={{
-            fontSize: '3rem',
-            marginBottom: '0.75rem',
-            fontWeight: 900,
-            letterSpacing: '0.5px',
-            background: 'linear-gradient(90deg, #ffffff, #e6d7ff)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Why Say Salams?
-        </h2>
-        <p style={{ maxWidth: '760px', margin: '0 auto 0.75rem auto', lineHeight: '1.75', fontSize: '1.05rem' }}>
-          Saying <strong>Assalamu alaykum</strong> is more than a greeting — it&apos;s a prayer of peace.
-        </p>
-        <p
-          style={{
-            maxWidth: '840px',
-            margin: '0 auto 0.75rem auto',
-            lineHeight: '1.8',
-            fontWeight: 700,
-            fontSize: '1.15rem',
-          }}
-        >
-          Say Salams is where Muslims come together — to discover events, build friendships, and share barakah.
-        </p>
-        <p style={{ maxWidth: '760px', margin: '0 auto 0.75rem auto', lineHeight: '1.7' }}>
-          <strong>Every Salam spreads peace. Every connection strengthens our Ummah.</strong>
-        </p>
-        <p style={{ fontWeight: 800, fontSize: '1.4rem', margin: 0 }}>✨ Peace begins with you.</p>
+      {/* Modern hero */}
+      <section className="hero-band full-bleed" data-reveal>
+        <div className="hero-band-inner">
+          <div>
+            <h1 className="hero-band-title">
+              Find your people. <br /> Share your salam.
+            </h1>
+            <p className="hero-band-sub">Discover Muslim-friendly events near you — join in, RSVP, and build meaningful connections.</p>
+            <form className="hero-search" action="/events" method="get">
+              <input className="hero-input" type="search" name="q" placeholder="Search events, e.g. picnic, sisters, workshop…" />
+              <button className="hero-submit" type="submit">Search</button>
+            </form>
+            {/* Stats pills removed per request */}
+            <div className="hero-band-ctas">
+              <Link href="/events" style={{ textDecoration: 'none' }}><span className="home-cta-primary">Browse events</span></Link>
+              <Link href="/host" style={{ textDecoration: 'none' }}><span className="home-cta-secondary">Become a host</span></Link>
+            </div>
+          </div>
+          <div>
+            <div className="hero-preview">
+              {mini.map((e) => (
+                <div key={e.id} className="hero-card-mini">
+                  <div className="mini-title">{e.title}</div>
+                  <div className="mini-meta">
+                    {(e.start_at ? new Date(e.start_at).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' }) : 'TBA')}
+                    {e.city_region ? ` · ${e.city_region}` : ''}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
+
+      {/* Why Say Salams (floating cards) */}
+      <section className="why-ribbon full-bleed" data-reveal>
+        <div className="why-ribbon-inner why-float">
+          <h2 className="why-ribbon-title"></h2>
+          <div className="why-float-grid">
+            <div className="why-float-card hover-pop">
+              <div className="why-float-icn">🌟</div>
+              <p className="why-float-text"><strong>Connect with friends</strong> — build your circle, strengthen bonds, and share in gatherings rooted in faith.</p>
+            </div>
+            <div className="why-float-card hover-pop">
+              <div className="why-float-icn">🎉</div>
+              <p className="why-float-text"><strong>Belong to something bigger</strong> — see who&apos;s going, join in, and never feel like you&apos;re attending alone.</p>
+            </div>
+            <div className="why-float-card hover-pop">
+              <div className="why-float-icn">📍</div>
+              <p className="why-float-text"><strong>Discover what&apos;s near you</strong> — find Muslim-friendly events, classes, and opportunities to connect in your local area.</p>
+            </div>
+            <div className="why-float-card hover-pop">
+              <div className="why-float-icn">🕌</div>
+              <p className="why-float-text"><strong>Strengthen our ummah</strong> — every event is more than a meetup; it&apos;s a step toward unity, peace, and spreading barakah.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Removed top categories chip row as requested */}
 
       {/* Events Section */}
       <section
@@ -138,7 +183,7 @@ export default function Home({ events, base }) {
               )}
               <div style={{ flex: 1, padding: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                  <h3 style={{ margin: '0 0 0.5rem 0', color: '#6e5084', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</h3>
+                  <h3 style={{ margin: '0 0 0.5rem 0', color: '#9b8bbd', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</h3>
                   {ev.is_recurring && (
                     <span style={{ background: '#fef3c7', color: '#92400e', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 600 }}>
                       Recurring
@@ -218,97 +263,13 @@ export default function Home({ events, base }) {
         </div>
       </section>
 
-      {/* What You Can Expect with Say Salams Section */}
-      <section
-        style={{
-          maxWidth: '1100px',
-          margin: '0 auto',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          padding: '1.2rem',
-          background: '#6e5084',
-          borderRadius: '10px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.16)',
-          color: '#fff',
-          marginBottom: '2rem',
-        }}
-        className="hover-pop"
-        data-reveal
-      >
-        <div
-          style={{
-            flex: '1',
-            minWidth: '300px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '2rem',
-              fontWeight: '700',
-              margin: 0,
-              letterSpacing: '0.5px',
-            }}
-          >
-            Why <strong>Say Salams</strong> Matters
-          </h2>
-        </div>
-        <div
-          style={{
-            flex: '1',
-            minWidth: '300px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            fontSize: '1rem',
-            lineHeight: '1.6',
-            color: '#fff',
-          }}
-        >
-          <p style={{ marginBottom: '0.6rem' }}>
-            🌟 <strong>Connect with friends</strong> — build your circle, strengthen bonds, and share in gatherings rooted in faith.
-          </p>
-          <p style={{ marginBottom: '0.6rem' }}>
-            🎉 <strong>Belong to something bigger</strong> — see who&apos;s going, join in, and never feel like you&apos;re attending alone.
-          </p>
-          <p style={{ marginBottom: '0.6rem' }}>
-            📍 <strong>Discover what&apos;s near you</strong> — find Muslim-friendly events, classes, and opportunities to connect in your local area.
-          </p>
-          <p style={{ marginBottom: '0.6rem' }}>
-            🕌 <strong>Strengthen our ummah</strong> — every event is more than a meetup; it&apos;s a step toward unity, peace, and spreading barakah.
-          </p>
-        </div>
 
-        {/* CTA: Go to sign-up flow (handles Clerk + Airtable) */}
-        <div style={{ flexBasis: '100%', textAlign: 'center' }}>
-          <Link
-            href="/sign-up"
-            style={{
-              background: '#f6f4fa',
-              color: '#6e5084',
-              padding: '0.8rem 2rem',
-              borderRadius: '8px',
-              fontWeight: 700,
-              textDecoration: 'none',
-              fontSize: '1.05rem',
-              display: 'inline-block',
-              marginTop: '0.5rem',
-              border: '1px solid #d9d6e3',
-              boxShadow: '0 4px 12px rgba(110, 80, 132, 0.15)'
-            }}
-          >
-            Join Say Salams
-          </Link>
-        </div>
-      </section>
-
+      
       {/* How to Become a Host Section */}
       <section
         style={{
           background: '#f6f4fa',
-          color: '#6e5084',
+          color: '#9b8bbd',
           padding: '2rem 1rem',
           textAlign: 'left',
           marginBottom: '2rem',
@@ -375,55 +336,7 @@ export default function Home({ events, base }) {
         </div>
       </section>
 
-      {/* Bottom CTA Section (moved to the very bottom) */}
-      <section
-        style={{
-          maxWidth: '1100px',
-          margin: '0 auto 3rem',
-          padding: '1.75rem',
-          border: '1px solid #eee',
-          borderRadius: '12px',
-          background: '#f6f4fa',
-          textAlign: 'center',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
-        }}
-        className="hover-pop"
-        data-reveal
-      >
-        <h3 style={{ color: '#6e5084', margin: '0 0 0.75rem 0', fontSize: '1.6rem' }}>Ready to get involved?</h3>
-        <p style={{ color: '#555', margin: '0 0 1rem 0' }}>
-          Browse the latest events or become a host and bring people together.
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <Link
-            href="/events"
-            style={{
-              background: '#f6f4fa',
-              color: '#6e5084',
-              padding: '0.6rem 1.2rem',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: 700,
-              border: '1px solid #ded7ef'
-            }}
-          >
-            Browse Events
-          </Link>
-          <Link
-            href="/host"
-            style={{
-              background: '#6e5084',
-              color: '#fff',
-              padding: '0.6rem 1.2rem',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: 700,
-            }}
-          >
-            Become a Host
-          </Link>
-        </div>
-      </section>
+      
     </Layout>
   );
 }

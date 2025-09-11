@@ -11,7 +11,7 @@ class MyDocument extends Document {
           <link rel="icon" href="/favicon.ico" />
           <link rel="apple-touch-icon" href="/icons/logo.png" />
           <link rel="manifest" href="/manifest.webmanifest" />
-          <meta name="theme-color" content="#6e5084" />
+          <meta name="theme-color" content="#9b8bbd" />
           <meta name="color-scheme" content="light" />
           {/* Performance hints */}
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -36,6 +36,8 @@ export default async function handler(req, res) {
         const name = pick(f, ['Full Name', 'Name', 'Full name']);
         const email = pick(f, ['Email', 'Email Address', 'E-mail']);
         const type = pick(f, ['Type', 'User Type']);
+        const rawGender = pick(f, ['Gender', 'gender', 'Sex', 'Sex/Gender', 'Sex (M/F)']);
+        const gender = String(rawGender || '').trim().toLowerCase();
         const location = pick(f, ['Location', 'City', 'Suburb', 'Region']);
         const interests = normalizeInterests(pick(f, ['Interests', 'Interests ', 'Interests (Comma)', 'Interest']));
         const heard = pick(f, ['How Heard About', 'How did you hear about us?', 'How did you hear about Say Salams?', 'Heard About']);
@@ -48,6 +50,7 @@ export default async function handler(req, res) {
           name: name || '',
           email: email || '',
           type: type || '',
+          gender,
           location: location || '',
           interests,
           heard_about: heard || '',

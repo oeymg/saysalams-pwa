@@ -102,7 +102,7 @@ export default function ProfilePage({ user, rsvps, recordId }) {
         ) : connStatus === 'pending' ? (
           <span style={{ background:'#fef3c7', color:'#92400e', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Request sent</span>
         ) : (
-          <button onClick={requestConnection} style={{ background:'#6e5084', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor:'pointer' }}>
+          <button onClick={requestConnection} style={{ background:'#9b8bbd', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor:'pointer' }}>
             Connect
           </button>
         )}

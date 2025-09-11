@@ -35,6 +35,7 @@ function mapUser(r) {
     : (typeof f['Interests'] === 'string' ? f['Interests'].split(',').map(s => s.trim()).filter(Boolean) : []);
   const clerk = f['ClerkID'] || f['Clerk ID'] || '';
   const idText = f['UserID'] || f['User ID'] || r.id;
+  const gender = String(f['Gender'] || f['gender'] || f['Sex'] || '').trim().toLowerCase();
   return {
     record_id: r.id,
     id_text: idText,
@@ -44,6 +45,7 @@ function mapUser(r) {
     location,
     interests,
     clerk_id: clerk,
+    gender,
   };
 }
 
@@ -97,6 +99,10 @@ export default async function handler(req, res) {
     for (const u of mapped) {
       if (!u || u.record_id === myRecordId) continue;
       if (connectedIds.has(u.record_id)) continue;
+      // Gender segregation: only suggest same-gender users if known
+      const myGender = String(me.gender || '').toLowerCase();
+      const uGender = String(u.gender || '').toLowerCase();
+      if ((myGender === 'female' || myGender === 'male') && myGender !== uGender) continue;
 
       const inter = jaccard(myInterests, toSet(u.interests));
       const locSame = !!(myCity && normalizeCity(u.location) && (normalizeCity(u.location) === myCity || normalizeCity(u.location).includes(myCity) || myCity.includes(normalizeCity(u.location))));

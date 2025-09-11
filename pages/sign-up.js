@@ -113,10 +113,10 @@ export default function Signup() {
   return (
     <Layout>
       <div style={{ padding: '1.5rem', textAlign: 'center' }}>
-        <h1 style={{ color: '#6e5084' }}>Become a Say Salams user today!</h1>
+        <h1 style={{ color: '#9b8bbd' }}>Become a Say Salams user today!</h1>
       </div>
       <section style={{ backgroundColor: '#f6f4fa', padding: '0rem', textAlign: 'center' }}>
-        <p style={{ color: '#6e5084', fontWeight: 'bold', marginBottom: '0rem' }}></p>
+        <p style={{ color: '#9b8bbd', fontWeight: 'bold', marginBottom: '0rem' }}></p>
       </section>
       <section
         style={{
@@ -141,13 +141,13 @@ export default function Signup() {
             fontSize: '1.1rem',
           }}
         >
-          <h2 style={{ color: '#6e5084', marginBottom: '1rem', textAlign: 'center', flexWrap: 'wrap', fontSize: '1.8rem' }}>Why Say Salams? 🌙✨</h2>
+          <h2 style={{ color: '#9b8bbd', marginBottom: '1rem', textAlign: 'center', flexWrap: 'wrap', fontSize: '1.8rem' }}>Why Say Salams? 🌙✨</h2>
           <Collapsible title="What you’ll gain">
             <p style={{ marginBottom: '1rem' }}>
               <strong>🕌 Say Salams strives to serve a vibrant community dedicated to personal growth, connections, and spreading salam. Experience the <em>barakah</em> that comes from strengthening the Ummah through meaningful connections and shared Islamic values.
                 Join us in fostering a supportive network that uplifts and inspires. 🤲</strong>
             </p>
-            <ul style={{ paddingLeft: '1.25rem', color: '#6e5084', fontWeight: '600', marginBottom: 0 }}>
+            <ul style={{ paddingLeft: '1.25rem', color: '#9b8bbd', fontWeight: '600', marginBottom: 0 }}>
               <li style={{ marginBottom: '0.75rem' }}>
                 <span style={{ color: '#6e5084' }}>Community 🤝:</span> Connect with like-minded individuals who share your values and vision.
               </li>

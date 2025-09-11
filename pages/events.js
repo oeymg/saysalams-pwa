@@ -3,6 +3,7 @@
 import Layout from '../components/layout.js';
 import SEO from '../components/seo';
 import Image from 'next/image';
+import { getAuth } from '@clerk/nextjs/server';
 
 export async function getServerSideProps(context) {
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
@@ -10,7 +11,25 @@ export async function getServerSideProps(context) {
   const base = `${proto}://${host}`;
   const res = await fetch(`${base}/api/events`).catch(() => null);
   const data = await res?.json();
-  return { props: { events: data?.events ?? [], base } };
+  let events = data?.events ?? [];
+  const { userId } = getAuth(context.req);
+  if (userId) {
+    try {
+      const meRes = await fetch(`${base}/api/users?clerkId=${encodeURIComponent(userId)}`);
+      const meJson = await meRes.json();
+      const myGender = String(meJson?.user?.gender || '').toLowerCase();
+      if (myGender === 'female' || myGender === 'male') {
+        const isSisters = (ev) => Array.isArray(ev?.audience) && ev.audience.some((a) => /(sister|women|lad(y|ies))/i.test(String(a)));
+        const isBrothers = (ev) => Array.isArray(ev?.audience) && ev.audience.some((a) => /(brother|men|gents?)/i.test(String(a)));
+        events = events.filter((ev) => {
+          if (myGender === 'female' && isBrothers(ev)) return false;
+          if (myGender === 'male' && isSisters(ev)) return false;
+          return true;
+        });
+      }
+    } catch (_) {}
+  }
+  return { props: { events, base } };
 }
 
 export default function EventsPage({ events, base }) {
@@ -36,7 +55,7 @@ export default function EventsPage({ events, base }) {
         <div
           style={{
             flex: 1,
-            backgroundColor: '#6e5084',
+            backgroundColor: '#9b8bbd',
             color: '#fff',
             padding: '1.5rem',
             borderRadius: '16px',
@@ -76,7 +95,7 @@ export default function EventsPage({ events, base }) {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              color: '#6e5084',
+                  color: '#9b8bbd',
               fontWeight: 'bold',
               fontSize: '1.2rem',
               textAlign: 'center',
@@ -146,7 +165,7 @@ export default function EventsPage({ events, base }) {
                 />
               )}
               <div style={{ flex: 1, padding: '1rem' }}>
-                <h3 style={{ margin: '0 0 0.5rem 0', color: '#6e5084', fontWeight: 'bold' }}>{ev.title}</h3>
+                <h3 style={{ margin: '0 0 0.5rem 0', color: '#9b8bbd', fontWeight: 'bold' }}>{ev.title}</h3>
                 <p style={{ marginBottom: '0.5rem', color: '#555' }}>
                   {ev.start_at
                     ? new Date(ev.start_at).toLocaleDateString('en-AU', {
@@ -186,7 +205,7 @@ export default function EventsPage({ events, base }) {
                     href={`/event/${encodeURIComponent(ev.public_id)}`}
                     style={{
                       background: '#ede8f7',
-                      color: '#6e5084',
+                      color: '#9b8bbd',
                       padding: '0.5rem 1rem',
                       borderRadius: '12px',
                       textDecoration: 'none',

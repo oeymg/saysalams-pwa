@@ -107,16 +107,24 @@ export default async function handler(req, res) {
       return res.status(200).json({ connections: edges });
     }
 
-    if (req.method === 'POST') {
-      const { toClerkId, toUserId, toRecordId } = req.body || {};
-      const fromClerk = authedClerkId || req.body?.fromClerkId;
-      if (!fromClerk) return res.status(401).json({ error: 'Not authenticated' });
-      const fromRid = await resolveUserRecordId({ clerkId: fromClerk });
-      if (!fromRid) return res.status(404).json({ error: 'Current user not found' });
+  if (req.method === 'POST') {
+    const { toClerkId, toUserId, toRecordId } = req.body || {};
+    const fromClerk = authedClerkId || req.body?.fromClerkId;
+    if (!fromClerk) return res.status(401).json({ error: 'Not authenticated' });
+    const fromRid = await resolveUserRecordId({ clerkId: fromClerk });
+    if (!fromRid) return res.status(404).json({ error: 'Current user not found' });
 
-      const toRid = await resolveUserRecordId({ clerkId: toClerkId, userIdText: toUserId, recordId: toRecordId });
-      if (!toRid) return res.status(404).json({ error: 'Target user not found' });
-      if (toRid === fromRid) return res.status(400).json({ error: 'Cannot connect to yourself' });
+    const toRid = await resolveUserRecordId({ clerkId: toClerkId, userIdText: toUserId, recordId: toRecordId });
+    if (!toRid) return res.status(404).json({ error: 'Target user not found' });
+    if (toRid === fromRid) return res.status(400).json({ error: 'Cannot connect to yourself' });
+
+    // Enforce gender segregation for new connections when both sides have gender
+    const [fromUser, toUser] = await Promise.all([getUserSummary(fromRid), getUserSummary(toRid)]);
+    const g1 = String(fromUser?.gender || '').toLowerCase();
+    const g2 = String(toUser?.gender || '').toLowerCase();
+    if ((g1 === 'female' || g1 === 'male') && (g2 === 'female' || g2 === 'male') && g1 !== g2) {
+      return res.status(403).json({ error: 'Cross-gender connections are restricted' });
+    }
 
       // Check existing edges (both directions)
       const existing = await base(CONNECTIONS_TABLE)

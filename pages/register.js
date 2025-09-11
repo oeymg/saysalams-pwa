@@ -79,14 +79,14 @@ export default function RegisterPage() {
             </div>
             <h1 style={{ color: '#6e5084', margin: '1rem 0 0.25rem' }}>Create your account</h1>
             <p style={{ color: '#5a3c91', margin: 0 }}>Community · Connections · Celebration</p>
-            <ul style={{ marginTop: '1rem', color: '#6e5084', fontWeight: 600 }}>
+            <ul style={{ marginTop: '1rem', color: '#9b8bbd', fontWeight: 600 }}>
               <li>Discover upcoming Muslim events</li>
               <li>Build your circle with intention</li>
               <li>Spread peace — Say Salams ✨</li>
             </ul>
             <p style={{ marginTop: 'auto', fontSize: '0.9rem', color: '#888' }}>
               Already have an account?{' '}
-              <Link href={signInHref} style={{ color: '#6e5084', fontWeight: 700 }}>Sign in</Link>
+              <Link href={signInHref} style={{ color: '#9b8bbd', fontWeight: 700 }}>Sign in</Link>
             </p>
           </div>
           <div style={{ display: 'grid', placeItems: 'center', padding: '1rem' }}>

@@ -9,7 +9,7 @@ export default function Host() {
   return (
     <Layout>
       <div className="host-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
-        <h1 style={{ color: '#6e5084', fontSize: '2.5rem', marginBottom: '1.5rem' }}>
+        <h1 style={{ color: '#9b8bbd', fontSize: '2.5rem', marginBottom: '1.5rem' }}>
           Turn Your Idea, Organisation, or Business into a Community Hub ✨
         </h1>
 
@@ -23,21 +23,21 @@ export default function Host() {
         <div className="stack-mobile" style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
           <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
-            <h3 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>Individuals</h3>
+            <h3 style={{ color: '#9b8bbd', marginBottom: '0.5rem' }}>Individuals</h3>
             <p style={{ color: '#333', lineHeight: '1.4' }}>
               Host fun, educational, or creative events that bring people together and spark joy in the community.
             </p>
           </div>
           <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🏛️</div>
-            <h3 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>Organisations</h3>
+            <h3 style={{ color: '#9b8bbd', marginBottom: '0.5rem' }}>Organisations</h3>
             <p style={{ color: '#333', lineHeight: '1.4' }}>
               Engage your community through workshops, seminars, and events that foster learning and growth.
             </p>
           </div>
           <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🏢</div>
-            <h3 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>Businesses</h3>
+            <h3 style={{ color: '#9b8bbd', marginBottom: '0.5rem' }}>Businesses</h3>
             <p style={{ color: '#333', lineHeight: '1.4' }}>
               Boost your brand presence by hosting exclusive offers, networking events, and launch parties.
             </p>
@@ -110,7 +110,7 @@ export default function Host() {
             target="_blank"
             rel="noreferrer"
             style={{
-              background: 'linear-gradient(90deg, #6e5084, #6e5065)',
+              background: 'linear-gradient(90deg, #9b8bbd, #6e5065)',
               color: '#fff',
               padding: '1rem 2rem',
               borderRadius: '8px',

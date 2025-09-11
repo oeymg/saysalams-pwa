@@ -66,8 +66,14 @@ export default function ConnectionsPage({ me }) {
 
   const discover = useMemo(() => {
     // Hide users I already have a connection with (pending or accepted)
-    return (people || []).filter(u => !pendingIds.has(u.record_id) && !acceptedIds.has(u.record_id) && !myIds.has(u.record_id));
-  }, [people, pendingIds, acceptedIds, myIds]);
+    let base = (people || []).filter(u => !pendingIds.has(u.record_id) && !acceptedIds.has(u.record_id) && !myIds.has(u.record_id));
+    // Gender segregation: only show same-gender users if my gender is known
+    const myGender = String(me?.gender || '').toLowerCase();
+    if (myGender === 'female' || myGender === 'male') {
+      base = base.filter(u => String(u?.gender || '').toLowerCase() === myGender);
+    }
+    return base;
+  }, [people, pendingIds, acceptedIds, myIds, me?.gender]);
 
   const request = async (to) => {
     try {

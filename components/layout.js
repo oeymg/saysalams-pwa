@@ -76,9 +76,9 @@ export default function Layout({ children }) {
               src="/icons/longlogo.png"
               alt="Say Salams logo"
               width={160}
-              height={60}
+              height={90}
               className="logo-img"
-              style={{ height: 'auto', width: 'auto' }}
+
             />
           </Link>
         </div>
@@ -165,13 +165,13 @@ export default function Layout({ children }) {
           }}
         >
           <div style={{ display: 'grid', gap: '0.25rem' }} onClick={() => setMobileOpen(false)}>
-            <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
-            <Link href="/host" legacyBehavior><a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Host</a></Link>
+            <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
+            <Link href="/host" legacyBehavior><a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Host</a></Link>
             <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
-              <a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Connections</a>
+              <a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Connections</a>
             </Link>
             <Link href={isSignedIn ? "/profile" : "/sign-in?next=/profile"} legacyBehavior>
-              <a style={{ padding: '0.75rem', color: '#6e5084', textDecoration: 'none', fontWeight: 700 }}>Profile</a>
+              <a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Profile</a>
             </Link>
           </div>
         </div>
