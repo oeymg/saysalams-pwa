@@ -87,7 +87,7 @@ export default function Home({ events, base }) {
             {/* Stats pills removed per request */}
             <div className="hero-band-ctas">
               <Link href="/events" style={{ textDecoration: 'none' }}><span className="home-cta-primary">Browse events</span></Link>
-              <Link href="/host" style={{ textDecoration: 'none' }}><span className="home-cta-secondary">Become a host</span></Link>
+              <Link href="/partners" style={{ textDecoration: 'none' }}><span className="home-cta-secondary">Become a partner</span></Link>
             </div>
           </div>
           <div>
@@ -263,9 +263,7 @@ export default function Home({ events, base }) {
         </div>
       </section>
 
-
-      
-      {/* How to Become a Host Section */}
+      {/* Partner With Us Section */}
       <section
         style={{
           background: '#f6f4fa',
@@ -284,13 +282,13 @@ export default function Home({ events, base }) {
         data-reveal
       >
         <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#6e5084', textAlign: 'center' }}>
-          Want to Host an Event with Say Salams?
+          Become a Partner with Say Salams
         </h2>
 
         <div className="host-collapsible" style={{ marginBottom: '1.5rem' }}>
           <Collapsible title="Here’s who can">
             <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.6', margin: 0 }}>
-              <li><strong>Individuals</strong> — Host game nights, study circles, or creative workshops (arts &amp; crafts, cooking, calligraphy).</li>
+              <li><strong>Individuals</strong> — Run game nights, study circles, or creative workshops (arts &amp; crafts, cooking, calligraphy).</li>
               <li><strong>Organisations</strong> — Mosques, youth groups, and community associations running events that uplift and connect.</li>
               <li><strong>Businesses</strong> — Use your space to run networking nights, offer exclusive discounts, or showcase Muslim-friendly services.</li>
             </ul>
@@ -310,16 +308,16 @@ export default function Home({ events, base }) {
         <div className="host-collapsible" style={{ marginBottom: '2rem' }}>
           <Collapsible title="Here’s how it works">
             <ol style={{ paddingLeft: '1.5rem', lineHeight: '1.6', margin: 0 }}>
-              <li><strong>Fill out the &apos;Become a Host&apos; Form</strong> — tell us about yourself, your organisation, or business.</li>
-              <li><strong>Become an approved host</strong> — join the Say Salams network of trusted organisers.</li>
-              <li><strong>Submit your event</strong> — share it through our events form and join the Say Salams host community.</li>
+              <li><strong>Fill out the &apos;Become a Partner&apos; form</strong> — tell us about yourself, your organisation, or business.</li>
+              <li><strong>Become an approved partner</strong> — join the Say Salams network of trusted organisers.</li>
+              <li><strong>Submit your event</strong> — share it through our events form and join the Say Salams partner community.</li>
             </ol>
           </Collapsible>
         </div>
 
         <div style={{ textAlign: 'center' }}>
           <Link
-            href="/host"
+            href="/partners"
             style={{
               background: '#6e5084',
               color: '#fff',
@@ -331,60 +329,11 @@ export default function Home({ events, base }) {
               textAlign: 'center',
             }}
           >
-            Become a Host
+            Become a Partner
           </Link>
         </div>
       </section>
-
-      {/* Bottom CTA Section (moved to the very bottom) */}
-      <section
-        style={{
-          maxWidth: '1100px',
-          margin: '0 auto 3rem',
-          padding: '1.75rem',
-          border: '1px solid #eee',
-          borderRadius: '12px',
-          background: '#f6f4fa',
-          textAlign: 'center',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
-        }}
-        className="hover-pop"
-        data-reveal
-      >
-        <h3 style={{ color: '#6e5084', margin: '0 0 0.75rem 0', fontSize: '1.6rem' }}>Ready to get involved?</h3>
-        <p style={{ color: '#555', margin: '0 0 1rem 0' }}>
-          Browse the latest events or become a host and bring people together.
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <Link
-            href="/events"
-            style={{
-              background: '#f6f4fa',
-              color: '#9b8bbd',
-              padding: '0.6rem 1.2rem',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: 700,
-              border: '1px solid #ded7ef'
-            }}
-          >
-            Browse Events
-          </Link>
-          <Link
-            href="/host"
-            style={{
-              background: '#6e5084',
-              color: '#fff',
-              padding: '0.6rem 1.2rem',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: 700,
-            }}
-          >
-            Become a Host
-          </Link>
-        </div>
-      </section>
+      
     </Layout>
   );
 }

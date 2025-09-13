@@ -136,7 +136,27 @@ export default function ConnectionsPage({ me }) {
                       <li key={c.id} style={pill('#f8f6fc', '#e7e2f0')}>
                         <div>
                           <strong>{c.other?.name || 'User'}</strong>
-                          <div style={{ color: '#666', fontSize: '0.9rem' }}>{c.other?.email || ''}</div>
+                          <div style={{ color: '#666', fontSize: '0.9rem' }}>
+                            {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
+                          </div>
+                          {Array.isArray(c.other?.interests) && c.other.interests.length > 0 && (
+                            <div style={{ marginTop: 6 }}>
+                              {c.other.interests.slice(0, 3).map((t) => (
+                                <span key={t} style={{ background: '#ede8f7', color: '#5a3c91', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
+                              ))}
+                            </div>
+                          )}
+                          {Array.isArray(c.other_rsvps) && c.other_rsvps.length > 0 && (
+                            <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                              {c.other_rsvps.map((r) => (
+                                <a key={`${c.id}-${r.eventId}`} href={`/event/${encodeURIComponent(r.eventId)}`} style={{ textDecoration: 'none' }}>
+                                  <span className="chip" style={{ display: 'inline-block' }}>
+                                    {r.title} · {r.start_at ? new Date(r.start_at).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' }) : ''}
+                                  </span>
+                                </a>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </li>
                     ))}
@@ -155,6 +175,16 @@ export default function ConnectionsPage({ me }) {
                         <div>
                           <strong>{c.other?.name || 'User'}</strong>
                           <div style={{ color: '#92400e', fontSize: '0.9rem' }}>Pending</div>
+                          <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+                            {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
+                          </div>
+                          {Array.isArray(c.other?.interests) && c.other.interests.length > 0 && (
+                            <div style={{ marginTop: 6 }}>
+                              {c.other.interests.slice(0, 3).map((t) => (
+                                <span key={t} style={{ background: '#fff1e6', color: '#92400e', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
+                              ))}
+                            </div>
+                          )}
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button onClick={() => actOn(c.id, 'accept')} style={btn('#16a34a')}>Accept</button>
@@ -177,6 +207,19 @@ export default function ConnectionsPage({ me }) {
                         <div>
                           <strong>{c.other?.name || 'User'}</strong>
                           <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Awaiting response</div>
+                          <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+                            {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
+                          </div>
+                          {Array.isArray(c.other?.interests) && c.other.interests.length > 0 && (
+                            <div style={{ marginTop: 6 }}>
+                              {c.other.interests.slice(0, 3).map((t) => (
+                                <span key={t} style={{ background: '#ede8f7', color: '#5a3c91', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button onClick={() => actOn(c.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
                         </div>
                       </li>
                     ))}
@@ -194,7 +237,9 @@ export default function ConnectionsPage({ me }) {
                     <li key={r.user.record_id} style={{ ...pill('#eefcf3', '#bbf7d0'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
                         <strong>{r.user.name || 'User'}</strong>
-                        <div style={{ color: '#666', fontSize: '0.9rem' }}>{r.user.location || ''}</div>
+                        <div style={{ color: '#666', fontSize: '0.9rem' }}>
+                          {[r.user.postcode, r.user.location].filter(Boolean).join(' · ')}
+                        </div>
                         <div style={{ marginTop: 6 }}>
                           {(r.reasons || []).map((t) => (
                             <span key={t} style={{ background: '#dcfce7', color: '#065f46', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
@@ -216,7 +261,9 @@ export default function ConnectionsPage({ me }) {
                         <li key={u.record_id} style={{ ...pill('#f1ecfb', '#e0d8f3'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div>
                             <strong>{u.name || 'User'}</strong>
-                            <div style={{ color: '#666', fontSize: '0.9rem' }}>{u.location || ''}</div>
+                            <div style={{ color: '#666', fontSize: '0.9rem' }}>
+                              {[u.postcode, u.location].filter(Boolean).join(' · ')}
+                            </div>
                             {Array.isArray(u.interests) && u.interests.length > 0 && (
                               <div style={{ marginTop: 6 }}>
                                 {u.interests.slice(0, 3).map((t) => (

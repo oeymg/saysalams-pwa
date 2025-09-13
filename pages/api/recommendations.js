@@ -30,6 +30,7 @@ function mapUser(r) {
   const email = f['Email'] || '';
   const type = f['Type'] || f['User Type'] || '';
   const location = f['Location'] || f['City'] || '';
+  const postcode = f['Postcode'] || f['Postal Code'] || f['ZIP'] || f['Zip'] || f['ZIP Code'] || '';
   const interests = Array.isArray(f['Interests'])
     ? f['Interests']
     : (typeof f['Interests'] === 'string' ? f['Interests'].split(',').map(s => s.trim()).filter(Boolean) : []);
@@ -43,6 +44,7 @@ function mapUser(r) {
     email,
     type,
     location,
+    postcode,
     interests,
     clerk_id: clerk,
     gender,

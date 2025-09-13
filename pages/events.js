@@ -4,6 +4,8 @@ import Layout from '../components/layout.js';
 import SEO from '../components/seo';
 import Image from 'next/image';
 import { getAuth } from '@clerk/nextjs/server';
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context) {
   const proto = context.req.headers['x-forwarded-proto'] || 'http';
@@ -33,6 +35,74 @@ export async function getServerSideProps(context) {
 }
 
 export default function EventsPage({ events, base }) {
+  const router = useRouter();
+  const initialQ = typeof router.query?.q === 'string' ? router.query.q : '';
+  const [q, setQ] = useState(initialQ);
+  const selected = typeof router.query?.tag === 'string' ? router.query.tag : '';
+  const initialSort = typeof router.query?.sort === 'string' ? router.query.sort : 'date';
+  const [sortBy, setSortBy] = useState(initialSort);
+
+  const tokens = useMemo(() => {
+    const set = new Set();
+    for (const ev of events || []) {
+      (Array.isArray(ev.category) ? ev.category : []).forEach(t => set.add(String(t)));
+      (Array.isArray(ev.audience) ? ev.audience : []).forEach(t => set.add(String(t)));
+    }
+    return Array.from(set).sort();
+  }, [events]);
+
+  const filtered = useMemo(() => {
+    const needles = (q || '').toLowerCase().split(/\s+/).filter(Boolean);
+    const base = (events || []).filter((ev) => {
+      const hay = [
+        ev.title,
+        ev.city_region,
+        ...(Array.isArray(ev.category) ? ev.category : []),
+        ...(Array.isArray(ev.audience) ? ev.audience : []),
+      ].join(' ').toLowerCase();
+      const okQ = needles.length === 0 || needles.every(n => hay.includes(n));
+      const okTag = !selected || (Array.isArray(ev.category) && ev.category.includes(selected)) || (Array.isArray(ev.audience) && ev.audience.includes(selected));
+      return okQ && okTag;
+    });
+    const arr = [...base];
+    if (sortBy === 'popular') {
+      arr.sort((a,b) => ((b.next_going_count ?? b.going_count ?? 0) - (a.next_going_count ?? a.going_count ?? 0)) || (new Date(a.start_at||0) - new Date(b.start_at||0)));
+    } else {
+      arr.sort((a,b) => new Date(a.start_at||0) - new Date(b.start_at||0));
+    }
+    return arr;
+  }, [events, q, selected, sortBy]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (selected) params.set('tag', selected);
+    if (sortBy) params.set('sort', sortBy);
+    router.push(`/events${params.toString() ? `?${params.toString()}` : ''}`);
+  };
+
+  const onSelectTag = (tag) => {
+    const params = new URLSearchParams(router.query);
+    if (tag && tag === selected) {
+      params.delete('tag');
+    } else if (tag) {
+      params.set('tag', tag);
+    }
+    if (q) params.set('q', q); else params.delete('q');
+    if (sortBy) params.set('sort', sortBy); else params.delete('sort');
+    router.push(`/events${params.toString() ? `?${params.toString()}` : ''}`);
+  };
+
+  const onChangeSort = (val) => {
+    setSortBy(val);
+    const params = new URLSearchParams(router.query);
+    if (val) params.set('sort', val); else params.delete('sort');
+    if (q) params.set('q', q); else params.delete('q');
+    if (selected) params.set('tag', selected); else params.delete('tag');
+    router.push(`/events${params.toString() ? `?${params.toString()}` : ''}`);
+  };
+
   return (
     <Layout>
       <SEO
@@ -40,70 +110,40 @@ export default function EventsPage({ events, base }) {
         title="Upcoming Muslim Events — Say Salams"
         description="Browse upcoming Muslim events near you. Discover classes, socials, workshops, and more — connect with community on Say Salams."
       />
-      <section
-        className="stack-mobile"
-        style={{
-          display: 'flex',
-          gap: '3rem',
-          maxWidth: '1400px',
-          margin: '0 auto',
-          padding: '2rem',
-          boxSizing: 'border-box',
-          alignItems: 'stretch',
-        }}
-      >
-        <div
-          style={{
-            flex: 1,
-            backgroundColor: '#9b8bbd',
-            color: '#fff',
-            padding: '1.5rem',
-            borderRadius: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            width: '100%',
-            minHeight: '300px',
-            height: '250px',
-          }}
-        >
-          <ul style={{ fontSize: '1.2rem', lineHeight: '1.5', marginTop: '1rem', paddingLeft: '1.2rem' }}>
-            <li>🌙 <strong>Find your people:</strong> Whether you&apos;re new to the city or looking to strengthen your ties, discover Muslims nearby who share your interests.</li>
-            <li>🎉 <strong>Celebrate together:</strong> From Eid nights to family picnics, join events that bring joy and belonging.</li>
-            <li>📖 <strong>Learn and grow:</strong> Attend classes, workshops, and talks that enrich your faith, skills, and personal growth.</li>
-            <li>🕌 <strong>Support our hosts:</strong> Mosques, organisations, and Muslim-owned businesses who put time, effort, and heart into serving the community.</li>
-          </ul>
-        </div>
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            minHeight: '300px',
-          }}
-        >
-          <div
-            aria-hidden="true"
-            style={{
-              width: '100%',
-              height: '300px',
-              borderRadius: '16px',
-              boxShadow: '0 8px 24px rgba(110, 80, 132, 0.3)',
-              backgroundColor: '#f0f0f0',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-                  color: '#9b8bbd',
-              fontWeight: 'bold',
-              fontSize: '1.2rem',
-              textAlign: 'center',
-              padding: '1rem',
-              flex: 1,
-            }}
-          >
-            Carousel of Featured Events (Coming Soon)
+      <section className="full-bleed" style={{ padding: '1rem 0 0' }}>
+        <div className="hero-band-inner" style={{ alignItems: 'stretch' }}>
+          <div style={{ display:'grid', gap:'0.5rem' }}>
+            <h1 className="hero-band-title" style={{ marginBottom: 0 }}>Upcoming Events</h1>
+            <p className="hero-band-sub" style={{ marginTop: 0 }}>Search and filter to find what suits you.</p>
+            <form onSubmit={onSubmit} className="hero-search" action="/events" method="get">
+              <input className="hero-input" type="search" name="q" placeholder="Search by title, city, category…" value={q} onChange={(e)=>setQ(e.target.value)} />
+              <select value={sortBy} onChange={(e)=>onChangeSort(e.target.value)} style={{ background:'#fff', color:'#6e5084', border:'1px solid #e7e2f0', borderRadius:12, padding:'.6rem .8rem', fontWeight:700 }}>
+                <option value="date">Sort: Date</option>
+                <option value="popular">Sort: Popular</option>
+              </select>
+              <button className="hero-submit" type="submit">Search</button>
+            </form>
+            {tokens.length > 0 && (
+              <div className="home-chip-row" style={{ marginTop: 6 }}>
+                <button type="button" onClick={()=>onSelectTag('')} className="home-chip" style={{ borderColor: selected ? '#ded7ef' : '#6e5084', color: selected ? '#5a3c91' : '#6e5084', background: selected ? '#ede8f7' : '#fff' }}>All</button>
+                {tokens.map(t => (
+                  <button key={t} type="button" onClick={()=>onSelectTag(t)} className="home-chip" style={{ borderColor: selected===t ? '#6e5084' : '#ded7ef', background: selected===t ? '#ede8f7' : '#fff', color: '#5a3c91' }}>{t}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="hero-preview">
+              {(filtered || []).slice(0,3).map((e) => (
+                <div key={e.id} className="hero-card-mini">
+                  <div className="mini-title">{e.title}</div>
+                  <div className="mini-meta">
+                    {(e.start_at ? new Date(e.start_at).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' }) : 'TBA')}
+                    {e.city_region ? ` · ${e.city_region}` : ''}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -113,15 +153,8 @@ export default function EventsPage({ events, base }) {
         className="container"
         style={{ maxWidth: '1100px', margin: '0 auto 4rem auto', padding: '0 1rem' }}
       >
-        <h2
-          style={{
-            textAlign: 'center',
-            marginBottom: '2rem',
-            fontSize: '2rem',
-            color: '#5a3c91',
-          }}
-        >
-          Upcoming Events
+        <h2 style={{ textAlign: 'center', marginBottom: '1.25rem', fontSize: '2rem', color: '#5a3c91' }}>
+          {filtered.length} event{filtered.length===1 ? '' : 's'} found
         </h2>
 
         {events.length === 0 && (
@@ -131,7 +164,7 @@ export default function EventsPage({ events, base }) {
         )}
 
         <div className="events-grid">
-          {events.map((ev) => (
+          {filtered.map((ev) => (
             <article
               key={ev.id}
               style={{
@@ -165,7 +198,7 @@ export default function EventsPage({ events, base }) {
                 />
               )}
               <div style={{ flex: 1, padding: '1rem' }}>
-                <h3 style={{ margin: '0 0 0.5rem 0', color: '#9b8bbd', fontWeight: 'bold' }}>{ev.title}</h3>
+                <h3 style={{ margin: '0 0 0.5rem 0', color: '#9b8bbd', fontWeight: 800 }} className="clamp-1">{ev.title}</h3>
                 <p style={{ marginBottom: '0.5rem', color: '#555' }}>
                   {ev.start_at
                     ? new Date(ev.start_at).toLocaleDateString('en-AU', {
@@ -177,9 +210,14 @@ export default function EventsPage({ events, base }) {
                         minute: 'numeric',
                       })
                     : 'TBA'}
-                  {ev.suburb ? ` · ${ev.suburb}` : ''}
-                  {ev.city ? `, ${ev.city}` : ''}
+                  {ev.city_region ? ` · ${ev.city_region}` : ''}
                 </p>
+                {(Array.isArray(ev.category) && ev.category.length > 0) || (Array.isArray(ev.audience) && ev.audience.length > 0) ? (
+                  <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom: '0.6rem' }}>
+                    {(ev.category || []).slice(0,2).map(t => (<span key={t} className="chip">{t}</span>))}
+                    {(ev.audience || []).slice(0,1).map(t => (<span key={t} className="chip">{t}</span>))}
+                  </div>
+                ) : null}
                 <p style={{ marginBottom: '0.8rem', color: '#666' }}>
                   👍 {(typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0))} going
                 </p>

@@ -15,14 +15,14 @@ export default function FAQ() {
           <Collapsible title="How do I attend an event?">
             <p style={{ margin: 0 }}>You can browse upcoming events on our platform and register for those that interest you. Attendance is usually free and open to all.</p>
           </Collapsible>
-          <Collapsible title="How do I become a host?">
-            <p style={{ margin: 0 }}>To become a host, sign up on our website and submit your event details for approval. We support hosts with resources to make your event successful.</p>
+          <Collapsible title="How do I become a partner?">
+            <p style={{ margin: 0 }}>To become a partner, sign up on our website and submit your event details for approval. We support partners with resources to make your event successful.</p>
           </Collapsible>
-          <Collapsible title="Does it cost to host or attend events?">
-            <p style={{ margin: 0 }}>No, Say Salams does not charge fees for hosting or attending events. We aim to keep community engagement accessible to everyone.</p>
+          <Collapsible title="Does it cost to partner or attend events?">
+            <p style={{ margin: 0 }}>No, Say Salams does not charge fees for partnering or attending events. We aim to keep community engagement accessible to everyone.</p>
           </Collapsible>
-          <Collapsible title="Can businesses benefit from hosting with Say Salams?">
-            <p style={{ margin: 0 }}>Yes, businesses can connect with the community, increase visibility, and foster goodwill by hosting events through Say Salams.</p>
+          <Collapsible title="Can businesses benefit from partnering with Say Salams?">
+            <p style={{ margin: 0 }}>Yes, businesses can connect with the community, increase visibility, and foster goodwill by partnering with Say Salams for events.</p>
           </Collapsible>
           <Collapsible title="How do I stay updated on new events?">
             <p style={{ margin: 0 }}>Subscribe to our newsletter and follow us on social media to get the latest updates on upcoming events and community news.</p>

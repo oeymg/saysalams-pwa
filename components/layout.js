@@ -94,7 +94,7 @@ export default function Layout({ children }) {
           }}
         >
           <Link href="/events" legacyBehavior><a className="nav-pill">Events</a></Link>
-          <Link href="/host" legacyBehavior><a className="nav-pill">Host</a></Link>
+          <Link href="/partners" legacyBehavior><a className="nav-pill">Partners</a></Link>
           <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
             <a className="nav-pill">Connections</a>
           </Link>
@@ -165,7 +165,7 @@ export default function Layout({ children }) {
         >
           <div style={{ display: 'grid', gap: '0.25rem' }} onClick={() => setMobileOpen(false)}>
             <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
-            <Link href="/host" legacyBehavior><a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Host</a></Link>
+            <Link href="/partners" legacyBehavior><a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Partners</a></Link>
             <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
               <a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Connections</a>
             </Link>
@@ -196,7 +196,7 @@ export default function Layout({ children }) {
       >
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0px', padding: '0.65rem 0' }}>
           <Link href="/events" legacyBehavior><a className="bn-item"><div className="bn-icon">🗓️</div><div className="bn-label">Events</div></a></Link>
-          <Link href="/host" legacyBehavior><a className="bn-item"><div className="bn-icon">📣</div><div className="bn-label">Host</div></a></Link>
+          <Link href="/partners" legacyBehavior><a className="bn-item"><div className="bn-icon">📣</div><div className="bn-label">Partners</div></a></Link>
           <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
             <a className="bn-item"><div className="bn-icon">🤝</div><div className="bn-label">Connect</div></a>
           </Link>
@@ -226,7 +226,7 @@ export default function Layout({ children }) {
             <h4 className="footer-title">Explore</h4>
             <ul className="footer-links">
               <li><Link href="/events" legacyBehavior><a>See our upcoming Events</a></Link></li>
-              <li><Link href="/host" legacyBehavior><a>Become a Host</a></Link></li>
+              <li><Link href="/partners" legacyBehavior><a>Become a Partner</a></Link></li>
               <li><Link href="/connections" legacyBehavior><a>Discover Connection</a></Link></li>
               <li><Link href="/profile" legacyBehavior><a>View your Profile</a></Link></li>
               <li><Link href="/faq" legacyBehavior><a>Frequently Asked Questions</a></Link></li>

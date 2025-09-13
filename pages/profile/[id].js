@@ -113,8 +113,8 @@ export default function ProfilePage({ user, rsvps, recordId }) {
           <span>{user.name || "N/A"}</span>
         </div>
         <div style={{marginBottom: "0.5rem"}}>
-          <span style={labelStyle}>Email:</span>
-          <span>{user.email || "N/A"}</span>
+          <span style={labelStyle}>Postcode:</span>
+          <span>{user.postcode || "N/A"}</span>
         </div>
         <div style={{marginBottom: "0.5rem"}}>
           <span style={labelStyle}>Location:</span>

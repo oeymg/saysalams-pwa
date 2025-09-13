@@ -123,8 +123,28 @@ export default function ProfilePage({ user, rows }) {
                   <ul style={{ listStyle:'none', padding:0, margin:0 }}>
                     {cons.accepted.map(c => (
                       <li key={c.id} style={{ background:'#f8f6fc', border:'1px solid #e7e2f0', borderRadius:8, padding:'0.6rem 0.8rem' }}>
-                        <strong>{c.other?.name || 'User'}</strong>
-                        <span style={{ color:'#666' }}> {c.other?.email ? `· ${c.other.email}` : ''}</span>
+                        <div>
+                          <strong>{c.other?.name || 'User'}</strong>
+                          <div style={{ color:'#666' }}>
+                            {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
+                          </div>
+                          {Array.isArray(c.other?.interests) && c.other.interests.length > 0 && (
+                            <div style={{ marginTop: 6 }}>
+                              {c.other.interests.slice(0,3).map(t => (
+                                <span key={t} style={{ background:'#ede8f7', color:'#5a3c91', padding:'0.15rem 0.5rem', borderRadius:6, fontSize:'0.75rem', marginRight:6 }}>{t}</span>
+                              ))}
+                            </div>
+                          )}
+                          {Array.isArray(c.other_rsvps) && c.other_rsvps.length > 0 && (
+                            <div style={{ marginTop: 8, display:'flex', gap:6, flexWrap:'wrap' }}>
+                              {c.other_rsvps.map(r => (
+                                <a key={`${c.id}-${r.eventId}`} href={`/event/${encodeURIComponent(r.eventId)}`} style={{ textDecoration:'none' }}>
+                                  <span className="chip">{r.title} · {r.start_at ? new Date(r.start_at).toLocaleDateString('en-AU', { month:'short', day:'numeric' }) : ''}</span>
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -141,6 +161,16 @@ export default function ProfilePage({ user, rows }) {
                         <span>
                           <strong>{c.other?.name || 'User'}</strong>
                           <span style={{ color:'#92400e' }}>  · Pending</span>
+                          <div style={{ color:'#92400e' }}>
+                            {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
+                          </div>
+                          {Array.isArray(c.other?.interests) && c.other.interests.length > 0 && (
+                            <div style={{ marginTop: 6 }}>
+                              {c.other.interests.slice(0,3).map(t => (
+                                <span key={t} style={{ background:'#fff1e6', color:'#92400e', padding:'0.15rem 0.5rem', borderRadius:6, fontSize:'0.75rem', marginRight:6 }}>{t}</span>
+                              ))}
+                            </div>
+                          )}
                         </span>
                         <span style={{ display:'flex', gap:'0.5rem' }}>
                           <button onClick={() => actOn(c.id,'accept')} style={{ background:'#16a34a', color:'#fff', border:'none', borderRadius:6, padding:'0.35rem 0.6rem', cursor:'pointer' }}>Accept</button>
@@ -162,6 +192,19 @@ export default function ProfilePage({ user, rows }) {
                         <span>
                           <strong>{c.other?.name || 'User'}</strong>
                           <span style={{ color:'#6b7280' }}>  · Awaiting response</span>
+                          <div style={{ color:'#6b7280' }}>
+                            {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
+                          </div>
+                          {Array.isArray(c.other?.interests) && c.other.interests.length > 0 && (
+                            <div style={{ marginTop: 6 }}>
+                              {c.other.interests.slice(0,3).map(t => (
+                                <span key={t} style={{ background:'#ede8f7', color:'#5a3c91', padding:'0.15rem 0.5rem', borderRadius:6, fontSize:'0.75rem', marginRight:6 }}>{t}</span>
+                              ))}
+                            </div>
+                          )}
+                        </span>
+                        <span>
+                          <button onClick={() => actOn(c.id,'withdraw')} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:6, padding:'0.35rem 0.6rem', cursor:'pointer' }}>Withdraw</button>
                         </span>
                       </li>
                     ))}

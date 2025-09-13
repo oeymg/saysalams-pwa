@@ -5,6 +5,7 @@ const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 const USERS_TABLE = process.env.AIRTABLE_USERS_TABLE || 'Users';
 const CONNECTIONS_TABLE = process.env.AIRTABLE_CONNECTIONS_TABLE || 'Connections';
+const RSVP_TABLE = process.env.AIRTABLE_RSVP_TABLE || 'RSVPs';
 
 const base = (AIRTABLE_TOKEN && AIRTABLE_BASE_ID)
   ? new Airtable({ apiKey: AIRTABLE_TOKEN }).base(AIRTABLE_BASE_ID)
@@ -59,6 +60,7 @@ async function getUserSummary(recId) {
       clerk_id: f['ClerkID'] || f['Clerk ID'] || '',
       user_id: f['UserID'] || f['User ID'] || '',
       location: f['Location'] || f['City'] || '',
+      postcode: f['Postcode'] || f['Postal Code'] || f['ZIP'] || f['Zip'] || f['ZIP Code'] || '',
       interests: Array.isArray(f['Interests']) ? f['Interests'] : [],
     };
   } catch (_) {
@@ -106,6 +108,54 @@ export default async function handler(req, res) {
           updated_at: f['Updated At'] || null,
         });
       }
+
+      // Optionally attach RSVP activity for connected users
+      try {
+        const otherUserIds = Array.from(new Set(edges.map(e => e.other?.user_id).filter(Boolean)));
+        if (otherUserIds.length > 0) {
+          // Load RSVPs for these users (Going/Interested)
+          const orUsers = otherUserIds.map(uid => `{UserID}='${uid}'`).join(',');
+          const statusOR = `OR(LOWER({Status})='going', LOWER({Status})='interested', {Status}='Going', {Status}='Interested')`;
+          const rsvps = await base(RSVP_TABLE).select({ filterByFormula: `AND(OR(${orUsers}), ${statusOR})` }).all();
+          const mapByUser = new Map(); // userId -> [{eventId,status}]
+          for (const r of rsvps) {
+            const f = r.fields || {};
+            const uid = f['UserID'] || f['User ID'] || null;
+            const eid = f['Event ID'] || f['EventID'] || f['Event Id'] || null;
+            const st = f['Status'] || '';
+            if (!uid || !eid) continue;
+            if (!mapByUser.has(uid)) mapByUser.set(uid, []);
+            mapByUser.get(uid).push({ eventId: String(eid), status: st });
+          }
+          // Load events to enrich titles/dates
+          const proto = req.headers['x-forwarded-proto'] || 'http';
+          const host = req.headers.host;
+          const baseUrl = `${proto}://${host}`;
+          const eResp = await fetch(`${baseUrl}/api/events`).catch(() => null);
+          const eJson = await eResp?.json();
+          const events = Array.isArray(eJson?.events) ? eJson.events : [];
+          const eventsById = Object.fromEntries(events.map((e) => [e.public_id || e.id, e]));
+          // Attach up to 3 upcoming RSVPs per user
+          const nowTs = Date.now();
+          for (const edge of edges) {
+            const uid = edge.other?.user_id;
+            const raw = uid ? mapByUser.get(uid) || [] : [];
+            const enriched = raw
+              .map(r => {
+                const ev = eventsById[r.eventId];
+                return ev ? { eventId: r.eventId, title: ev.title, start_at: ev.start_at, status: r.status } : null;
+              })
+              .filter(Boolean)
+              .sort((a, b) => new Date(a.start_at || 0) - new Date(b.start_at || 0))
+              .filter(x => new Date(x.start_at || 0).getTime() >= nowTs)
+              .slice(0, 3);
+            edge.other_rsvps = enriched;
+          }
+        }
+      } catch (_) {
+        // ignore activity attachment failures
+      }
+
       return res.status(200).json({ connections: edges });
     }
 
@@ -171,6 +221,7 @@ export default async function handler(req, res) {
       if (action === 'accept') update['Status'] = 'Accepted';
       else if (action === 'decline') update['Status'] = 'Declined';
       else if (action === 'block') update['Status'] = 'Blocked';
+      else if (action === 'withdraw') update['Status'] = 'Declined';
       else return res.status(400).json({ error: 'Invalid action' });
       // Try to set Updated At; if field is not writable, retry without it
       let rec;
