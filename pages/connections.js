@@ -270,7 +270,7 @@ export default function ConnectionsPage({ me }) {
                               <button onClick={() => actOn(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
                             </div>
                           ) : (
-                            <a href="/connections" className="chip" style={{ textDecoration:'none', background:'#fef9c3', color:'#92400e' }}>Review request</a>
+                            <Link href="/connections" className="chip" style={{ textDecoration:'none', background:'#fef9c3', color:'#92400e' }}>Review request</Link>
                           )
                         ) : (
                           <button onClick={() => request(r.user.record_id)} style={btn('#16a34a')}>Connect</button>
@@ -311,7 +311,7 @@ export default function ConnectionsPage({ me }) {
                                   <button onClick={() => actOn(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
                                 </div>
                               ) : (
-                                <a href="/connections" className="chip" style={{ textDecoration:'none' }}>Review request</a>
+                                <Link href="/connections" className="chip" style={{ textDecoration:'none' }}>Review request</Link>
                               )
                             ) : (
                               <button onClick={() => request(u.record_id)} style={btn('#6e5084')}>Connect</button>
@@ -376,7 +376,7 @@ function QuickProfile({ data, onClose, onAction }) {
           </div>
         )}
         <div style={{ display:'flex', gap:6, alignItems:'center', justifyContent:'space-between' }}>
-          <a href={`/profile/${encodeURIComponent(user.record_id)}`} style={{ color:'#6e5084', fontWeight:800, textDecoration:'none' }}>View Profile</a>
+          <Link href={`/profile/${encodeURIComponent(user.record_id)}`} style={{ color:'#6e5084', fontWeight:800, textDecoration:'none' }}>View Profile</Link>
           <div style={{ display:'flex', gap:6 }}>
             {status === 'accepted' ? (
               <span className="chip" style={{ background:'#e8faf0', color:'#166534' }}>Connected</span>
