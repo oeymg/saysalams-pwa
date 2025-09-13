@@ -129,7 +129,7 @@ export default function ConnectionsPage({ me }) {
   return (
     <Layout>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '2rem 1rem' }}>
-        <header style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <header className="connections-header" style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '1rem' }}>
           <h1 style={{ color: '#6e5084', margin: 0 }}>My Connections</h1>
           <Link href="/profile" style={{ color: '#6e5084', textDecoration: 'underline' }}>View profile</Link>
         </header>
@@ -137,7 +137,7 @@ export default function ConnectionsPage({ me }) {
         {loading ? (
           <p>Loading…</p>
         ) : (
-          <div className="connections-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.0rem' }}>
+          <div className="connections-grid">
             {/* Left: My Network + Requests */}
             <div style={{ display: 'grid', gap: '1rem' }}>
               <section style={secStyle}>
@@ -185,7 +185,7 @@ export default function ConnectionsPage({ me }) {
                 ) : (
                   <ul style={list}>
                     {incoming.map((c) => (
-                      <li key={c.id} style={{ ...pill('#fff7ed', '#fed7aa'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <li key={c.id} className="conn-item" style={{ ...pill('#fff7ed', '#fed7aa') }}>
                         <div>
                           <strong style={{ cursor:'pointer' }} onClick={() => openQuick(c.other)}>{c.other?.name || 'User'}</strong>
                           <div style={{ color: '#92400e', fontSize: '0.9rem' }}>Pending</div>
@@ -200,7 +200,7 @@ export default function ConnectionsPage({ me }) {
                             </div>
                           )}
                         </div>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div className="conn-actions">
                           <button onClick={() => actOn(c.id, 'accept')} style={btn('#16a34a')}>Accept</button>
                           <button onClick={() => actOn(c.id, 'decline')} style={btn('#ef4444')}>Decline</button>
                         </div>
@@ -217,7 +217,7 @@ export default function ConnectionsPage({ me }) {
                 ) : (
                   <ul style={list}>
                     {sent.map((c) => (
-                      <li key={c.id} style={{ ...pill('#f8f6fc', '#e7e2f0'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <li key={c.id} className="conn-item" style={{ ...pill('#f8f6fc', '#e7e2f0') }}>
                         <div>
                           <strong style={{ cursor:'pointer' }} onClick={() => openQuick(c.other)}>{c.other?.name || 'User'}</strong>
                           <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Awaiting response</div>
@@ -232,7 +232,7 @@ export default function ConnectionsPage({ me }) {
                             </div>
                           )}
                         </div>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div className="conn-actions">
                           <button onClick={() => actOn(c.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
                         </div>
                       </li>
@@ -251,7 +251,7 @@ export default function ConnectionsPage({ me }) {
                     const edge = findPendingEdge(r.user.record_id);
                     const mine = edge && edge.requester === me?.record_id;
                     return (
-                      <li key={r.user.record_id} style={{ ...pill('#eefcf3', '#bbf7d0'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <li key={r.user.record_id} className="conn-item" style={{ ...pill('#eefcf3', '#bbf7d0') }}>
                         <div>
                           <strong style={{ cursor:'pointer' }} onClick={() => openQuick(r.user)}>{r.user.name || 'User'}</strong>
                           <div style={{ color: '#666', fontSize: '0.9rem' }}>
@@ -265,7 +265,7 @@ export default function ConnectionsPage({ me }) {
                         </div>
                         {edge ? (
                           mine ? (
-                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <div className="conn-actions">
                               <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>Pending</span>
                               <button onClick={() => actOn(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
                             </div>
@@ -290,7 +290,7 @@ export default function ConnectionsPage({ me }) {
                         const edge = findPendingEdge(u.record_id);
                         const mine = edge && edge.requester === me?.record_id;
                         return (
-                          <li key={u.record_id} style={{ ...pill('#f1ecfb', '#e0d8f3'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <li key={u.record_id} className="conn-item" style={{ ...pill('#f1ecfb', '#e0d8f3') }}>
                             <div>
                               <strong style={{ cursor:'pointer' }} onClick={() => openQuick(u)}>{u.name || 'User'}</strong>
                               <div style={{ color: '#666', fontSize: '0.9rem' }}>
@@ -306,7 +306,7 @@ export default function ConnectionsPage({ me }) {
                             </div>
                             {edge ? (
                               mine ? (
-                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                <div className="conn-actions">
                                   <span className="chip">Pending</span>
                                   <button onClick={() => actOn(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
                                 </div>

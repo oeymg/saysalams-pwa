@@ -79,7 +79,7 @@ export default function Layout({ children }) {
               height={110}
               priority
               className="logo-img"
-              style={{ height: 44, width: 'auto' }}
+              style={{ height: 40, width: 'auto' }}
               sizes="(max-width: 640px) 140px, 180px"
             />
           </Link>
@@ -220,7 +220,7 @@ export default function Layout({ children }) {
               width={210}
               height={210}
               className="logo-img-footer"
-              style={{ height: 60, width: 'auto' }}
+              style={{ height: 40, width: 'auto' }}
               sizes="(max-width: 640px) 150px, 200px"
             />
             <p className="footer-blurb">Community | Connections | Celebration</p>

@@ -32,6 +32,13 @@ img, video {
   white-space: nowrap;
 }
 
+/* Consistent logo sizing and alignment */
+.logo-img, .logo-img-footer {
+  height: 40px !important;
+  width: auto !important;
+  display: block;
+}
+
 /* Pill buttons for navbar */
 .nav-pill {
   color: #9b8bbd !important;
@@ -112,6 +119,8 @@ p, li {
 }
 /* Connections grid responsive */
 .connections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.conn-item { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.conn-actions { display: flex; gap: 0.5rem; }
 @media (max-width: 900px) { .connections-grid { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {
   .events-grid {
@@ -119,6 +128,11 @@ p, li {
   }
 }
 @media (max-width: 640px) {
+  .connections-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.35rem !important; }
+  .conn-item { flex-direction: column !important; align-items: stretch !important; }
+  .conn-actions { width: 100% !important; justify-content: flex-end; }
+  .conn-actions button { flex: 1 1 0 !important; padding: 0.6rem 0.8rem !important; }
+  .conn-item > button, .conn-item > a.chip { width: 100% !important; text-align: center; }
   .events-grid {
     grid-template-columns: 1fr;
     gap: 16px;
