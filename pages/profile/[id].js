@@ -5,12 +5,15 @@ import React from "react";
 
 export async function getServerSideProps(context) {
   const { id } = context.query;
+  const proto = context.req.headers['x-forwarded-proto'] || 'http';
+  const host = context.req.headers.host;
+  const base = `${proto}://${host}`;
   // Fetch user info
-  const userRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/users?id=${id}`);
-  const userData = await userRes.json();
+  const userRes = await fetch(`${base}/api/users?id=${encodeURIComponent(id)}`).catch(() => null);
+  const userData = await userRes?.json?.() || {};
   // Fetch RSVPs
-  const rsvpRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/rsvp?userId=${id}`);
-  const rsvpData = await rsvpRes.json();
+  const rsvpRes = await fetch(`${base}/api/rsvp?userId=${encodeURIComponent(id)}`).catch(() => null);
+  const rsvpData = await rsvpRes?.json?.() || {};
   return {
     props: {
       user: userData?.user || null,
@@ -174,16 +177,22 @@ export default function ProfilePage({ user, rsvps, recordId }) {
         ) : connStatus === 'pending-out' ? (
           <div style={{ display:'flex', gap:'0.5rem', alignItems:'center' }}>
             <span style={{ background:'#fef3c7', color:'#92400e', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Request sent</span>
-            <button onClick={() => actOn('withdraw')} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor:'pointer' }}>Withdraw</button>
+            <button onClick={() => actOn('withdraw')} disabled={connStatus==='loading'} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+              {connStatus==='loading' ? 'Withdrawing…' : 'Withdraw'}
+            </button>
           </div>
         ) : connStatus === 'pending-in' ? (
           <div style={{ display:'flex', gap:'0.5rem' }}>
-            <button onClick={() => actOn('accept')} style={{ background:'#16a34a', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor:'pointer' }}>Accept</button>
-            <button onClick={() => actOn('decline')} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor:'pointer' }}>Decline</button>
+            <button onClick={() => actOn('accept')} disabled={connStatus==='loading'} style={{ background:'#16a34a', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+              {connStatus==='loading' ? 'Saving…' : 'Accept'}
+            </button>
+            <button onClick={() => actOn('decline')} disabled={connStatus==='loading'} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+              {connStatus==='loading' ? 'Saving…' : 'Decline'}
+            </button>
           </div>
         ) : (
-          <button onClick={requestConnection} style={{ background:'#9b8bbd', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor:'pointer' }}>
-            Connect
+          <button onClick={requestConnection} disabled={connStatus==='loading'} style={{ background:'#9b8bbd', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+            {connStatus==='loading' ? 'Sending…' : 'Connect'}
           </button>
         )}
       </div>

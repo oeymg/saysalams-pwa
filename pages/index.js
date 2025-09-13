@@ -70,7 +70,7 @@ export default function Home({ events, base }) {
         url={base}
         title="Say Salams — Discover Muslim Events Near You"
         description="Say Salams brings Muslims together through events, connections, and community. Discover what's on, RSVP, and spread peace."
-        image="/icons/longlogo.png"
+        image="/icons/logo.png"
         jsonLd={[
           {
             '@context': 'https://schema.org',

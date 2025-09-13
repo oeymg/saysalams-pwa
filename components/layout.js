@@ -74,10 +74,13 @@ export default function Layout({ children }) {
           <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
             <Image
               src="/icons/longlogo.svg"
-              alt="Say Salams logo"
+              alt="Say Salams"
               width={190}
               height={110}
+              priority
               className="logo-img"
+              style={{ height: 44, width: 'auto' }}
+              sizes="(max-width: 640px) 140px, 180px"
             />
           </Link>
         </div>
@@ -213,10 +216,12 @@ export default function Layout({ children }) {
           <div className="footer-col footer-brand">
             <Image
               src="/icons/invertlogo.svg"
-              alt="Say Salams logo"
+              alt="Say Salams"
               width={210}
               height={210}
-              style={{ height: 'auto', width: 'auto' }}
+              className="logo-img-footer"
+              style={{ height: 60, width: 'auto' }}
+              sizes="(max-width: 640px) 150px, 200px"
             />
             <p className="footer-blurb">Community | Connections | Celebration</p>
           </div>

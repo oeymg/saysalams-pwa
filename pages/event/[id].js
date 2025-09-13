@@ -111,10 +111,23 @@ export async function getServerSideProps(context) {
     }
   } catch (_) {}
 
-  return { props: { ev, occurrences, occurrenceCounts, base, id, similar } };
+  // Merge friends-going counts for this event from /api/feed (if signed in)
+  let friends = { going: 0, interested: 0 };
+  try {
+    if (userId && ev) {
+      const feedRes = await fetch(`${base}/api/feed`, { headers: { cookie: context.req.headers.cookie || '' } });
+      if (feedRes.ok) {
+        const feedJson = await feedRes.json();
+        const row = (feedJson?.events || []).find((e) => String(e.public_id || e.id) === String(ev.public_id));
+        if (row) friends = { going: Number(row.connections_going || 0), interested: Number(row.connections_interested || 0) };
+      }
+    }
+  } catch (_) {}
+
+  return { props: { ev, occurrences, occurrenceCounts, base, id, similar, friends } };
 }
 
-export default function EventPage({ ev, occurrences = [], occurrenceCounts = {}, base, id, similar = [] }) {
+export default function EventPage({ ev, occurrences = [], occurrenceCounts = {}, base, id, similar = [], friends = { going: 0, interested: 0 } }) {
   const { user, isSignedIn } = useUser();
   const [savingMap, setSavingMap] = useState({}); // by occurrenceId
   const [counts, setCounts] = useState(occurrenceCounts);
@@ -198,7 +211,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         url={`${base}/event/${encodeURIComponent(id)}`}
         title={`${ev.title} — Say Salams`}
         description={(typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')).slice(0, 280) || 'View event details on Say Salams.'}
-        image={ev.image_url || '/icons/longlogo.png'}
+        image={ev.image_url || '/icons/logo.png'}
         type="article"
         jsonLd={{
           '@context': 'https://schema.org',
@@ -283,11 +296,18 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         </div>
 
         {/* Meta info */}
-        <p style={{ color: '#555', marginBottom: '1rem' }} data-reveal>
+        <p style={{ color: '#555', marginBottom: '0.5rem' }} data-reveal>
           {ev.start_at ? new Date(ev.start_at).toLocaleString('en-AU') : 'TBA'}
           {ev.venue ? ` · ${ev.venue}` : ''}
           {ev.city_region ? ` · ${ev.city_region}` : ''}
         </p>
+        {(friends.going > 0 || friends.interested > 0) && (
+          <div style={{ marginBottom: '1rem' }} data-reveal>
+            <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>
+              {friends.going > 0 ? `${friends.going} friend${friends.going===1?'':'s'} going` : `${friends.interested} friend${friends.interested===1?'':'s'} interested`}
+            </span>
+          </div>
+        )}
 
         {/* Tags */}
         {(ev.category || []).length > 0 && (

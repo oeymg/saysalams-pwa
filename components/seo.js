@@ -4,7 +4,7 @@ const SITE_NAME = 'Say Salams';
 const SITE_URL = 'https://www.saysalams.com';
 const DEFAULT_TITLE = `${SITE_NAME} — Community, Connections, Celebration`;
 const DEFAULT_DESC = 'Say Salams helps Muslims discover events, build friendships, and strengthen our Ummah — every Salam spreads peace.';
-const DEFAULT_IMAGE = '/icons/longlogo.png';
+const DEFAULT_IMAGE = '/icons/logo.png';
 const DEFAULT_KEYWORDS = 'Say Salams, Muslim events, community, Ummah, friendship, Islamic events, peace, Muslim connections';
 
 const DEFAULT_JSON_LD = {

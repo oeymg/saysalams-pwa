@@ -83,11 +83,14 @@ img, video {
     padding: 0.4rem 0.8rem !important;
     font-size: 0.9rem !important;
   }
-  .logo-img { width: 140px !important; height: auto !important; }
+  .logo-img { max-height: 40px !important; width: auto !important; }
   /* Make search controls comfortable on small screens */
   .hero-search { gap: 0.5rem !important; }
   .hero-search > * { flex: 1 1 100% !important; }
   .hero-input { min-width: 0 !important; }
+  /* Keep hero CTAs side-by-side on phones */
+  .hero-band-ctas { flex-wrap: nowrap !important; gap: 0.5rem !important; justify-content: space-between !important; }
+  .home-cta-primary, .home-cta-secondary { padding: 0.5rem 0.75rem !important; font-size: 0.95rem !important; white-space: nowrap !important; }
 }
 
 /* Improve text rendering consistency */
@@ -107,6 +110,9 @@ p, li {
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
+/* Connections grid responsive */
+.connections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .connections-grid { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {
   .events-grid {
     grid-template-columns: repeat(2, 1fr);

@@ -137,7 +137,7 @@ export default function ConnectionsPage({ me }) {
         {loading ? (
           <p>Loading…</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          <div className="connections-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.0rem' }}>
             {/* Left: My Network + Requests */}
             <div style={{ display: 'grid', gap: '1rem' }}>
               <section style={secStyle}>
