@@ -32,11 +32,21 @@ img, video {
   white-space: nowrap;
 }
 
-/* Consistent logo sizing and alignment */
-.logo-img, .logo-img-footer {
-  height: 40px !important;
-  width: auto !important;
-  display: block;
+/* Fallback logo sizing */
+/* Desktop fallback sizing for logos (avoid rounded corners) */
+img.logo {
+  width: 180px;
+  height: auto;
+  border-radius: 0 !important;
+  padding: 0.5rem;
+}
+@media (max-width: 640px) {
+  /* On phones let it scale down but not crop */
+  img.logo { width: 130px; height: auto; }
+  /* Don’t let flex columns shrink the logo */
+  .nav-bar > div:first-child { flex: 0 0 auto !important; }
+  .nav-bar .cta { flex: 0 0 auto !important; }
+  .nav-bar .logo { max-width: 75vw !important; }
 }
 
 /* Pill buttons for navbar */
@@ -90,7 +100,7 @@ img, video {
     padding: 0.4rem 0.8rem !important;
     font-size: 0.9rem !important;
   }
-  .logo-img { max-height: 40px !important; width: auto !important; }
+  /* Let logo render at intended size; fallback handled by img.logo */
   /* Make search controls comfortable on small screens */
   .hero-search { gap: 0.5rem !important; }
   .hero-search > * { flex: 1 1 100% !important; }

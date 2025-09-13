@@ -74,7 +74,7 @@ export default function SignInCatchAll() {
         >
           <div style={{ display: 'none', borderRight: '1px solid #f0eaff', paddingRight: '1rem' }} className="signin-left">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Image src="/icons/longlogo.svg" alt="Say Salams" width={160} height={60} />
+              <Image src="/logo.png" alt="Say Salams" width={180} height={60} className="logo" style={{ objectFit: 'contain' }} sizes="180px" />
             </div>
             <h1 style={{ color: '#6e5084', margin: '1rem 0 0.25rem' }}>Welcome back</h1>
             <p style={{ color: '#5a3c91', margin: 0 }}>Community · Connections · Celebration</p>

@@ -71,15 +71,15 @@ export default function Layout({ children }) {
       >
         {/* Logo */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', padding: '0.5rem' }}>
             <Image
-              src="/icons/longlogo.svg"
+              src="/logo.png"
               alt="Say Salams"
-              width={190}
-              height={110}
+              width={180}
+              height={60}
               priority
-              className="logo-img"
-              style={{ height: 40, width: 'auto' }}
+              className="logo-img logo"
+              style={{ objectFit: 'contain' }}
               sizes="(max-width: 640px) 140px, 180px"
             />
           </Link>
@@ -215,13 +215,13 @@ export default function Layout({ children }) {
           {/* Brand + blurb */}
           <div className="footer-col footer-brand">
             <Image
-              src="/icons/invertlogo.svg"
+              src="/invertlogo.png"
               alt="Say Salams"
-              width={210}
-              height={210}
-              className="logo-img-footer"
-              style={{ height: 40, width: 'auto' }}
-              sizes="(max-width: 640px) 150px, 200px"
+              width={180}
+              height={60}
+              className="logo-img-footer logo"
+              style={{ objectFit: 'contain' }}
+              sizes="(max-width: 640px) 140px, 180px"
             />
             <p className="footer-blurb">Community | Connections | Celebration</p>
           </div>
