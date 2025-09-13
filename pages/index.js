@@ -29,6 +29,26 @@ export async function getServerSideProps(context) {
           return true;
         });
       }
+      // Merge friend RSVP counts from /api/feed for badges
+      try {
+        const feedRes = await fetch(`${base}/api/feed`, { headers: { cookie: context.req.headers.cookie || '' } });
+        if (feedRes.ok) {
+          const feedJson = await feedRes.json();
+          const map = new Map();
+          for (const e of feedJson?.events || []) {
+            const id = e.public_id || e.id;
+            map.set(String(id), {
+              g: Number(e.connections_going || 0),
+              i: Number(e.connections_interested || 0),
+            });
+          }
+          events = events.map((ev) => {
+            const id = String(ev.public_id || ev.id);
+            const m = map.get(id);
+            return m ? { ...ev, friends_going: m.g, friends_interested: m.i } : ev;
+          });
+        }
+      } catch (_) { /* ignore */ }
     } catch (_) {}
   }
   return { props: { events, base } };
@@ -220,9 +240,14 @@ export default function Home({ events, base }) {
                     </span>
                   ))}
                 </div>
-                <p style={{ marginBottom: '0.8rem', color: '#666' }}>
-                  👍 {typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0)} going
-                </p>
+                <div style={{ marginBottom: '0.8rem', color: '#666', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span>👍 {typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0)} going</span>
+                  {(ev.friends_going > 0 || ev.friends_interested > 0) && (
+                    <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>
+                      {ev.friends_going > 0 ? `${ev.friends_going} friend${ev.friends_going===1?'':'s'} going` : `${ev.friends_interested} friend${ev.friends_interested===1?'':'s'} interested`}
+                    </span>
+                  )}
+                </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {ev.tickets_url && (
                     <a

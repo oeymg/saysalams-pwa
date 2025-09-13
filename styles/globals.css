@@ -84,6 +84,10 @@ img, video {
     font-size: 0.9rem !important;
   }
   .logo-img { width: 140px !important; height: auto !important; }
+  /* Make search controls comfortable on small screens */
+  .hero-search { gap: 0.5rem !important; }
+  .hero-search > * { flex: 1 1 100% !important; }
+  .hero-input { min-width: 0 !important; }
 }
 
 /* Improve text rendering consistency */
@@ -233,6 +237,11 @@ button:active { transform: translateY(1px); }
   .collapsible { border-radius: 12px; }
   .collapsible-header { padding: 0.6rem 0.8rem; }
   .collapsible-content { padding: 0.75rem; }
+}
+
+/* Touch optimizations */
+@media (hover: none) {
+  a, button { -webkit-tap-highlight-color: rgba(0,0,0,0); }
 }
 
 /* iOS safe area support for sticky/footer sections */

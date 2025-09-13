@@ -31,6 +31,7 @@ export default function ConnectionsPage({ me }) {
   const [recs, setRecs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const [quick, setQuick] = useState(null); // { user, edge, mine, status }
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -63,6 +64,19 @@ export default function ConnectionsPage({ me }) {
   const myIds = useMemo(() => new Set([me?.record_id]), [me?.record_id]);
   const pendingIds = new Set(pending.flatMap(c => [c.requester, c.recipient]).filter(Boolean));
   const acceptedIds = new Set(accepted.flatMap(c => [c.requester, c.recipient]).filter(Boolean));
+  const findPendingEdge = (rid) => pending.find(c => c.other?.record_id === rid) || null;
+
+  const findAcceptedEdge = (rid) => accepted.find(c => c.other?.record_id === rid) || null;
+
+  const openQuick = (user) => {
+    if (!user) return;
+    const p = findPendingEdge(user.record_id);
+    const a = findAcceptedEdge(user.record_id);
+    const mine = p && p.requester === me?.record_id;
+    const status = a ? 'accepted' : (p ? (mine ? 'pending-out' : 'pending-in') : 'none');
+    setQuick({ user, edge: p || a || null, mine, status });
+  };
+  const closeQuick = () => setQuick(null);
 
   const incoming = useMemo(
     () => pending.filter(c => c.recipient === me?.record_id),
@@ -74,8 +88,8 @@ export default function ConnectionsPage({ me }) {
   );
 
   const discover = useMemo(() => {
-    // Hide users I already have a connection with (pending or accepted)
-    let base = (people || []).filter(u => !pendingIds.has(u.record_id) && !acceptedIds.has(u.record_id) && !myIds.has(u.record_id));
+    // Hide users I already have an accepted connection with; allow pending for withdraw UI
+    let base = (people || []).filter(u => !acceptedIds.has(u.record_id) && !myIds.has(u.record_id));
     // Gender segregation: only show same-gender users if my gender is known
     const myGender = String(me?.gender || '').toLowerCase();
     if (myGender === 'female' || myGender === 'male') {
@@ -135,7 +149,7 @@ export default function ConnectionsPage({ me }) {
                     {accepted.map((c) => (
                       <li key={c.id} style={pill('#f8f6fc', '#e7e2f0')}>
                         <div>
-                          <strong>{c.other?.name || 'User'}</strong>
+                          <strong style={{ cursor:'pointer' }} onClick={() => openQuick(c.other)}>{c.other?.name || 'User'}</strong>
                           <div style={{ color: '#666', fontSize: '0.9rem' }}>
                             {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
                           </div>
@@ -173,7 +187,7 @@ export default function ConnectionsPage({ me }) {
                     {incoming.map((c) => (
                       <li key={c.id} style={{ ...pill('#fff7ed', '#fed7aa'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <strong>{c.other?.name || 'User'}</strong>
+                          <strong style={{ cursor:'pointer' }} onClick={() => openQuick(c.other)}>{c.other?.name || 'User'}</strong>
                           <div style={{ color: '#92400e', fontSize: '0.9rem' }}>Pending</div>
                           <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
                             {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
@@ -205,7 +219,7 @@ export default function ConnectionsPage({ me }) {
                     {sent.map((c) => (
                       <li key={c.id} style={{ ...pill('#f8f6fc', '#e7e2f0'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <strong>{c.other?.name || 'User'}</strong>
+                          <strong style={{ cursor:'pointer' }} onClick={() => openQuick(c.other)}>{c.other?.name || 'User'}</strong>
                           <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Awaiting response</div>
                           <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
                             {[c.other?.postcode, c.other?.location].filter(Boolean).join(' · ')}
@@ -233,22 +247,37 @@ export default function ConnectionsPage({ me }) {
               <h2 style={h2}>Recommended For You</h2>
               {Array.isArray(recs) && recs.length > 0 ? (
                 <ul style={list}>
-                  {recs.map((r) => (
-                    <li key={r.user.record_id} style={{ ...pill('#eefcf3', '#bbf7d0'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <strong>{r.user.name || 'User'}</strong>
-                        <div style={{ color: '#666', fontSize: '0.9rem' }}>
-                          {[r.user.postcode, r.user.location].filter(Boolean).join(' · ')}
+                  {recs.map((r) => {
+                    const edge = findPendingEdge(r.user.record_id);
+                    const mine = edge && edge.requester === me?.record_id;
+                    return (
+                      <li key={r.user.record_id} style={{ ...pill('#eefcf3', '#bbf7d0'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <strong style={{ cursor:'pointer' }} onClick={() => openQuick(r.user)}>{r.user.name || 'User'}</strong>
+                          <div style={{ color: '#666', fontSize: '0.9rem' }}>
+                            {[r.user.postcode, r.user.location].filter(Boolean).join(' · ')}
+                          </div>
+                          <div style={{ marginTop: 6 }}>
+                            {(r.reasons || []).map((t) => (
+                              <span key={t} style={{ background: '#dcfce7', color: '#065f46', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
+                            ))}
+                          </div>
                         </div>
-                        <div style={{ marginTop: 6 }}>
-                          {(r.reasons || []).map((t) => (
-                            <span key={t} style={{ background: '#dcfce7', color: '#065f46', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <button onClick={() => request(r.user.record_id)} style={btn('#16a34a')}>Connect</button>
-                    </li>
-                  ))}
+                        {edge ? (
+                          mine ? (
+                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                              <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>Pending</span>
+                              <button onClick={() => actOn(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
+                            </div>
+                          ) : (
+                            <a href="/connections" className="chip" style={{ textDecoration:'none', background:'#fef9c3', color:'#92400e' }}>Review request</a>
+                          )
+                        ) : (
+                          <button onClick={() => request(r.user.record_id)} style={btn('#16a34a')}>Connect</button>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
                 <>
@@ -257,24 +286,39 @@ export default function ConnectionsPage({ me }) {
                     <p style={{ margin: 0 }}>No suggestions right now.</p>
                   ) : (
                     <ul style={list}>
-                      {discover.map((u) => (
-                        <li key={u.record_id} style={{ ...pill('#f1ecfb', '#e0d8f3'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <strong>{u.name || 'User'}</strong>
-                            <div style={{ color: '#666', fontSize: '0.9rem' }}>
-                              {[u.postcode, u.location].filter(Boolean).join(' · ')}
-                            </div>
-                            {Array.isArray(u.interests) && u.interests.length > 0 && (
-                              <div style={{ marginTop: 6 }}>
-                                {u.interests.slice(0, 3).map((t) => (
-                                  <span key={t} style={{ background: '#ede8f7', color: '#5a3c91', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
-                                ))}
+                      {discover.map((u) => {
+                        const edge = findPendingEdge(u.record_id);
+                        const mine = edge && edge.requester === me?.record_id;
+                        return (
+                          <li key={u.record_id} style={{ ...pill('#f1ecfb', '#e0d8f3'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <strong style={{ cursor:'pointer' }} onClick={() => openQuick(u)}>{u.name || 'User'}</strong>
+                              <div style={{ color: '#666', fontSize: '0.9rem' }}>
+                                {[u.postcode, u.location].filter(Boolean).join(' · ')}
                               </div>
+                              {Array.isArray(u.interests) && u.interests.length > 0 && (
+                                <div style={{ marginTop: 6 }}>
+                                  {u.interests.slice(0, 3).map((t) => (
+                                    <span key={t} style={{ background: '#ede8f7', color: '#5a3c91', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', marginRight: 6 }}>{t}</span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            {edge ? (
+                              mine ? (
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                  <span className="chip">Pending</span>
+                                  <button onClick={() => actOn(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
+                                </div>
+                              ) : (
+                                <a href="/connections" className="chip" style={{ textDecoration:'none' }}>Review request</a>
+                              )
+                            ) : (
+                              <button onClick={() => request(u.record_id)} style={btn('#6e5084')}>Connect</button>
                             )}
-                          </div>
-                          <button onClick={() => request(u.record_id)} style={btn('#6e5084')}>Connect</button>
-                        </li>
-                      ))}
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                 </>
@@ -287,6 +331,16 @@ export default function ConnectionsPage({ me }) {
           <div onClick={() => setToast(null)} style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1000, background: toast.type === 'error' ? '#ef4444' : '#22c55e', color: '#fff', padding: '0.75rem 1rem', borderRadius: 8, boxShadow: '0 6px 20px rgba(0,0,0,0.15)', cursor: 'pointer' }}>{toast.message}</div>
         )}
       </div>
+      {quick && (
+        <QuickProfile
+          data={quick}
+          onClose={() => setQuick(null)}
+          onAction={(arg1, action) => {
+            if (action === 'connect') return request(arg1);
+            return actOn(arg1, action);
+          }}
+        />
+      )}
     </Layout>
   );
 }
@@ -301,3 +355,47 @@ const h2 = { color: '#6e5084', margin: '0 0 0.75rem 0' };
 const list = { listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.5rem' };
 const pill = (bg, border) => ({ background: bg, border: `1px solid ${border}`, borderRadius: 8, padding: '0.6rem 0.8rem' });
 const btn = (bg) => ({ background: bg, color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 0.7rem', cursor: 'pointer', fontWeight: 600 });
+
+// Lightweight quick profile overlay
+function QuickProfile({ data, onClose, onAction }) {
+  if (!data) return null;
+  const { user, edge, mine, status } = data;
+  return (
+    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}>
+      <div onClick={(e)=>e.stopPropagation()} style={{ background:'#fff', borderRadius:12, padding:'1rem', maxWidth:420, width:'100%', boxShadow:'0 10px 28px rgba(0,0,0,0.25)' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+          <h3 style={{ margin:0, color:'#6e5084' }}>{user?.name || 'User'}</h3>
+          <button onClick={onClose} style={{ background:'transparent', border:'none', fontSize:'1.2rem', cursor:'pointer' }}>×</button>
+        </div>
+        <div style={{ color:'#666', marginBottom:8 }}>
+          {[user?.postcode, user?.location].filter(Boolean).join(' · ')}
+        </div>
+        {Array.isArray(user?.interests) && user.interests.length > 0 && (
+          <div style={{ marginBottom:12, display:'flex', gap:6, flexWrap:'wrap' }}>
+            {user.interests.slice(0,6).map(t => (<span key={t} className="chip">{t}</span>))}
+          </div>
+        )}
+        <div style={{ display:'flex', gap:6, alignItems:'center', justifyContent:'space-between' }}>
+          <a href={`/profile/${encodeURIComponent(user.record_id)}`} style={{ color:'#6e5084', fontWeight:800, textDecoration:'none' }}>View Profile</a>
+          <div style={{ display:'flex', gap:6 }}>
+            {status === 'accepted' ? (
+              <span className="chip" style={{ background:'#e8faf0', color:'#166534' }}>Connected</span>
+            ) : status === 'pending-out' ? (
+              <>
+                <span className="chip" style={{ background:'#fef3c7', color:'#92400e' }}>Pending</span>
+                <button onClick={() => onAction(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
+              </>
+            ) : status === 'pending-in' ? (
+              <>
+                <button onClick={() => onAction(edge.id, 'accept')} style={btn('#16a34a')}>Accept</button>
+                <button onClick={() => onAction(edge.id, 'decline')} style={btn('#ef4444')}>Decline</button>
+              </>
+            ) : (
+              <button onClick={() => onAction(user.record_id, 'connect')} style={btn('#6e5084')}>Connect</button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

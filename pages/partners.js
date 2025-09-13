@@ -1,5 +1,128 @@
 // pages/partners.js
-import Host from './host';
+import Layout from '../components/layout.js';
+import Collapsible from '../components/Collapsible';
 
-export default Host;
+export default function Partners() {
+  return (
+    <Layout>
+      <div className="host-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
+        <h1 style={{ color: '#9b8bbd', fontSize: '2.5rem', marginBottom: '1.5rem' }}>
+          Turn Your Idea, Organisation, or Business into a Community Hub ✨
+        </h1>
 
+        <p style={{ marginBottom: '2rem', color: '#444', lineHeight: '1.6' }}>
+          You can set up an event with Say Salams anytime, anywhere. Whether you&apos;re an
+          individual, organisation, or business, partnering with us empowers you to build meaningful connections, showcase your unique offerings, and engage deeply with the Muslim community through impactful events.
+        </p>
+
+        <div className="host-collapsible">
+          <Collapsible title="Who can partner with Say Salams?">
+            <div className="stack-mobile" style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
+              <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
+                <h3 style={{ color: '#9b8bbd', marginBottom: '0.5rem' }}>Individuals</h3>
+                <p style={{ color: '#333', lineHeight: '1.4' }}>
+                  Run fun, educational, or creative events that bring people together and spark joy in the community.
+                </p>
+              </div>
+              <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🏛️</div>
+                <h3 style={{ color: '#9b8bbd', marginBottom: '0.5rem' }}>Organisations</h3>
+                <p style={{ color: '#333', lineHeight: '1.4' }}>
+                  Engage your community through workshops, seminars, and events that foster learning and growth.
+                </p>
+              </div>
+              <div style={{ flex: 1, background: '#f6f4fa', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🏢</div>
+                <h3 style={{ color: '#9b8bbd', marginBottom: '0.5rem' }}>Businesses</h3>
+                <p style={{ color: '#333', lineHeight: '1.4' }}>
+                  Boost your brand presence by hosting exclusive offers, networking events, and launch parties.
+                </p>
+              </div>
+            </div>
+          </Collapsible>
+        </div>
+
+        <div className="host-collapsible">
+          <Collapsible title="How it works">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', color: '#333' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                <div style={{
+                  minWidth: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  background: '#6e5084',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '700',
+                  fontSize: '1rem',
+                  flexShrink: 0,
+                  marginTop: '4px'
+                }}>1</div>
+                <p>Fill out our simple partner form with all the details about your event idea.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                <div style={{
+                  minWidth: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  background: '#6e5084',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '700',
+                  fontSize: '1rem',
+                  flexShrink: 0,
+                  marginTop: '4px'
+                }}>2</div>
+                <p>Get quick approval and support from our team to help you prepare for a successful event.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                <div style={{
+                  minWidth: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  background: '#6e5084',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '700',
+                  fontSize: '1rem',
+                  flexShrink: 0,
+                  marginTop: '4px'
+                }}>3</div>
+                <p>Your event is promoted across the Say Salams network, connecting you with a vibrant community.</p>
+              </div>
+            </div>
+          </Collapsible>
+        </div>
+
+        <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+          <a
+            href="https://airtable.com/embed/appTagC9VpvWx3nGF/pagNTMHiWpoKO2GLo/form"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              background: 'linear-gradient(90deg, #9b8bbd, #6e5065)',
+              color: '#fff',
+              padding: '1rem 2rem',
+              borderRadius: '8px',
+              fontWeight: '600',
+              textDecoration: 'none',
+              fontSize: '1.1rem',
+              display: 'inline-block',
+              cursor: 'pointer',
+              userSelect: 'none',
+            }}
+          >
+            Become a Partner
+          </a>
+        </div>
+      </div>
+    </Layout>
+  );
+}

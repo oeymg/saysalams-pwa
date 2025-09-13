@@ -55,13 +55,49 @@ const rsvpItemStyle = {
   alignItems: "center",
 };
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 
 export default function ProfilePage({ user, rsvps, recordId }) {
   // Hooks must be called unconditionally at the top level
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user: clerkUser } = useUser();
   const [connStatus, setConnStatus] = useState('idle');
+  const [edge, setEdge] = useState(null); // current connection edge (if any)
+  const [meRid, setMeRid] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!isSignedIn) return;
+      try {
+        // Get my Airtable record id
+        const me = await fetch(`/api/users?clerkId=${encodeURIComponent(clerkUser?.id || '')}`).then(r=>r.json()).catch(()=>null);
+        const my = me?.user || null;
+        if (my?.record_id) setMeRid(my.record_id);
+        // Load pending + accepted edges
+        const [pen, acc] = await Promise.all([
+          fetch('/api/connections?status=Pending').then(r=>r.json()).catch(()=>({})),
+          fetch('/api/connections?status=Accepted').then(r=>r.json()).catch(()=>({})),
+        ]);
+        const pendingEdge = (pen?.connections || []).find(c => c?.other?.record_id === recordId) || null;
+        if (pendingEdge) {
+          setEdge(pendingEdge);
+          const amRequester = pendingEdge.requester && my?.record_id && (pendingEdge.requester === my.record_id);
+          setConnStatus(amRequester ? 'pending-out' : 'pending-in');
+          return;
+        }
+        const acceptedEdge = (acc?.connections || []).find(c => c?.other?.record_id === recordId) || null;
+        if (acceptedEdge) {
+          setEdge(acceptedEdge);
+          setConnStatus('accepted');
+          return;
+        }
+        setConnStatus('none');
+      } catch (_) {
+        setConnStatus('none');
+      }
+    };
+    load();
+  }, [isSignedIn, recordId, clerkUser?.id]);
 
   if (!user) {
     return (
@@ -86,10 +122,46 @@ export default function ProfilePage({ user, rsvps, recordId }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Failed to send request');
-      setConnStatus((data?.status || 'Pending').toLowerCase());
+      setConnStatus('pending-out');
     } catch (e) {
       alert(e.message || 'Failed to send request');
       setConnStatus('idle');
+    }
+  };
+
+  const actOn = async (action) => {
+    if (!edge?.id) return;
+    try {
+      setConnStatus('loading');
+      const res = await fetch('/api/connections', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: edge.id, action }),
+      });
+      if (!res.ok) throw new Error('Failed to update');
+      // Reload status
+      const [pen, acc] = await Promise.all([
+        fetch('/api/connections?status=Pending').then(r=>r.json()).catch(()=>({})),
+        fetch('/api/connections?status=Accepted').then(r=>r.json()).catch(()=>({})),
+      ]);
+      const pendingEdge = (pen?.connections || []).find(c => c?.other?.record_id === recordId) || null;
+      if (pendingEdge) {
+        setEdge(pendingEdge);
+        const amRequester = pendingEdge.requester && meRid && (pendingEdge.requester === meRid);
+        setConnStatus(amRequester ? 'pending-out' : 'pending-in');
+        return;
+      }
+      const acceptedEdge = (acc?.connections || []).find(c => c?.other?.record_id === recordId) || null;
+      if (acceptedEdge) {
+        setEdge(acceptedEdge);
+        setConnStatus('accepted');
+        return;
+      }
+      setEdge(null);
+      setConnStatus('none');
+    } catch (e) {
+      alert(e.message || 'Update failed');
+      setConnStatus('none');
     }
   };
 
@@ -99,8 +171,16 @@ export default function ProfilePage({ user, rsvps, recordId }) {
       <div style={{ marginBottom: '1rem' }}>
         {connStatus === 'accepted' ? (
           <span style={{ background:'#e8faf0', color:'#166534', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Connected</span>
-        ) : connStatus === 'pending' ? (
-          <span style={{ background:'#fef3c7', color:'#92400e', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Request sent</span>
+        ) : connStatus === 'pending-out' ? (
+          <div style={{ display:'flex', gap:'0.5rem', alignItems:'center' }}>
+            <span style={{ background:'#fef3c7', color:'#92400e', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Request sent</span>
+            <button onClick={() => actOn('withdraw')} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor:'pointer' }}>Withdraw</button>
+          </div>
+        ) : connStatus === 'pending-in' ? (
+          <div style={{ display:'flex', gap:'0.5rem' }}>
+            <button onClick={() => actOn('accept')} style={{ background:'#16a34a', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor:'pointer' }}>Accept</button>
+            <button onClick={() => actOn('decline')} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor:'pointer' }}>Decline</button>
+          </div>
         ) : (
           <button onClick={requestConnection} style={{ background:'#9b8bbd', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor:'pointer' }}>
             Connect

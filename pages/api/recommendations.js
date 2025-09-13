@@ -82,7 +82,7 @@ export default async function handler(req, res) {
     // Exclude already connected/pending
     const myRecordId = me.record_id;
     const cons = await base(CONNECTIONS_TABLE).select().all();
-    const connectedIds = new Set();
+    const connectedIds = new Set(); // only accepted
     for (const r of cons) {
       const f = r.fields || {};
       const reqArr = Array.isArray(f['Requester']) ? f['Requester'] : [];
@@ -91,7 +91,8 @@ export default async function handler(req, res) {
       const requester = reqArr[0] || null;
       const recipient = recArr[0] || null;
       const other = requester === myRecordId ? recipient : requester;
-      if (other) connectedIds.add(other);
+      const status = String(f['Status'] || '').toLowerCase();
+      if (other && status === 'accepted') connectedIds.add(other);
     }
 
     const myInterests = toSet(me.interests);

@@ -75,7 +75,7 @@ export default function RegisterPage() {
         >
           <div style={{ display: 'none', borderRight: '1px solid #f0eaff', paddingRight: '1rem' }} className="signup-left">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Image src="/icons/longlogo.png" alt="Say Salams" width={160} height={60} />
+              <Image src="/icons/longlogo.svg" alt="Say Salams" width={160} height={60} />
             </div>
             <h1 style={{ color: '#6e5084', margin: '1rem 0 0.25rem' }}>Create your account</h1>
             <p style={{ color: '#5a3c91', margin: 0 }}>Community · Connections · Celebration</p>

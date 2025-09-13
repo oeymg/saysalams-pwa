@@ -29,6 +29,26 @@ export async function getServerSideProps(context) {
           return true;
         });
       }
+      // Merge friend RSVP counts from /api/feed
+      try {
+        const feedRes = await fetch(`${base}/api/feed`, { headers: { cookie: context.req.headers.cookie || '' } });
+        if (feedRes.ok) {
+          const feedJson = await feedRes.json();
+          const map = new Map();
+          for (const e of feedJson?.events || []) {
+            const id = e.public_id || e.id;
+            map.set(String(id), {
+              g: Number(e.connections_going || 0),
+              i: Number(e.connections_interested || 0),
+            });
+          }
+          events = events.map((ev) => {
+            const id = String(ev.public_id || ev.id);
+            const m = map.get(id);
+            return m ? { ...ev, friends_going: m.g, friends_interested: m.i } : ev;
+          });
+        }
+      } catch (_) { /* ignore */ }
     } catch (_) {}
   }
   return { props: { events, base } };
@@ -111,7 +131,7 @@ export default function EventsPage({ events, base }) {
         description="Browse upcoming Muslim events near you. Discover classes, socials, workshops, and more — connect with community on Say Salams."
       />
       <section className="full-bleed" style={{ padding: '1rem 0 0' }}>
-        <div className="hero-band-inner" style={{ alignItems: 'stretch' }}>
+        <div className="hero-band-inner" style={{ alignItems: 'stretch', gridTemplateColumns: '1fr' }}>
           <div style={{ display:'grid', gap:'0.5rem' }}>
             <h1 className="hero-band-title" style={{ marginBottom: 0 }}>Upcoming Events</h1>
             <p className="hero-band-sub" style={{ marginTop: 0 }}>Search and filter to find what suits you.</p>
@@ -132,19 +152,7 @@ export default function EventsPage({ events, base }) {
               </div>
             )}
           </div>
-          <div>
-            <div className="hero-preview">
-              {(filtered || []).slice(0,3).map((e) => (
-                <div key={e.id} className="hero-card-mini">
-                  <div className="mini-title">{e.title}</div>
-                  <div className="mini-meta">
-                    {(e.start_at ? new Date(e.start_at).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' }) : 'TBA')}
-                    {e.city_region ? ` · ${e.city_region}` : ''}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          
         </div>
       </section>
 
@@ -218,9 +226,14 @@ export default function EventsPage({ events, base }) {
                     {(ev.audience || []).slice(0,1).map(t => (<span key={t} className="chip">{t}</span>))}
                   </div>
                 ) : null}
-                <p style={{ marginBottom: '0.8rem', color: '#666' }}>
-                  👍 {(typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0))} going
-                </p>
+                <div style={{ marginBottom: '0.8rem', color: '#666', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span>👍 {(typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0))} going</span>
+                  {(ev.friends_going > 0 || ev.friends_interested > 0) && (
+                    <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>
+                      {ev.friends_going > 0 ? `${ev.friends_going} friend${ev.friends_going===1?'':'s'} going` : `${ev.friends_interested} friend${ev.friends_interested===1?'':'s'} interested`}
+                    </span>
+                  )}
+                </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {ev.tickets_url && (
                     <a

@@ -73,7 +73,7 @@ export default function Layout({ children }) {
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
             <Image
-              src="/icons/longlogo.png"
+              src="/icons/longlogo.svg"
               alt="Say Salams logo"
               width={190}
               height={110}
@@ -212,7 +212,7 @@ export default function Layout({ children }) {
           {/* Brand + blurb */}
           <div className="footer-col footer-brand">
             <Image
-              src="/icons/invertlogo.png"
+              src="/icons/invertlogo.svg"
               alt="Say Salams logo"
               width={210}
               height={210}
