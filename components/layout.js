@@ -75,10 +75,9 @@ export default function Layout({ children }) {
             <Image
               src="/icons/longlogo.png"
               alt="Say Salams logo"
-              width={160}
-              height={90}
+              width={190}
+              height={110}
               className="logo-img"
-
             />
           </Link>
         </div>
@@ -215,8 +214,8 @@ export default function Layout({ children }) {
             <Image
               src="/icons/invertlogo.png"
               alt="Say Salams logo"
-              width={180}
-              height={180}
+              width={210}
+              height={210}
               style={{ height: 'auto', width: 'auto' }}
             />
             <p className="footer-blurb">Community | Connections | Celebration</p>

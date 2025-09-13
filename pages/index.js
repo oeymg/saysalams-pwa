@@ -336,7 +336,55 @@ export default function Home({ events, base }) {
         </div>
       </section>
 
-      
+      {/* Bottom CTA Section (moved to the very bottom) */}
+      <section
+        style={{
+          maxWidth: '1100px',
+          margin: '0 auto 3rem',
+          padding: '1.75rem',
+          border: '1px solid #eee',
+          borderRadius: '12px',
+          background: '#f6f4fa',
+          textAlign: 'center',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
+        }}
+        className="hover-pop"
+        data-reveal
+      >
+        <h3 style={{ color: '#6e5084', margin: '0 0 0.75rem 0', fontSize: '1.6rem' }}>Ready to get involved?</h3>
+        <p style={{ color: '#555', margin: '0 0 1rem 0' }}>
+          Browse the latest events or become a host and bring people together.
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <Link
+            href="/events"
+            style={{
+              background: '#f6f4fa',
+              color: '#9b8bbd',
+              padding: '0.6rem 1.2rem',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontWeight: 700,
+              border: '1px solid #ded7ef'
+            }}
+          >
+            Browse Events
+          </Link>
+          <Link
+            href="/host"
+            style={{
+              background: '#6e5084',
+              color: '#fff',
+              padding: '0.6rem 1.2rem',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontWeight: 700,
+            }}
+          >
+            Become a Host
+          </Link>
+        </div>
+      </section>
     </Layout>
   );
 }

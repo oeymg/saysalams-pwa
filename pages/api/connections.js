@@ -55,6 +55,7 @@ async function getUserSummary(recId) {
       record_id: rec.id,
       name: f['Full Name'] || f['Name'] || '',
       email: f['Email'] || '',
+      gender: String(f['Gender'] || f['gender'] || f['Sex'] || '').trim().toLowerCase(),
       clerk_id: f['ClerkID'] || f['Clerk ID'] || '',
       user_id: f['UserID'] || f['User ID'] || '',
       location: f['Location'] || f['City'] || '',
@@ -76,16 +77,17 @@ export default async function handler(req, res) {
       const me = await resolveUserRecordId({ clerkId });
       if (!me) return res.status(404).json({ error: 'Current user not found' });
 
-      const parts = [];
-      // Connections where I am requester or recipient
-      parts.push(`FIND('${me}', ARRAYJOIN({Requester}))`);
-      parts.push(`FIND('${me}', ARRAYJOIN({Recipient}))`);
-      let filter = `OR(${parts.join(',')})`;
-      if (status) filter = `AND(${filter}, {Status}='${status}')`;
-
-      const rows = await base(CONNECTIONS_TABLE)
-        .select({ filterByFormula: filter })
-        .all();
+      // Airtable formulas cannot reliably search linked record IDs. Fetch by status, then filter in code.
+      const selector = base(CONNECTIONS_TABLE).select(
+        status ? { filterByFormula: `{Status}='${status}'` } : {}
+      );
+      const allRows = await selector.all();
+      const rows = allRows.filter((r) => {
+        const f = r.fields || {};
+        const req = Array.isArray(f['Requester']) ? f['Requester'] : [];
+        const rec = Array.isArray(f['Recipient']) ? f['Recipient'] : [];
+        return req.includes(me) || rec.includes(me);
+      });
 
       const edges = [];
       for (const r of rows) {
@@ -126,24 +128,39 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'Cross-gender connections are restricted' });
     }
 
-      // Check existing edges (both directions)
-      const existing = await base(CONNECTIONS_TABLE)
-        .select({
-          maxRecords: 1,
-          filterByFormula: `OR(AND(FIND('${fromRid}', ARRAYJOIN({Requester})), FIND('${toRid}', ARRAYJOIN({Recipient}))), AND(FIND('${toRid}', ARRAYJOIN({Requester})), FIND('${fromRid}', ARRAYJOIN({Recipient}))))`,
-        })
-        .firstPage();
-      if (existing && existing.length) {
-        const f = existing[0].fields || {};
-        return res.status(200).json({ id: existing[0].id, status: f['Status'] || 'Pending' });
+      // Check existing edges (both directions). Fetch and filter in code to match linked record IDs.
+      const exRows = await base(CONNECTIONS_TABLE).select().all();
+      const existing = exRows.find((r) => {
+        const f = r.fields || {};
+        const req = Array.isArray(f['Requester']) ? f['Requester'] : [];
+        const rec = Array.isArray(f['Recipient']) ? f['Recipient'] : [];
+        return (
+          (req.includes(fromRid) && rec.includes(toRid)) ||
+          (req.includes(toRid) && rec.includes(fromRid))
+        );
+      });
+      if (existing) {
+        const f = existing.fields || {};
+        return res.status(200).json({ id: existing.id, status: f['Status'] || 'Pending' });
       }
 
-      const rec = await base(CONNECTIONS_TABLE).create({
-        Requester: [fromRid],
-        Recipient: [toRid],
-        Status: 'Pending',
-        'Created At': new Date().toISOString(),
-      });
+      // Create connection; be tolerant of Airtable field types (e.g., Created time cannot be set)
+      let rec;
+      try {
+        rec = await base(CONNECTIONS_TABLE).create({
+          Requester: [fromRid],
+          Recipient: [toRid],
+          Status: 'Pending',
+          'Created At': new Date().toISOString(),
+        });
+      } catch (e) {
+        // Retry without Created At if the field is not writable
+        rec = await base(CONNECTIONS_TABLE).create({
+          Requester: [fromRid],
+          Recipient: [toRid],
+          Status: 'Pending',
+        });
+      }
       return res.status(201).json({ id: rec.id, status: rec.fields['Status'] || 'Pending' });
     }
 
@@ -155,8 +172,14 @@ export default async function handler(req, res) {
       else if (action === 'decline') update['Status'] = 'Declined';
       else if (action === 'block') update['Status'] = 'Blocked';
       else return res.status(400).json({ error: 'Invalid action' });
-      update['Updated At'] = new Date().toISOString();
-      const rec = await base(CONNECTIONS_TABLE).update(id, update);
+      // Try to set Updated At; if field is not writable, retry without it
+      let rec;
+      try {
+        update['Updated At'] = new Date().toISOString();
+        rec = await base(CONNECTIONS_TABLE).update(id, update);
+      } catch (e) {
+        rec = await base(CONNECTIONS_TABLE).update(id, { Status: update['Status'] });
+      }
       return res.status(200).json({ id: rec.id, status: rec.fields['Status'] });
     }
 

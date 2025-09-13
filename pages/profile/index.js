@@ -131,12 +131,12 @@ export default function ProfilePage({ user, rows }) {
                 )}
               </div>
               <div>
-                <h3 style={{ marginBottom: '0.5rem', color:'#5a3c91' }}>Requests</h3>
-                {cons.pending.length === 0 ? (
-                  <p style={{ margin:0 }}>No pending requests.</p>
+                <h3 style={{ marginBottom: '0.5rem', color:'#5a3c91' }}>Requests Received</h3>
+                {cons.pending.filter(c => c.recipient === user.record_id).length === 0 ? (
+                  <p style={{ margin:0 }}>No incoming requests.</p>
                 ) : (
                   <ul style={{ listStyle:'none', padding:0, margin:0 }}>
-                    {cons.pending.map(c => (
+                    {cons.pending.filter(c => c.recipient === user.record_id).map(c => (
                       <li key={c.id} style={{ background:'#fff7ed', border:'1px solid #fed7aa', borderRadius:8, padding:'0.6rem 0.8rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                         <span>
                           <strong>{c.other?.name || 'User'}</strong>
@@ -145,6 +145,23 @@ export default function ProfilePage({ user, rows }) {
                         <span style={{ display:'flex', gap:'0.5rem' }}>
                           <button onClick={() => actOn(c.id,'accept')} style={{ background:'#16a34a', color:'#fff', border:'none', borderRadius:6, padding:'0.35rem 0.6rem', cursor:'pointer' }}>Accept</button>
                           <button onClick={() => actOn(c.id,'decline')} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:6, padding:'0.35rem 0.6rem', cursor:'pointer' }}>Decline</button>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <h3 style={{ marginBottom: '0.5rem', color:'#5a3c91' }}>Requests Sent</h3>
+                {cons.pending.filter(c => c.requester === user.record_id).length === 0 ? (
+                  <p style={{ margin:0 }}>No sent requests.</p>
+                ) : (
+                  <ul style={{ listStyle:'none', padding:0, margin:0 }}>
+                    {cons.pending.filter(c => c.requester === user.record_id).map(c => (
+                      <li key={c.id} style={{ background:'#f8f6fc', border:'1px solid #e7e2f0', borderRadius:8, padding:'0.6rem 0.8rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                        <span>
+                          <strong>{c.other?.name || 'User'}</strong>
+                          <span style={{ color:'#6b7280' }}>  · Awaiting response</span>
                         </span>
                       </li>
                     ))}

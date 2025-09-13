@@ -79,14 +79,15 @@ export default async function handler(req, res) {
 
     // Exclude already connected/pending
     const myRecordId = me.record_id;
-    const cons = await base(CONNECTIONS_TABLE)
-      .select({ filterByFormula: `OR(FIND('${myRecordId}', ARRAYJOIN({Requester})), FIND('${myRecordId}', ARRAYJOIN({Recipient})))` })
-      .all();
+    const cons = await base(CONNECTIONS_TABLE).select().all();
     const connectedIds = new Set();
     for (const r of cons) {
       const f = r.fields || {};
-      const requester = Array.isArray(f['Requester']) ? f['Requester'][0] : null;
-      const recipient = Array.isArray(f['Recipient']) ? f['Recipient'][0] : null;
+      const reqArr = Array.isArray(f['Requester']) ? f['Requester'] : [];
+      const recArr = Array.isArray(f['Recipient']) ? f['Recipient'] : [];
+      if (!(reqArr.includes(myRecordId) || recArr.includes(myRecordId))) continue;
+      const requester = reqArr[0] || null;
+      const recipient = recArr[0] || null;
       const other = requester === myRecordId ? recipient : requester;
       if (other) connectedIds.add(other);
     }

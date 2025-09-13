@@ -26,13 +26,16 @@ async function resolveUserRecordId(clerkId) {
 }
 
 async function listConnectionUserIds(me) {
-  const filter = `AND({Status}='Accepted', OR(FIND('${me}', ARRAYJOIN({Requester})), FIND('${me}', ARRAYJOIN({Recipient}))))`;
-  const rows = await base(CONNECTIONS_TABLE).select({ filterByFormula: filter }).all();
+  // Fetch accepted connections, then filter by linked record IDs in code
+  const all = await base(CONNECTIONS_TABLE).select({ filterByFormula: `{Status}='Accepted'` }).all();
   const ids = new Set();
-  for (const r of rows) {
+  for (const r of all) {
     const f = r.fields || {};
-    const requester = Array.isArray(f['Requester']) ? f['Requester'][0] : null;
-    const recipient = Array.isArray(f['Recipient']) ? f['Recipient'][0] : null;
+    const reqArr = Array.isArray(f['Requester']) ? f['Requester'] : [];
+    const recArr = Array.isArray(f['Recipient']) ? f['Recipient'] : [];
+    if (!(reqArr.includes(me) || recArr.includes(me))) continue;
+    const requester = reqArr[0] || null;
+    const recipient = recArr[0] || null;
     const other = requester === me ? recipient : requester;
     if (other) ids.add(other);
   }

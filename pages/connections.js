@@ -64,6 +64,15 @@ export default function ConnectionsPage({ me }) {
   const pendingIds = new Set(pending.flatMap(c => [c.requester, c.recipient]).filter(Boolean));
   const acceptedIds = new Set(accepted.flatMap(c => [c.requester, c.recipient]).filter(Boolean));
 
+  const incoming = useMemo(
+    () => pending.filter(c => c.recipient === me?.record_id),
+    [pending, me?.record_id]
+  );
+  const sent = useMemo(
+    () => pending.filter(c => c.requester === me?.record_id),
+    [pending, me?.record_id]
+  );
+
   const discover = useMemo(() => {
     // Hide users I already have a connection with (pending or accepted)
     let base = (people || []).filter(u => !pendingIds.has(u.record_id) && !acceptedIds.has(u.record_id) && !myIds.has(u.record_id));
@@ -136,12 +145,12 @@ export default function ConnectionsPage({ me }) {
               </section>
 
               <section style={secStyle}>
-                <h2 style={h2}>Requests</h2>
-                {pending.length === 0 ? (
-                  <p style={{ margin: 0 }}>No pending requests.</p>
+                <h2 style={h2}>Requests Received</h2>
+                {incoming.length === 0 ? (
+                  <p style={{ margin: 0 }}>No incoming requests.</p>
                 ) : (
                   <ul style={list}>
-                    {pending.map((c) => (
+                    {incoming.map((c) => (
                       <li key={c.id} style={{ ...pill('#fff7ed', '#fed7aa'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                           <strong>{c.other?.name || 'User'}</strong>
@@ -150,6 +159,24 @@ export default function ConnectionsPage({ me }) {
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button onClick={() => actOn(c.id, 'accept')} style={btn('#16a34a')}>Accept</button>
                           <button onClick={() => actOn(c.id, 'decline')} style={btn('#ef4444')}>Decline</button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              <section style={secStyle}>
+                <h2 style={h2}>Requests Sent</h2>
+                {sent.length === 0 ? (
+                  <p style={{ margin: 0 }}>No sent requests.</p>
+                ) : (
+                  <ul style={list}>
+                    {sent.map((c) => (
+                      <li key={c.id} style={{ ...pill('#f8f6fc', '#e7e2f0'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <strong>{c.other?.name || 'User'}</strong>
+                          <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Awaiting response</div>
                         </div>
                       </li>
                     ))}
