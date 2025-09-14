@@ -359,9 +359,9 @@ const btn = (bg) => ({ background: bg, color: '#fff', border: 'none', borderRadi
 
 // Lightweight quick profile overlay
 function QuickProfile({ data, onClose, onAction }) {
+  const [showPhoto, setShowPhoto] = useState(false);
   if (!data) return null;
   const { user, edge, mine, status } = data;
-  const [showPhoto, setShowPhoto] = useState(false);
   const initials = (n) => {
     const parts = String(n || '').trim().split(/\s+/).slice(0,2);
     return parts.map(p=>p[0]?.toUpperCase()||'').join('');
