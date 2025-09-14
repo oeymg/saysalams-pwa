@@ -192,7 +192,7 @@ export default function ProfilePage({ user, rsvps, recordId }) {
           </div>
         ) : (
           <button onClick={requestConnection} disabled={connStatus==='loading'} style={{ background:'#9b8bbd', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
-            {connStatus==='loading' ? 'Sending…' : 'Connect'}
+            {connStatus==='loading' ? 'Sending…' : 'Say Salams'}
           </button>
         )}
       </div>

@@ -223,7 +223,7 @@ export default function Layout({ children }) {
               style={{ objectFit: 'contain' }}
               sizes="(max-width: 640px) 140px, 180px"
             />
-            <p className="footer-blurb">Community | Connections | Celebration</p>
+            <p className="footer-blurb">Community | Events | Connections</p>
           </div>
 
           {/* Quick links */}
@@ -232,7 +232,7 @@ export default function Layout({ children }) {
             <ul className="footer-links">
               <li><Link href="/events" legacyBehavior><a>See our upcoming Events</a></Link></li>
               <li><Link href="/partners" legacyBehavior><a>Become a Partner</a></Link></li>
-              <li><Link href="/connections" legacyBehavior><a>Discover Connection</a></Link></li>
+              <li><Link href="/connections" legacyBehavior><a>Discover Connections</a></Link></li>
               <li><Link href="/profile" legacyBehavior><a>View your Profile</a></Link></li>
               <li><Link href="/faq" legacyBehavior><a>Frequently Asked Questions</a></Link></li>
             </ul>
@@ -242,7 +242,7 @@ export default function Layout({ children }) {
           <div className="footer-col">
             <h4 className="footer-title">Contact</h4>
             <ul className="footer-contact">
-              <li><a href="mailto:contact@saysalams.com">contact@saysalams.com</a></li>
+              <li><a href="mailto:contact@saysalams.com">contact@saysalams.com.au</a></li>
               <li>Brisbane, QLD, 4000</li>
             </ul>
             <div className="footer-social">

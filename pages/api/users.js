@@ -31,6 +31,14 @@ export default async function handler(req, res) {
       };
 
       // Helper to map a record to our shape
+      const pickAsset = (fields, candidates) => {
+        for (const key of candidates) {
+          const v = fields[key];
+          if (Array.isArray(v) && v.length && v[0]?.url) return v[0].url;
+        }
+        return '';
+      };
+
       const mapUser = (r) => {
         const f = r.fields || {};
         const name = pick(f, ['Full Name', 'Name', 'Full name']);
@@ -45,6 +53,7 @@ export default async function handler(req, res) {
         const created = pick(f, ['Created At', 'Created time', 'Created']);
         const clerk = pick(f, ['ClerkID', 'Clerk ID']);
         const id = f['UserID'] || f['User ID'] || r.id;
+        const image_url = pickAsset(f, ['Photo', 'Profile Photo', 'Avatar', 'Image', 'ProfileImage', 'Picture']);
         return {
           id,
           record_id: r.id,
@@ -58,6 +67,7 @@ export default async function handler(req, res) {
           heard_about: heard || '',
           created_at: created || null,
           clerk_id: clerk || '',
+          image_url,
         };
       };
 

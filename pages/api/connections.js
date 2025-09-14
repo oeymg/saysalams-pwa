@@ -62,6 +62,14 @@ async function getUserSummary(recId) {
       location: f['Location'] || f['City'] || '',
       postcode: f['Postcode'] || f['Postal Code'] || f['ZIP'] || f['Zip'] || f['ZIP Code'] || '',
       interests: Array.isArray(f['Interests']) ? f['Interests'] : [],
+      image_url: (() => {
+        const cand = ['Photo', 'Profile Photo', 'Avatar', 'Image', 'ProfileImage', 'Picture'];
+        for (const k of cand) {
+          const v = f[k];
+          if (Array.isArray(v) && v.length && v[0]?.url) return v[0].url;
+        }
+        return '';
+      })(),
     };
   } catch (_) {
     return null;

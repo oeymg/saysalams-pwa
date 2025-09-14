@@ -2,6 +2,7 @@ import Layout from '../components/layout';
 import { getAuth } from '@clerk/nextjs/server';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 
 export async function getServerSideProps(context) {
   const { userId: clerkId } = getAuth(context.req);
@@ -273,7 +274,7 @@ export default function ConnectionsPage({ me }) {
                             <Link href="/connections" className="chip" style={{ textDecoration:'none', background:'#fef9c3', color:'#92400e' }}>Review request</Link>
                           )
                         ) : (
-                          <button onClick={() => request(r.user.record_id)} style={btn('#16a34a')}>Connect</button>
+                          <button onClick={() => request(r.user.record_id)} style={btn('#16a34a')}>Say Salams</button>
                         )}
                       </li>
                     );
@@ -314,7 +315,7 @@ export default function ConnectionsPage({ me }) {
                                 <Link href="/connections" className="chip" style={{ textDecoration:'none' }}>Review request</Link>
                               )
                             ) : (
-                              <button onClick={() => request(u.record_id)} style={btn('#6e5084')}>Connect</button>
+                              <button onClick={() => request(u.record_id)} style={btn('#6e5084')}>Say Salams</button>
                             )}
                           </li>
                         );
@@ -360,9 +361,33 @@ const btn = (bg) => ({ background: bg, color: '#fff', border: 'none', borderRadi
 function QuickProfile({ data, onClose, onAction }) {
   if (!data) return null;
   const { user, edge, mine, status } = data;
+  const [showPhoto, setShowPhoto] = useState(false);
+  const initials = (n) => {
+    const parts = String(n || '').trim().split(/\s+/).slice(0,2);
+    return parts.map(p=>p[0]?.toUpperCase()||'').join('');
+  };
   return (
     <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}>
       <div onClick={(e)=>e.stopPropagation()} style={{ background:'#fff', borderRadius:12, padding:'1rem', maxWidth:420, width:'100%', boxShadow:'0 10px 28px rgba(0,0,0,0.25)' }}>
+        {/* Photo */}
+        <div style={{ display:'flex', justifyContent:'center', marginBottom:8 }}>
+          {user?.image_url ? (
+            <div style={{ position:'relative', width:96, height:96 }}>
+              <Image
+                src={user.image_url}
+                alt={user?.name || 'Profile photo'}
+                fill
+                sizes="96px"
+                style={{ objectFit:'cover', borderRadius: '9999px', cursor:'pointer' }}
+                onClick={() => setShowPhoto(true)}
+              />
+            </div>
+          ) : (
+            <div style={{ width:96, height:96, borderRadius:'9999px', background:'#e7e2f0', color:'#6e5084', display:'grid', placeItems:'center', fontWeight:800, fontSize:'1.4rem' }}>
+              {initials(user?.name)}
+            </div>
+          )}
+        </div>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
           <h3 style={{ margin:0, color:'#6e5084' }}>{user?.name || 'User'}</h3>
           <button onClick={onClose} style={{ background:'transparent', border:'none', fontSize:'1.2rem', cursor:'pointer' }}>×</button>
@@ -391,10 +416,20 @@ function QuickProfile({ data, onClose, onAction }) {
                 <button onClick={() => onAction(edge.id, 'decline')} style={btn('#ef4444')}>Decline</button>
               </>
             ) : (
-              <button onClick={() => onAction(user.record_id, 'connect')} style={btn('#6e5084')}>Connect</button>
+              <button onClick={() => onAction(user.record_id, 'connect')} style={btn('#6e5084')}>Say Salams</button>
             )}
           </div>
         </div>
+        {showPhoto && (
+          <div onClick={()=>setShowPhoto(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.75)', zIndex:1100, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}>
+            <div onClick={(e)=>e.stopPropagation()} style={{ position:'relative', maxWidth:'90vw', maxHeight:'85vh' }}>
+              <button onClick={()=>setShowPhoto(false)} aria-label="Close" style={{ position:'absolute', top:-8, right:-8, background:'#000', color:'#fff', border:'none', borderRadius:'9999px', width:32, height:32, fontSize:'1.1rem', cursor:'pointer', lineHeight:1 }}>×</button>
+              {user?.image_url ? (
+                <img src={user.image_url} alt={user?.name || 'Profile photo'} style={{ maxWidth:'90vw', maxHeight:'85vh', objectFit:'contain', borderRadius:12, display:'block' }} />
+              ) : null}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
