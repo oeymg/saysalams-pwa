@@ -20,6 +20,19 @@ img, video {
   height: auto;
 }
 
+/* Theme variable shims for inline styles (revert mapping to original scheme) */
+:root {
+  --accent: #6e5084;      /* primary purple */
+  --warm: #f6f4fa;        /* light purple-tint background */
+  --surface: #ffffff;     /* white card/nav */
+  --surface-2: #f6f4fa;   /* softer surface */
+  --border-soft: #eee;    /* light border */
+  --bg: #f6f4fa;          /* page background */
+  --danger: #ef4444;
+  --success: #16a34a;
+  --warning-contrast: #92400e;
+}
+
 /* Navbar responsive tweaks */
 .mobile-only { display: none !important; }
 .nav-bar {

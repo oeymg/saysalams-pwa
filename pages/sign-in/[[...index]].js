@@ -2,6 +2,7 @@ import { SignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
+import Layout from '../../components/layout';
 
 export default function SignInCatchAll() {
   const router = useRouter();
@@ -41,12 +42,13 @@ export default function SignInCatchAll() {
   const signUpHref = `/register?next=${encodeURIComponent(next)}`;
 
   return (
+    <Layout>
     <div
       style={{
         minHeight: '100vh',
         display: 'grid',
         placeItems: 'center',
-        background: 'linear-gradient(180deg, #f6f4fa, #ede8f7)',
+        background: 'var(--bg)',
         padding: '2rem',
       }}
     >
@@ -59,11 +61,14 @@ export default function SignInCatchAll() {
           gap: '1.5rem',
         }}
       >
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <button onClick={() => router.back()} aria-label="Go back" style={{ background:'var(--surface-2)', color:'var(--accent)', border:'1px solid var(--border-soft)', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
+        </div>
         <div
           className="auth-card"
           style={{
-            background: '#fff',
-            border: '1px solid #eee',
+            background: 'var(--surface)',
+            border: '1px solid var(--border-soft)',
             borderRadius: 16,
             boxShadow: '0 10px 30px rgba(110, 80, 132, 0.15)',
             padding: '1.25rem',
@@ -72,18 +77,18 @@ export default function SignInCatchAll() {
             gap: '1.25rem',
           }}
         >
-          <div style={{ display: 'none', borderRight: '1px solid #f0eaff', paddingRight: '1rem' }} className="signin-left">
+          <div style={{ display: 'none', borderRight: '1px solid var(--border-soft)', paddingRight: '1rem' }} className="signin-left">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Image src="/logo.png" alt="Say Salams" width={180} height={60} className="logo" style={{ objectFit: 'contain' }} sizes="180px" />
             </div>
-            <h1 style={{ color: '#6e5084', margin: '1rem 0 0.25rem' }}>Welcome back</h1>
-            <p style={{ color: '#5a3c91', margin: 0 }}>Community · Connections · Celebration</p>
-            <ul style={{ marginTop: '1rem', color: '#9b8bbd', fontWeight: 600 }}>
+            <h1 style={{ color: 'var(--accent)', margin: '1rem 0 0.25rem' }}>Welcome back</h1>
+            <p style={{ color: 'var(--accent)', margin: 0 }}>Community · Connections · Celebration</p>
+            <ul style={{ marginTop: '1rem', color: 'var(--accent)', fontWeight: 600 }}>
               <li>Discover upcoming Muslim events</li>
               <li>Build your circle with intention</li>
               <li>Spread peace — Say Salams ✨</li>
             </ul>
-            <p style={{ marginTop: 'auto', fontSize: '0.9rem', color: '#888' }}>
+            <p style={{ marginTop: 'auto', fontSize: '0.9rem', color: 'var(--muted-2)' }}>
               New here? <Link href={signUpHref} style={{ color: '#9b8bbd', fontWeight: 700 }}>Create an account</Link>
             </p>
           </div>
@@ -108,5 +113,6 @@ export default function SignInCatchAll() {
         `}</style>
       </div>
     </div>
+    </Layout>
   );
 }

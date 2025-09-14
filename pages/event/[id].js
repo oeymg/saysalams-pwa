@@ -198,7 +198,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
       } else {
         showToast('Failed to save RSVP.', 'error');
       }
-    } catch (error) {
+    } catch {
       showToast('Failed to save RSVP.', 'error');
     } finally {
       setSavingMap((m) => ({ ...m, [occurrenceId]: false }));
@@ -266,11 +266,11 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         )}
 
         {/* Title + badges + tickets */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }} data-reveal>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <h1 style={{ color: '#6e5084', marginBottom: '0.5rem' }}>{ev.title}</h1>
-            {ev.is_recurring && (
-              <span style={{ background: '#fef3c7', color: '#92400e', padding: '0.2rem 0.5rem', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }} data-reveal>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <h1 style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}>{ev.title}</h1>
+              {ev.is_recurring && (
+              <span style={{ background: 'var(--warm)', color: 'var(--warning-contrast)', padding: '0.2rem 0.5rem', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600 }}>
                 Recurring
               </span>
             )}
@@ -281,7 +281,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
               target="_blank"
               rel="noreferrer"
               style={{
-                background: '#6e5084',
+                background: 'var(--accent)',
                 color: '#fff',
                 padding: '0.5rem 0.9rem',
                 borderRadius: '8px',
@@ -296,14 +296,14 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         </div>
 
         {/* Meta info */}
-        <p style={{ color: '#555', marginBottom: '0.5rem' }} data-reveal>
+        <p style={{ color: 'var(--muted)', marginBottom: '0.5rem' }} data-reveal>
           {ev.start_at ? new Date(ev.start_at).toLocaleString('en-AU') : 'TBA'}
           {ev.venue ? ` · ${ev.venue}` : ''}
           {ev.city_region ? ` · ${ev.city_region}` : ''}
         </p>
         {(friends.going > 0 || friends.interested > 0) && (
           <div style={{ marginBottom: '1rem' }} data-reveal>
-            <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>
+            <span className="chip" style={{ background:'var(--warm)', color:'var(--accent)' }}>
               {friends.going > 0 ? `${friends.going} friend${friends.going===1?'':'s'} going` : `${friends.interested} friend${friends.interested===1?'':'s'} interested`}
             </span>
           </div>
@@ -316,8 +316,8 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
               <span
                 key={t}
                 style={{
-                  background: '#9b8bbd', // light pink chip
-                  color: '#f6f4fa',
+                  background: 'var(--warm)',
+                  color: 'var(--accent)',
                   padding: '0.2rem 0.6rem',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
@@ -333,8 +333,8 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         {/* Event Summary moved below tags */}
         {ev.summary && (
           <div style={{ marginBottom: '1.25rem' }} data-reveal>
-            <h2 style={{ marginBottom: '0.5rem', color: '#6e5084' }}>Event Summary</h2>
-            <p style={{ lineHeight: '1.6', color: '#333' }}>
+            <h2 style={{ marginBottom: '0.5rem', color: 'var(--accent)' }}>Event Summary</h2>
+            <p style={{ lineHeight: '1.6', color: '#2e2e2e' }}>
               {typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')}
             </p>
           </div>
@@ -342,7 +342,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
 
         {/* Halal Notes (if exists) */}
         {ev.halal_notes && (
-          <p style={{ color: '#777', fontStyle: 'italic', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--muted)', fontStyle: 'italic', marginBottom: '1rem' }}>
             {ev.halal_notes}
           </p>
         )}
@@ -350,26 +350,26 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         {/* Occurrences list */}
         {occurrences && occurrences.length > 0 && (
           <div style={{ marginBottom: '1.5rem' }} data-reveal>
-            <h2 style={{ margin: '1rem 0 0.5rem', color: '#6e5084' }}>Upcoming in this Event</h2>
+            <h2 style={{ margin: '1rem 0 0.5rem', color: 'var(--accent)' }}>Upcoming in this Event</h2>
             <div style={{ display: 'grid', gap: '0.5rem' }}>
               {occurrences.map((o, idx) => (
-                <div key={o.occurrence_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f4fa', border: '1px solid #eee', borderRadius: 8, padding: '0.6rem 0.8rem', transitionDelay: `${idx * 60}ms` }} className="reveal">
+                <div key={o.occurrence_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--surface-2)', border: '1px solid var(--border-soft)', borderRadius: 8, padding: '0.6rem 0.8rem', transitionDelay: `${idx * 60}ms` }} className="reveal">
                   <div>
-                    <div style={{ fontWeight: 600, color: '#4f3a76' }}>
+                    <div style={{ fontWeight: 600, color: 'var(--accent)' }}>
                       {o.start_at ? new Date(o.start_at).toLocaleString('en-AU') : 'TBA'}
                     </div>
-                    <div style={{ color: '#555', fontSize: '0.9rem' }}>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
                       {(o.venue || ev.venue) ? (o.venue || ev.venue) : ''}
                       {o.city_region ? ` · ${o.city_region}` : (ev.city_region ? ` · ${ev.city_region}` : '')}
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ color: '#444', fontSize: '0.9rem' }}>👍 {counts[o.occurrence_id] || 0}</div>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>👍 {counts[o.occurrence_id] || 0}</div>
                     <button
                       onClick={() => handleRSVP(o.occurrence_id)}
                       style={{
-                        background: '#6e5084',
-                        color: '#f6f4fa',
+                        background: 'var(--accent)',
+                        color: '#fff',
                         padding: '0.5rem 0.9rem',
                         borderRadius: '8px',
                         fontWeight: '600',
@@ -390,15 +390,15 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         {/* Fallback: series-level RSVP when no occurrences */}
         {(!occurrences || occurrences.length === 0) && (
           <div style={{ marginBottom: '1.5rem' }} data-reveal>
-            <h2 style={{ margin: '1rem 0 0.5rem', color: '#6e5084' }}>RSVP</h2>
-            <p style={{ color: '#666', marginBottom: '0.75rem' }}>
+            <h2 style={{ margin: '1rem 0 0.5rem', color: 'var(--accent)' }}>RSVP</h2>
+            <p style={{ color: 'var(--muted)', marginBottom: '0.75rem' }}>
               No upcoming occurrences listed yet. RSVP to the event series.
             </p>
             <button
               onClick={handleSeriesRSVP}
               style={{
-                background: '#6e5084',
-                color: '#f6f4fa',
+                background: 'var(--accent)',
+                color: '#fff',
                 padding: '0.6rem 1.2rem',
                 borderRadius: '8px',
                 fontWeight: '600',
@@ -421,12 +421,12 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         {/* Details list */}
         <div style={{ marginTop: '2rem', display: 'grid', gap: '0.5rem' }}>
           {ev.cost && (
-            <div style={{ background: '#f6f0ff', padding: '0.75rem 1rem', borderRadius: 8 }}>
-              <div style={{ color: '#4f3a76' }}><strong>Cost:</strong> {ev.cost}</div>
+            <div style={{ background: 'var(--surface-2)', padding: '0.75rem 1rem', borderRadius: 8 }}>
+              <div style={{ color: 'var(--accent)' }}><strong>Cost:</strong> {ev.cost}</div>
             </div>
           )}
           {ev.halal_notes && (
-            <div style={{ background: '#eefcf3', padding: '0.75rem 1rem', borderRadius: 8, color: '#065f46' }}>
+            <div style={{ background: 'var(--surface-2)', padding: '0.75rem 1rem', borderRadius: 8, color: 'var(--accent)' }}>
               <strong>Halal Notes:</strong> {ev.halal_notes}
             </div>
           )}
@@ -435,7 +435,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
       {/* Similar events */}
       {Array.isArray(similar) && similar.length > 0 && (
         <div className="container" style={{ padding: '0 1rem 2rem', maxWidth: '1100px', margin: '0 auto' }}>
-          <h2 style={{ color: '#6e5084', margin: '1.5rem 0 1rem' }}>Discover other events like this</h2>
+          <h2 style={{ color: 'var(--accent)', margin: '1.5rem 0 1rem' }}>Discover other events like this</h2>
           <div className="events-grid">
             {similar.map((s) => (
               <article
@@ -443,10 +443,10 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
                 className="hover-pop"
                 style={{
                   boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                  border: '1px solid #eee',
+                  border: '1px solid var(--border-soft)',
                   borderRadius: '12px',
                   overflow: 'hidden',
-                  background: '#fff',
+                  background: 'var(--surface)',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
@@ -461,25 +461,25 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
                   />
                 )}
                 <div style={{ padding: '1rem' }}>
-                  <h3 style={{ margin: '0 0 0.4rem', color: '#9b8bbd', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</h3>
-                  <p style={{ margin: '0 0 0.5rem', color: '#555' }}>
+                  <h3 style={{ margin: '0 0 0.4rem', color: 'var(--accent)', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</h3>
+                  <p style={{ margin: '0 0 0.5rem', color: 'var(--muted)' }}>
                     {s.start_at ? new Date(s.start_at).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : 'TBA'}
                     {s.city_region ? ` · ${s.city_region}` : ''}
                   </p>
                   <div style={{ marginBottom: '0.5rem' }}>
                     {(s.category || []).slice(0, 2).map((t) => (
-                      <span key={t} style={{ background: '#ede8f7', color: '#5a3c91', padding: '0.2rem 0.6rem', borderRadius: 6, fontSize: '0.8rem', marginRight: '0.3rem' }}>
+                      <span key={t} style={{ background: 'var(--warm)', color: 'var(--accent)', padding: '0.2rem 0.6rem', borderRadius: 6, fontSize: '0.8rem', marginRight: '0.3rem' }}>
                         {t}
                       </span>
                     ))}
                   </div>
-                  <p style={{ margin: 0, color: '#666' }}>👍 {(typeof s.next_going_count === 'number' ? s.next_going_count : (s.going_count ?? 0))} going</p>
+                  <p style={{ margin: 0, color: 'var(--muted)' }}>👍 {(typeof s.next_going_count === 'number' ? s.next_going_count : (s.going_count ?? 0))} going</p>
                   <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.7rem' }}>
                     <a
                       href={`/event/${encodeURIComponent(s.public_id)}`}
                       style={{
-                        background: '#ede8f7',
-                        color: '#5a3c91',
+                        background: 'var(--warm)',
+                        color: 'var(--accent)',
                         padding: '0.5rem 1rem',
                         borderRadius: '8px',
                         textDecoration: 'none',
@@ -494,7 +494,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
                         href={s.tickets_url}
                         target="_blank"
                         rel="noreferrer"
-                      style={{ background: '#6e5084', color: '#fff', padding: '0.5rem 1rem', borderRadius: 8, textDecoration: 'none', fontSize: '0.9rem', fontWeight: 700 }}
+                      style={{ background: 'var(--accent)', color: '#fff', padding: '0.5rem 1rem', borderRadius: 8, textDecoration: 'none', fontSize: '0.9rem', fontWeight: 700 }}
                       >
                         Tickets
                       </a>
@@ -509,7 +509,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
       {toast && (
         <div
           onClick={() => setToast(null)}
-          style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1000, background: toast.type === 'error' ? '#ef4444' : '#22c55e', color: '#fff', padding: '0.75rem 1rem', borderRadius: 8, boxShadow: '0 6px 20px rgba(0,0,0,0.15)', cursor: 'pointer' }}
+          style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1000, background: toast.type === 'error' ? 'var(--danger)' : 'var(--accent)', color: '#fff', padding: '0.75rem 1rem', borderRadius: 8, boxShadow: '0 6px 20px rgba(0,0,0,0.15)', cursor: 'pointer' }}
         >
           {toast.message}
         </div>

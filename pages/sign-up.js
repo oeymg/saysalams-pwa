@@ -112,11 +112,14 @@ export default function Signup() {
 
   return (
     <Layout>
-      <div style={{ padding: '1.5rem', textAlign: 'center' }}>
-        <h1 style={{ color: '#9b8bbd' }}>Become a Say Salams user today!</h1>
+      <div style={{ padding: '1rem 1.5rem 0.5rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>
+        <button onClick={() => router.back()} aria-label="Go back" style={{ background:'var(--surface-2)', color:'var(--accent)', border:'1px solid var(--border-soft)', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
       </div>
-      <section style={{ backgroundColor: '#f6f4fa', padding: '0rem', textAlign: 'center' }}>
-        <p style={{ color: '#9b8bbd', fontWeight: 'bold', marginBottom: '0rem' }}></p>
+      <div style={{ padding: '0.5rem 1.5rem', textAlign: 'center' }}>
+        <h1 style={{ color: 'var(--accent)' }}>Become a Say Salams user today!</h1>
+      </div>
+      <section style={{ backgroundColor: 'var(--surface-2)', padding: '0rem', textAlign: 'center' }}>
+        <p style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: '0rem' }}></p>
       </section>
       <section
         style={{
@@ -132,30 +135,30 @@ export default function Signup() {
           style={{
             flex: 0.8,
             maxWidth: '480px',
-            backgroundColor: '#fff',
+            backgroundColor: 'var(--surface)',
             borderRadius: '12px',
             boxShadow: '0 4px 12px rgba(110, 80, 132, 0.15)',
             padding: '2rem',
-            color: '#555',
+            color: 'var(--muted)',
             lineHeight: '1.6',
             fontSize: '1.1rem',
           }}
         >
-          <h2 style={{ color: '#9b8bbd', marginBottom: '1rem', textAlign: 'center', flexWrap: 'wrap', fontSize: '1.8rem' }}>Why Say Salams? 🌙✨</h2>
+          <h2 style={{ color: 'var(--accent)', marginBottom: '1rem', textAlign: 'center', flexWrap: 'wrap', fontSize: '1.8rem' }}>Why Say Salams? 🌙✨</h2>
           <Collapsible title="What you’ll gain">
             <p style={{ marginBottom: '1rem' }}>
               <strong>🕌 Say Salams strives to serve a vibrant community dedicated to personal growth, connections, and spreading salam. Experience the <em>barakah</em> that comes from strengthening the Ummah through meaningful connections and shared Islamic values.
                 Join us in fostering a supportive network that uplifts and inspires. 🤲</strong>
             </p>
-            <ul style={{ paddingLeft: '1.25rem', color: '#9b8bbd', fontWeight: '600', marginBottom: 0 }}>
+            <ul style={{ paddingLeft: '1.25rem', color: 'var(--accent)', fontWeight: '600', marginBottom: 0 }}>
               <li style={{ marginBottom: '0.75rem' }}>
-                <span style={{ color: '#6e5084' }}>Community 🤝:</span> Connect with like-minded individuals who share your values and vision.
+                <span style={{ color: 'var(--accent)' }}>Community 🤝:</span> Connect with like-minded individuals who share your values and vision.
               </li>
               <li style={{ marginBottom: '0.75rem' }}>
-                <span style={{ color: '#6e5084' }}>Events 🗓️:</span> Discover and participate in meaningful events that enrich your spiritual and social life.
+                <span style={{ color: 'var(--accent)' }}>Events 🗓️:</span> Discover and participate in meaningful events that enrich your spiritual and social life.
               </li>
               <li>
-                <span style={{ color: '#6e5084' }}>Barakah ✨:</span> Gain blessings through building sincere and supportive relationships within the Ummah.
+                <span style={{ color: 'var(--accent)' }}>Barakah ✨:</span> Gain blessings through building sincere and supportive relationships within the Ummah.
               </li>
             </ul>
           </Collapsible>
@@ -169,14 +172,14 @@ export default function Signup() {
             allowFullScreen
           />
           <div style={{ marginTop: '0.75rem', textAlign: 'center' }}>
-            <p style={{ margin: '0 0 0.5rem 0', color: '#6e5084' }}>
+            <p style={{ margin: '0 0 0.5rem 0', color: 'var(--accent)' }}>
               Submit the form above to complete your Say Salams profile.
             </p>
             <button
               onClick={manualCheck}
               disabled={checking || found}
               style={{
-                background: '#6e5084',
+                background: 'var(--accent)',
                 color: '#fff',
                 padding: '0.5rem 1rem',
                 borderRadius: 8,

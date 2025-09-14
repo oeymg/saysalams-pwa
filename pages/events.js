@@ -137,7 +137,7 @@ export default function EventsPage({ events, base }) {
             <p className="hero-band-sub" style={{ marginTop: 0 }}>Search and filter to find what suits you.</p>
             <form onSubmit={onSubmit} className="hero-search" action="/events" method="get">
               <input className="hero-input" type="search" name="q" placeholder="Search by title, city, category…" value={q} onChange={(e)=>setQ(e.target.value)} />
-              <select value={sortBy} onChange={(e)=>onChangeSort(e.target.value)} style={{ background:'#fff', color:'#6e5084', border:'1px solid #e7e2f0', borderRadius:12, padding:'.6rem .8rem', fontWeight:700 }}>
+              <select value={sortBy} onChange={(e)=>onChangeSort(e.target.value)} style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--border-soft)', borderRadius:12, padding:'.6rem .8rem', fontWeight:700 }}>
                 <option value="date">Sort: Date</option>
                 <option value="popular">Sort: Popular</option>
               </select>
@@ -145,9 +145,9 @@ export default function EventsPage({ events, base }) {
             </form>
             {tokens.length > 0 && (
               <div className="home-chip-row" style={{ marginTop: 6 }}>
-                <button type="button" onClick={()=>onSelectTag('')} className="home-chip" style={{ borderColor: selected ? '#ded7ef' : '#6e5084', color: selected ? '#5a3c91' : '#6e5084', background: selected ? '#ede8f7' : '#fff' }}>All</button>
+                <button type="button" onClick={()=>onSelectTag('')} className="home-chip" style={{ borderColor: selected ? 'var(--border-soft)' : 'var(--accent)', color: 'var(--accent)', background: selected ? 'var(--surface-2)' : 'var(--surface)' }}>All</button>
                 {tokens.map(t => (
-                  <button key={t} type="button" onClick={()=>onSelectTag(t)} className="home-chip" style={{ borderColor: selected===t ? '#6e5084' : '#ded7ef', background: selected===t ? '#ede8f7' : '#fff', color: '#5a3c91' }}>{t}</button>
+                  <button key={t} type="button" onClick={()=>onSelectTag(t)} className="home-chip" style={{ borderColor: selected===t ? 'var(--accent)' : 'var(--border-soft)', background: selected===t ? 'var(--surface-2)' : 'var(--surface)', color: 'var(--accent)' }}>{t}</button>
                 ))}
               </div>
             )}
@@ -161,12 +161,12 @@ export default function EventsPage({ events, base }) {
         className="container"
         style={{ maxWidth: '1100px', margin: '0 auto 4rem auto', padding: '0 1rem' }}
       >
-        <h2 style={{ textAlign: 'center', marginBottom: '1.25rem', fontSize: '2rem', color: '#5a3c91' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '1.25rem', fontSize: '2rem', color: 'var(--accent)' }}>
           {filtered.length} event{filtered.length===1 ? '' : 's'} found
         </h2>
 
         {events.length === 0 && (
-          <p style={{ textAlign: 'center', color: '#888' }}>
+          <p style={{ textAlign: 'center', color: 'var(--muted-2)' }}>
             No events yet — check back soon insha’Allah ✨
           </p>
         )}
@@ -177,10 +177,10 @@ export default function EventsPage({ events, base }) {
               key={ev.id}
               style={{
                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                border: '1px solid #eee',
+                border: '1px solid var(--border-soft)',
                 borderRadius: '16px',
                 overflow: 'hidden',
-                background: '#fff',
+                background: 'var(--card)',
                 display: 'flex',
                 flexDirection: 'column',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
@@ -235,30 +235,15 @@ export default function EventsPage({ events, base }) {
                   )}
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {ev.tickets_url && (
-                    <a
-                      href={ev.tickets_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        background: '#6e5084',
-                        color: '#fff',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '12px',
-                        textDecoration: 'none',
-                        fontSize: '0.9rem',
-                      }}
-                    >
-                      Tickets
-                    </a>
-                  )}
                   <a
                     href={`/event/${encodeURIComponent(ev.public_id)}`}
                     style={{
-                      background: '#ede8f7',
-                      color: '#9b8bbd',
+                      background: 'var(--warm)',
+                      color: 'var(--accent)',
                       padding: '0.5rem 1rem',
                       borderRadius: '12px',
+                      border: '1px solid #ded7ef',
+                      boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
                       textDecoration: 'none',
                       fontSize: '0.9rem',
                     }}

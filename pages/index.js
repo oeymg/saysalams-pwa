@@ -58,11 +58,7 @@ export default function Home({ events, base }) {
   // Derive simple hero stats and a small preview list
   const now = Date.now();
   const in7 = now + 7 * 24 * 60 * 60 * 1000;
-  const eventsThisWeek = (events || []).filter(e => {
-    const t = e?.start_at ? new Date(e.start_at).getTime() : null;
-    return t && t >= now && t <= in7;
-  }).length;
-  const cities = new Set((events || []).map(e => e.city_region).filter(Boolean));
+  // Derived stats (unused for now) can be reintroduced in future UI
   const mini = (events || []).slice(0, 3);
   return (
     <Layout>
@@ -163,14 +159,14 @@ export default function Home({ events, base }) {
             textAlign: 'center',
             marginBottom: '2rem',
             fontSize: '2.2rem',
-            color: '#6e5084',
+            color: '#2e2e2e',
           }}
         >
           Our Upcoming Events
         </h2>
 
         {events.length === 0 && (
-          <p style={{ textAlign: 'center', color: '#888' }}>
+          <p style={{ textAlign: 'center', color: 'var(--muted-2)' }}>
             No events yet — check back soon insha&apos;Allah ✨
           </p>
         )}
@@ -181,10 +177,10 @@ export default function Home({ events, base }) {
               key={ev.id}
               style={{
                 boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-                border: '1px solid #eee',
+                border: '1px solid var(--border-soft)',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                background: '#fff',
+                background: 'var(--card)',
                 display: 'flex',
                 flexDirection: 'column',
                 transitionDelay: `${idx * 60}ms`,
@@ -203,14 +199,14 @@ export default function Home({ events, base }) {
               )}
               <div style={{ flex: 1, padding: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                  <h3 style={{ margin: '0 0 0.5rem 0', color: '#9b8bbd', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</h3>
+                  <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent)', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</h3>
                   {ev.is_recurring && (
-                    <span style={{ background: '#fef3c7', color: '#92400e', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 600 }}>
+                    <span style={{ background: 'var(--warm)', color: 'var(--warning-contrast)', padding: '0.15rem 0.5rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 600 }}>
                       Recurring
                     </span>
                   )}
                 </div>
-                <p style={{ marginBottom: '0.5rem', color: '#555' }}>
+                <p style={{ marginBottom: '0.5rem', color: 'var(--muted)' }}>
                   {ev.start_at
                     ? new Date(ev.start_at).toLocaleDateString('en-AU', {
                         weekday: 'short',
@@ -228,8 +224,8 @@ export default function Home({ events, base }) {
                     <span
                       key={t}
                       style={{
-                        background: '#ede8f7',
-                        color: '#5a3c91',
+                        background: 'var(--warm)',
+                        color: 'var(--accent)',
                         padding: '0.2rem 0.6rem',
                         borderRadius: '6px',
                         fontSize: '0.8rem',
@@ -240,40 +236,24 @@ export default function Home({ events, base }) {
                     </span>
                   ))}
                 </div>
-                <div style={{ marginBottom: '0.8rem', color: '#666', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ marginBottom: '0.8rem', color: 'var(--muted)', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span>👍 {typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0)} going</span>
                   {(ev.friends_going > 0 || ev.friends_interested > 0) && (
-                    <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>
+                    <span className="chip" style={{ background:'var(--warm)', color:'var(--accent)' }}>
                       {ev.friends_going > 0 ? `${ev.friends_going} friend${ev.friends_going===1?'':'s'} going` : `${ev.friends_interested} friend${ev.friends_interested===1?'':'s'} interested`}
                     </span>
                   )}
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {ev.tickets_url && (
-                    <a
-                      href={ev.tickets_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        background: '#6a4caf',
-                        color: '#fff',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '8px',
-                        textDecoration: 'none',
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
-                      }}
-                    >
-                      Tickets
-                    </a>
-                  )}
                   <Link
                     href={`/event/${encodeURIComponent(ev.public_id)}`}
                     style={{
-                      background: '#ede8f7',
-                      color: '#5a3c91',
+                      background: 'var(--warm)',
+                      color: 'var(--accent)',
                       padding: '0.5rem 1rem',
                       borderRadius: '8px',
+                      border: '1px solid #ded7ef',
+                      boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
                       textDecoration: 'none',
                       fontSize: '0.9rem',
                       fontWeight: 700,
@@ -291,8 +271,8 @@ export default function Home({ events, base }) {
       {/* Partner With Us Section */}
       <section
         style={{
-          background: '#f6f4fa',
-          color: '#9b8bbd',
+          background: 'var(--surface-2)',
+          color: 'var(--accent)',
           padding: '2rem 1rem',
           textAlign: 'left',
           marginBottom: '2rem',
@@ -301,12 +281,12 @@ export default function Home({ events, base }) {
           marginRight: 'auto',
           borderRadius: '12px',
           boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-          border: '2px solid #f6f4fa',
+          border: '2px solid var(--surface-2)',
         }}
         className="hover-pop"
         data-reveal
       >
-        <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#6e5084', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#2e2e2e', textAlign: 'center' }}>
           Become a Partner with Say Salams
         </h2>
 
@@ -344,7 +324,7 @@ export default function Home({ events, base }) {
           <Link
             href="/partners"
             style={{
-              background: '#6e5084',
+              background: 'var(--accent)',
               color: '#fff',
               padding: '0.8rem 2rem',
               borderRadius: '8px',

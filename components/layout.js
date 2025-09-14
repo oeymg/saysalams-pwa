@@ -217,7 +217,7 @@ export default function Layout({ children }) {
           {/* Brand + blurb */}
           <div className="footer-col footer-brand">
             <Image
-              src="/invertlogo.png"
+              src="/icons/invertlogo.svg"
               alt="Say Salams"
               width={180}
               height={60}

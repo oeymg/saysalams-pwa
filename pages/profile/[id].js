@@ -2,6 +2,8 @@
 
 
 import React from "react";
+import Layout from '../../components/layout';
+import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context) {
   const { id } = context.query;
@@ -67,6 +69,7 @@ export default function ProfilePage({ user, rsvps, recordId }) {
   const [connStatus, setConnStatus] = useState('idle');
   const [edge, setEdge] = useState(null); // current connection edge (if any)
   const [meRid, setMeRid] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const load = async () => {
@@ -104,10 +107,15 @@ export default function ProfilePage({ user, rsvps, recordId }) {
 
   if (!user) {
     return (
-      <div style={containerStyle}>
-        <h2>User not found</h2>
-        <p>Sorry, we couldn&apos;t find that user profile.</p>
-      </div>
+      <Layout>
+        <div style={containerStyle}>
+          <div style={{ marginBottom:'0.5rem' }}>
+            <button onClick={() => router.back()} aria-label="Go back" style={{ background:'#ede8f7', color:'#5a3c91', border:'1px solid #ded7ef', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
+          </div>
+          <h2>User not found</h2>
+          <p>Sorry, we couldn&apos;t find that user profile.</p>
+        </div>
+      </Layout>
     );
   }
 
@@ -169,29 +177,33 @@ export default function ProfilePage({ user, rsvps, recordId }) {
   };
 
   return (
+    <Layout>
     <div style={containerStyle}>
+      <div style={{ marginBottom:'0.5rem' }}>
+        <button onClick={() => router.back()} aria-label="Go back" style={{ background:'#ede8f7', color:'#5a3c91', border:'1px solid #ded7ef', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
+      </div>
       <h1 style={{marginBottom: "1rem"}}>Profile</h1>
       <div style={{ marginBottom: '1rem' }}>
         {connStatus === 'accepted' ? (
-          <span style={{ background:'#e8faf0', color:'#166534', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Connected</span>
+          <span style={{ background:'var(--warm)', color:'var(--accent)', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Connected</span>
         ) : connStatus === 'pending-out' ? (
           <div style={{ display:'flex', gap:'0.5rem', alignItems:'center' }}>
-            <span style={{ background:'#fef3c7', color:'#92400e', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Request sent</span>
-            <button onClick={() => actOn('withdraw')} disabled={connStatus==='loading'} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+            <span style={{ background:'var(--warm)', color:'var(--warning-contrast)', padding:'0.4rem 0.7rem', borderRadius:8, fontWeight:600 }}>Request sent</span>
+            <button onClick={() => actOn('withdraw')} disabled={connStatus==='loading'} style={{ background:'var(--danger)', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
               {connStatus==='loading' ? 'Withdrawing…' : 'Withdraw'}
             </button>
           </div>
         ) : connStatus === 'pending-in' ? (
           <div style={{ display:'flex', gap:'0.5rem' }}>
-            <button onClick={() => actOn('accept')} disabled={connStatus==='loading'} style={{ background:'#16a34a', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+            <button onClick={() => actOn('accept')} disabled={connStatus==='loading'} style={{ background:'var(--success)', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
               {connStatus==='loading' ? 'Saving…' : 'Accept'}
             </button>
-            <button onClick={() => actOn('decline')} disabled={connStatus==='loading'} style={{ background:'#ef4444', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+            <button onClick={() => actOn('decline')} disabled={connStatus==='loading'} style={{ background:'var(--danger)', color:'#fff', border:'none', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
               {connStatus==='loading' ? 'Saving…' : 'Decline'}
             </button>
           </div>
         ) : (
-          <button onClick={requestConnection} disabled={connStatus==='loading'} style={{ background:'#9b8bbd', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
+          <button onClick={requestConnection} disabled={connStatus==='loading'} style={{ background:'var(--accent)', color:'#fff', border:'none', borderRadius:8, padding:'0.5rem 1rem', fontWeight:600, cursor: connStatus==='loading' ? 'not-allowed' : 'pointer', opacity: connStatus==='loading' ? .8 : 1 }}>
             {connStatus==='loading' ? 'Sending…' : 'Say Salams'}
           </button>
         )}
@@ -240,5 +252,6 @@ export default function ProfilePage({ user, rsvps, recordId }) {
         )}
       </section>
     </div>
+    </Layout>
   );
 }
