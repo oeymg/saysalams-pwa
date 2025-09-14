@@ -95,7 +95,7 @@ export default function ProfilePage({ user, rsvps, recordId }) {
           return;
         }
         setConnStatus('none');
-      } catch (_) {
+      } catch {
         setConnStatus('none');
       }
     };

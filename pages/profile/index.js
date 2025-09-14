@@ -71,7 +71,7 @@ export default function ProfilePage({ user, rows }) {
         const acc = await fetch('/api/connections?status=Accepted').then(r=>r.json());
         const pen = await fetch('/api/connections?status=Pending').then(r=>r.json());
         setCons({ accepted: acc?.connections || [], pending: pen?.connections || [] });
-      } catch (_) {
+      } catch {
       } finally {
         setLoadingCons(false);
       }

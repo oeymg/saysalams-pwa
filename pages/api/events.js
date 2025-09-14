@@ -184,7 +184,7 @@ export default async function handler(req, res) {
           }
         }
       }
-    } catch (_) {
+    } catch {
       // Fail soft: keep counts at 0
     }
 

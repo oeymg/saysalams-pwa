@@ -7,7 +7,7 @@ export default function Collapsible({ title, children, defaultOpenDesktop = true
         const mq = window.matchMedia && window.matchMedia('(max-width: 640px)');
         return mq && mq.matches ? defaultOpenMobile : defaultOpenDesktop;
       }
-    } catch (_) {}
+    } catch {}
     return defaultOpenDesktop;
   });
   const cid = useId();
@@ -21,7 +21,7 @@ export default function Collapsible({ title, children, defaultOpenDesktop = true
         mq.addEventListener('change', update);
         return () => mq.removeEventListener('change', update);
       }
-    } catch (_) {
+    } catch {
       // noop (SSR)
     }
   }, [defaultOpenDesktop, defaultOpenMobile]);

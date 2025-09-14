@@ -29,7 +29,7 @@ export async function getServerSideProps(context) {
     if (found) {
       return { redirect: { destination: String(redirectTo), permanent: false } };
     }
-  } catch (_) {}
+  } catch {}
 
   return { props: {} };
 }
@@ -80,7 +80,7 @@ export default function Signup() {
           router.replace(redirectTo);
           return;
         }
-      } catch (_) {}
+      } catch {}
       finally {
         setChecking(false);
       }

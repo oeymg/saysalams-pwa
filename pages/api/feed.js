@@ -46,7 +46,7 @@ async function getUserIdText(recId) {
   try {
     const rec = await base(USERS_TABLE).find(recId);
     return rec.fields['UserID'] || rec.fields['User ID'] || null;
-  } catch (_) {
+  } catch {
     return null;
   }
 }

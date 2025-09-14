@@ -96,7 +96,7 @@ async function resolveAirtableUserRecordId(userId) {
   try {
     const rec = await base(USERS_TABLE).find(String(userId));
     if (rec?.id) return rec.id;
-  } catch (_) {}
+  } catch {}
 
   // Try UserID text variants
   for (const f of ['UserID', 'User ID']) {
@@ -132,7 +132,7 @@ async function resolveOccurrenceAndEvent(occurrenceId) {
     try {
       const rec = await base(OCCURRENCES_TABLE).find(String(rid));
       return rec || null;
-    } catch (_) {
+    } catch {
       return null;
     }
   };
@@ -170,7 +170,7 @@ async function resolveOccurrenceAndEvent(occurrenceId) {
         const evRec = await base(EVENTS_TABLE).find(seriesLink);
         const ef = evRec?.fields || {};
         eventPublicId = ef['EventID'] || ef['Event ID'] || ef['Event Id'] || null;
-      } catch (_) {
+      } catch {
         // ignore
       }
     }
@@ -208,7 +208,7 @@ export default async function handler(req, res) {
           }
         }
         if (!usersRid) {
-          try { const rec = await base(USERS_TABLE).find(String(userId)); usersRid = rec?.id || null; } catch (_) {}
+          try { const rec = await base(USERS_TABLE).find(String(userId)); usersRid = rec?.id || null; } catch {}
         }
         if (!usersRid) {
           for (const f of ['UserID', 'User ID']) {

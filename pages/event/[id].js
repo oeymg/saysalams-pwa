@@ -33,8 +33,8 @@ export async function getServerSideProps(context) {
         limited = limited.concat(past);
       }
       occurrences = limited;
-    } catch (_) {}
-  } catch (_) {}
+    } catch {}
+  } catch {}
 
   // Fetch per-occurrence going counts
   let occurrenceCounts = {};
@@ -47,13 +47,13 @@ export async function getServerSideProps(context) {
           const rsvps = rj?.rsvps || [];
           const going = rsvps.filter(r => (r.fields?.Status || '').toLowerCase() === 'going').length;
           return [o.occurrence_id, going];
-        } catch (_) {
+        } catch {
           return [o.occurrence_id, 0];
         }
       })
     );
     counts.forEach(([oid, c]) => { occurrenceCounts[oid] = c; });
-  } catch (_) {}
+  } catch {}
 
   // Compute similar events by overlapping category and/or same city/region
   let similar = [];
@@ -78,7 +78,7 @@ export async function getServerSideProps(context) {
       scored.sort((a, b) => b.score - a.score);
       similar = scored.slice(0, 6).map((x) => x.e);
     }
-  } catch (_) {}
+  } catch {}
 
   // Gender-based filtering for similar list as well
   try {
@@ -96,7 +96,7 @@ export async function getServerSideProps(context) {
         });
       }
     }
-  } catch (_) {}
+  } catch {}
 
   try {
     if (userId && ev && Array.isArray(ev.audience)) {
@@ -109,7 +109,7 @@ export async function getServerSideProps(context) {
         return { redirect: { destination: '/events', permanent: false } };
       }
     }
-  } catch (_) {}
+  } catch {}
 
   // Merge friends-going counts for this event from /api/feed (if signed in)
   let friends = { going: 0, interested: 0 };
@@ -156,7 +156,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
       } else {
         showToast('Failed to save RSVP.', 'error');
       }
-    } catch (_) {
+    } catch {
       showToast('Failed to save RSVP.', 'error');
     } finally {
       setSavingSeries(false);

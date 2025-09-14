@@ -15,7 +15,7 @@ export default function SignInCatchAll() {
         const u = new URL(val);
         return u.pathname + (u.search || '');
       }
-    } catch (_) {}
+    } catch {}
     return String(val);
   };
 
@@ -31,7 +31,7 @@ export default function SignInCatchAll() {
         if (inner) return normalizePath(inner);
         return '/profile';
       }
-    } catch (_) {}
+    } catch {}
     return normalizePath(val);
   };
 

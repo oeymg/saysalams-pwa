@@ -13,7 +13,7 @@ async function getSeriesEventId(seriesRecId) {
   try {
     const rec = await base(EVENTS_TABLE).find(seriesRecId);
     return rec?.fields?.['EventID'] || rec?.fields?.['Event Id'] || rec?.fields?.['Event ID'] || null;
-  } catch (_) {
+  } catch {
     return null;
   }
 }

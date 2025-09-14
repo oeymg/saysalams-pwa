@@ -48,8 +48,8 @@ export async function getServerSideProps(context) {
             return m ? { ...ev, friends_going: m.g, friends_interested: m.i } : ev;
           });
         }
-      } catch (_) { /* ignore */ }
-    } catch (_) {}
+      } catch { /* ignore */ }
+    } catch {}
   }
   return { props: { events, base } };
 }

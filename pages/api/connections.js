@@ -17,7 +17,7 @@ async function resolveUserRecordId({ clerkId, recordId, userIdText }) {
     try {
       const rec = await base(USERS_TABLE).find(String(recordId));
       if (rec?.id) return rec.id;
-    } catch (_) {}
+    } catch {}
   }
   // Clerk id
   if (clerkId) {
@@ -71,7 +71,7 @@ async function getUserSummary(recId) {
         return '';
       })(),
     };
-  } catch (_) {
+  } catch {
     return null;
   }
 }
@@ -160,7 +160,7 @@ export default async function handler(req, res) {
             edge.other_rsvps = enriched;
           }
         }
-      } catch (_) {
+      } catch {
         // ignore activity attachment failures
       }
 

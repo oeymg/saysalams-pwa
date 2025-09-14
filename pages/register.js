@@ -13,7 +13,7 @@ export default function RegisterPage() {
         const u = new URL(val);
         return u.pathname + (u.search || '');
       }
-    } catch (_) {}
+    } catch {}
     return String(val);
   };
 
@@ -32,7 +32,7 @@ export default function RegisterPage() {
       } else {
         next = f;
       }
-    } catch (_) {
+    } catch {
       next = f;
     }
   }

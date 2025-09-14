@@ -87,7 +87,7 @@ export default async function handler(req, res) {
               .select({ maxRecords: 1, filterByFormula: f })
               .firstPage();
             if (page && page.length) { recs = page; break; }
-          } catch (_) { /* ignore missing field errors */ }
+          } catch { /* ignore missing field errors */ }
         }
         let user = recs && recs[0] ? mapUser(recs[0]) : null;
 
@@ -109,7 +109,7 @@ export default async function handler(req, res) {
                 }
               }
             }
-          } catch (_) { /* ignore */ }
+          } catch { /* ignore */ }
         }
 
         return res.status(200).json({ user });
