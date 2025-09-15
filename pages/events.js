@@ -133,8 +133,8 @@ export default function EventsPage({ events, base }) {
       <section className="full-bleed" style={{ padding: '1rem 0 0' }}>
         <div className="hero-band-inner" style={{ alignItems: 'stretch', gridTemplateColumns: '1fr' }}>
           <div style={{ display:'grid', gap:'0.5rem' }}>
-            <h1 className="hero-band-title" style={{ marginBottom: 0 }}>Upcoming Events</h1>
-            <p className="hero-band-sub" style={{ marginTop: 0 }}>Search and filter to find what suits you.</p>
+            <h1 className="hero-band-title" style={{ marginBottom: 0, color: '#6e5084' }}>Upcoming Events</h1>
+            <p className="hero-band-sub" style={{ marginTop: 0, color: '#9b8bbd' }}>Search and filter to find what suits you.</p>
             <form onSubmit={onSubmit} className="hero-search" action="/events" method="get">
               <input className="hero-input" type="search" name="q" placeholder="Search by title, city, category…" value={q} onChange={(e)=>setQ(e.target.value)} />
               <select value={sortBy} onChange={(e)=>onChangeSort(e.target.value)} style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--border-soft)', borderRadius:12, padding:'.6rem .8rem', fontWeight:700 }}>
@@ -226,6 +226,16 @@ export default function EventsPage({ events, base }) {
                     {(ev.audience || []).slice(0,1).map(t => (<span key={t} className="chip">{t}</span>))}
                   </div>
                 ) : null}
+                <div style={{ marginBottom: '0.6rem', display:'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span className="chip" style={{ background:'#fef3c7', color:'#92400e' }}>
+                    {ev.start_at ? new Date(ev.start_at).toLocaleDateString('en-AU', { month:'short', day:'numeric' }) : 'TBA'}
+                  </span>
+                  {(ev.city_region || ev.venue) && (
+                    <span className="chip" style={{ background:'#ede8f7', color:'#5a3c91' }}>
+                      {(ev.city_region || ev.venue)}
+                    </span>
+                  )}
+                </div>
                 <div style={{ marginBottom: '0.8rem', color: '#666', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span>👍 {(typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0))} going</span>
                   {(ev.friends_going > 0 || ev.friends_interested > 0) && (

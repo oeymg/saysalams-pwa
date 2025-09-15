@@ -50,7 +50,7 @@ export default function Layout({ children }) {
   return (
     <div
       style={{
-        background: '#f6f4fa',
+        background: '#fff',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
@@ -221,7 +221,7 @@ export default function Layout({ children }) {
               alt="Say Salams"
               width={180}
               height={60}
-              className="logo-img-footer logo"
+              className="logo-img logo"
               style={{ objectFit: 'contain' }}
               sizes="(max-width: 640px) 140px, 180px"
             />

@@ -159,7 +159,7 @@ export default function Home({ events, base }) {
             textAlign: 'center',
             marginBottom: '2rem',
             fontSize: '2.2rem',
-            color: '#2e2e2e',
+            color: '#6e5084',
           }}
         >
           Our Upcoming Events
@@ -236,6 +236,16 @@ export default function Home({ events, base }) {
                     </span>
                   ))}
                 </div>
+                <div style={{ marginBottom: '0.6rem', display:'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span className="chip" style={{ background:'#fef3c7', color:'#92400e' }}>
+                    {ev.start_at ? new Date(ev.start_at).toLocaleDateString('en-AU', { month:'short', day:'numeric' }) : 'TBA'}
+                  </span>
+                  {(ev.city_region || ev.venue) && (
+                    <span className="chip" style={{ background:'#ede8f7', color:'#5a3c91' }}>
+                      {(ev.city_region || ev.venue)}
+                    </span>
+                  )}
+                </div>
                 <div style={{ marginBottom: '0.8rem', color: 'var(--muted)', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span>👍 {typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0)} going</span>
                   {(ev.friends_going > 0 || ev.friends_interested > 0) && (
@@ -286,7 +296,7 @@ export default function Home({ events, base }) {
         className="hover-pop"
         data-reveal
       >
-        <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#2e2e2e', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#6e5084', textAlign: 'center' }}>
           Become a Partner with Say Salams
         </h2>
 

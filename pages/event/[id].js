@@ -36,6 +36,16 @@ export async function getServerSideProps(context) {
     } catch {}
   } catch {}
 
+  // If event fully in the past: redirect to /events
+  try {
+    const nowTs = Date.now();
+    const hasUpcoming = (occurrences || []).some(o => o.start_at && new Date(o.start_at).getTime() >= nowTs);
+    const evFuture = ev?.start_at ? new Date(ev.start_at).getTime() >= nowTs : true;
+    if (ev && !hasUpcoming && !evFuture) {
+      return { redirect: { destination: '/events', permanent: false } };
+    }
+  } catch {}
+
   // Fetch per-occurrence going counts
   let occurrenceCounts = {};
   try {
@@ -243,7 +253,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
           } : undefined,
         }}
       />
-      <div className="container" style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
+      <div className="container" style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
         {/* Event image */}
         {ev.image_url && (
           <Image
@@ -266,31 +276,27 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         )}
 
         {/* Title + badges + tickets */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }} data-reveal>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <h1 style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}>{ev.title}</h1>
-              {ev.is_recurring && (
-              <span style={{ background: 'var(--warm)', color: 'var(--warning-contrast)', padding: '0.2rem 0.5rem', borderRadius: 6, fontSize: '0.8rem', fontWeight: 600 }}>
-                Recurring
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.5rem', alignItems: 'center' }} data-reveal>
+          <div>
+            <h1 style={{ color: 'var(--accent)', margin: 0 }}>{ev.title}</h1>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 8 }}>
+              <span className="chip" style={{ background: '#fef3c7', color: '#92400e' }}>
+                {ev.start_at ? new Date(ev.start_at).toLocaleString('en-AU') : 'TBA'}
               </span>
-            )}
+              {(ev.venue || ev.city_region) && (
+                <span className="chip" style={{ background: '#ede8f7', color: '#5a3c91' }}>
+                  {[ev.venue, ev.city_region].filter(Boolean).join(' · ')}
+                </span>
+              )}
+              {ev.is_recurring && (
+                <span className="chip" style={{ background: 'var(--warm)', color: 'var(--warning-contrast)' }}>Recurring</span>
+              )}
+            </div>
           </div>
           {ev.tickets_url && (
-            <a
-              href={ev.tickets_url}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                background: 'var(--accent)',
-                color: '#fff',
-                padding: '0.5rem 0.9rem',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Tickets
+            <a href={ev.tickets_url} target="_blank" rel="noreferrer"
+               style={{ background: 'var(--accent)', color: '#fff', padding: '0.6rem 1rem', borderRadius: 10, textDecoration: 'none', fontWeight: 800 }}>
+              Get Tickets →
             </a>
           )}
         </div>
