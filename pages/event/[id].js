@@ -143,6 +143,14 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
   const [counts, setCounts] = useState(occurrenceCounts);
   const [savingSeries, setSavingSeries] = useState(false);
   const [toast, setToast] = useState(null);
+  const organiserDetails = ev?.organiser_details || null;
+  const organiserName = organiserDetails?.name || ev?.organiser_name || null;
+  const organiserLogo = organiserDetails?.logoUrl || null;
+  const organiserWebsiteRaw = organiserDetails?.website || null;
+  const organiserWebsite = organiserWebsiteRaw && /^https?:\/\//i.test(organiserWebsiteRaw)
+    ? organiserWebsiteRaw
+    : (organiserWebsiteRaw ? `https://${organiserWebsiteRaw}` : null);
+  const showOrganiser = organiserName || organiserLogo;
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     if (showToast._t) window.clearTimeout(showToast._t);
@@ -312,6 +320,59 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
             <span className="chip" style={{ background:'var(--warm)', color:'var(--accent)' }}>
               {friends.going > 0 ? `${friends.going} friend${friends.going===1?'':'s'} going` : `${friends.interested} friend${friends.interested===1?'':'s'} interested`}
             </span>
+          </div>
+        )}
+
+        {showOrganiser && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.97), rgba(238,242,255,0.92))',
+              border: '1px solid var(--border-soft)',
+              borderRadius: '12px',
+              padding: '1rem',
+              marginBottom: '1.25rem',
+              boxShadow: '0 10px 30px rgba(15, 23, 42, 0.08)',
+            }}
+            data-reveal
+          >
+            {organiserLogo && (
+              <div
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '12px',
+                  background: 'repeating-linear-gradient(45deg, #f8fafc, #f8fafc 12px, #eef2ff 12px, #eef2ff 24px)',
+                  border: '1px solid rgba(148, 163, 184, 0.3)',
+                  padding: '0.5rem',
+                  display: 'grid',
+                  placeItems: 'center',
+                }}
+              >
+                <Image
+                  src={organiserLogo}
+                  alt={organiserName ? `${organiserName} logo` : 'Event organiser logo'}
+                  width={72}
+                  height={72}
+                  style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+                  sizes="72px"
+                />
+              </div>
+            )}
+            <div>
+              <div style={{ color: 'var(--muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>Hosted by</div>
+              {organiserWebsite ? (
+                <a href={organiserWebsite} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1.05rem', textDecoration: 'none' }}>
+                  {organiserName || 'View organiser'}
+                </a>
+              ) : (
+                <div style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1.05rem' }}>
+                  {organiserName}
+                </div>
+              )}
+            </div>
           </div>
         )}
 

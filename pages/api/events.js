@@ -66,11 +66,55 @@ export default async function handler(req, res) {
         approval_status: f['Approval Status'] || null,
         organiser: Array.isArray(f['Organiser']) ? f['Organiser'][0] : null,
         organiser_name: f['Organiser Name'] || null,
+        organiser_details: null,
         going_count: 0,
         next_occurrence: null,
         next_going_count: 0,
       };
     });
+
+    const organiserIds = Array.from(new Set(rows.map((row) => row.organiser).filter(Boolean)));
+    if (organiserIds.length > 0) {
+      const organiserMap = new Map();
+      const chunkSize = 10;
+      const organiserTable = base('Organisers');
+      const chunked = [];
+      for (let i = 0; i < organiserIds.length; i += chunkSize) {
+        chunked.push(organiserIds.slice(i, i + chunkSize));
+      }
+      for (const batch of chunked) {
+        try {
+          const filter = `OR(${batch.map((id) => `RECORD_ID()='${id}'`).join(',')})`;
+          const organisers = await organiserTable
+            .select({ filterByFormula: filter })
+            .all();
+          for (const org of organisers) {
+            const fields = org.fields || {};
+            const logo = Array.isArray(fields['Organisation Logo']) ? fields['Organisation Logo'][0] : null;
+            const logoUrl = logo?.thumbnails?.large?.url || logo?.url || null;
+            organiserMap.set(org.id, {
+              id: org.id,
+              name: fields['Organisation Name'] || fields['Full Name'] || null,
+              logoUrl,
+              website: fields['Website'] || null,
+            });
+          }
+        } catch {
+          // Ignore organiser hydration errors so events still load
+        }
+      }
+
+      for (const row of rows) {
+        if (!row.organiser) continue;
+        const details = organiserMap.get(row.organiser);
+        if (details) {
+          row.organiser_details = details;
+          if (!row.organiser_name && details.name) {
+            row.organiser_name = details.name;
+          }
+        }
+      }
+    }
 
     rows.sort(
       (a, b) => new Date(a.start_at || 0) - new Date(b.start_at || 0)
