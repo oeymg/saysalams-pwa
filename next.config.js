@@ -1,8 +1,6 @@
 const withPWA = require('next-pwa')({
   dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development', // enable SW only in production
+  disable: process.env.NODE_ENV === 'development',
 });
 
 module.exports = withPWA({
@@ -21,13 +19,5 @@ module.exports = withPWA({
     ],
     // Allow using quality={90} on next/image (required in Next 16)
     qualities: [75, 90],
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/__clerk/:path*',
-        destination: 'https://api.clerk.dev/:path*',
-      },
-    ];
   },
 });
