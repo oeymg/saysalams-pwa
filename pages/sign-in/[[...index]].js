@@ -49,16 +49,17 @@ export default function SignInCatchAll() {
         display: 'grid',
         placeItems: 'center',
         background: 'var(--bg)',
-        padding: '2rem',
+        padding: '1.5rem 1rem',
       }}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: 980,
+          maxWidth: 420,
           display: 'grid',
           gridTemplateColumns: '1fr',
-          gap: '1.5rem',
+          gap: '1.25rem',
+          margin: '0 auto',
         }}
       >
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -70,16 +71,19 @@ export default function SignInCatchAll() {
             background: 'var(--surface)',
             border: '1px solid var(--border-soft)',
             borderRadius: 16,
-            boxShadow: '0 10px 30px rgba(110, 80, 132, 0.15)',
-            padding: '1.25rem',
+            boxShadow: '0 8px 24px rgba(17,17,17,0.08)',
+            padding: '1.1rem',
             display: 'grid',
             gridTemplateColumns: '1fr',
             gap: '1.25rem',
+            width: '100%',
+            maxWidth: 420,
+            margin: '0 auto',
           }}
         >
           <div style={{ display: 'none', borderRight: '1px solid var(--border-soft)', paddingRight: '1rem' }} className="signin-left">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Image src="/logo.png" alt="Say Salams" width={180} height={60} className="logo" style={{ objectFit: 'contain' }} sizes="180px" />
+              <Image src="/icons/logo.svg" alt="Say Salams" width={180} height={60} className="logo" style={{ objectFit: 'contain' }} sizes="180px" />
             </div>
             <h1 style={{ color: 'var(--accent)', margin: '1rem 0 0.25rem' }}>Welcome back</h1>
             <p style={{ color: 'var(--accent)', margin: 0 }}>Community · Connections · Celebration</p>
@@ -89,20 +93,22 @@ export default function SignInCatchAll() {
               <li>Spread peace — Say Salams ✨</li>
             </ul>
             <p style={{ marginTop: 'auto', fontSize: '0.9rem', color: 'var(--muted-2)' }}>
-              New here? <Link href={signUpHref} style={{ color: '#9b8bbd', fontWeight: 700 }}>Create an account</Link>
+              New here? <Link href={signUpHref} style={{ color: 'var(--accent)', fontWeight: 700 }}>Create an account</Link>
             </p>
           </div>
-          <div style={{ display: 'grid', placeItems: 'center', padding: '1rem' }}>
-            <SignIn
-              path="/sign-in"
-              routing="path"
-              // Send users who choose "Sign up" to our Clerk SignUp page at /register
-              signUpUrl={signUpHref}
-              // Redirect signed-in users to their intended destination
-              redirectUrl={redirectUrl}
-              afterSignInUrl={redirectUrl}
-              appearance={{ variables: { colorPrimary: '#6e5084', colorBackground: 'white' } }}
-            />
+          <div style={{ display: 'grid', placeItems: 'center', padding: '0.75rem', width: '100%' }}>
+            <div style={{ width: '100%', maxWidth: 360 }}>
+              <SignIn
+                path="/sign-in"
+                routing="path"
+                // Send users who choose "Sign up" to our Clerk SignUp page at /register
+                signUpUrl={signUpHref}
+                // Redirect signed-in users to their intended destination
+                redirectUrl={redirectUrl}
+                afterSignInUrl={redirectUrl}
+                appearance={{ variables: { colorPrimary: '#111111', colorText: '#111111', colorBackground: 'white' } }}
+              />
+            </div>
           </div>
         </div>
         <style jsx>{`

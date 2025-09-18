@@ -50,7 +50,7 @@ export default function Layout({ children }) {
   return (
     <div
       style={{
-        background: '#fff',
+        background: 'var(--bg)',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
@@ -63,9 +63,10 @@ export default function Layout({ children }) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '1rem 2rem',
-          background: '#fff',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+          padding: '0 2.5rem 0.3rem',
+          paddingTop: 'calc(0.55rem + env(safe-area-inset-top))',
+          background: 'var(--warm)',
+          boxShadow: '0 2px 6px rgba(17,17,17,0.05)',
           position: 'sticky',
           top: 0,
           zIndex: 50,
@@ -73,12 +74,12 @@ export default function Layout({ children }) {
       >
         {/* Logo */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', padding: '0.5rem' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', padding: '0.25rem 0.2rem' }}>
             <Image
-              src="/logo.png"
+              src="/icons/logo.svg"
               alt="Say Salams"
-              width={180}
-              height={60}
+              width={118}
+              height={36}
               priority
               className="logo-img logo"
               style={{ objectFit: 'contain' }}
@@ -113,12 +114,13 @@ export default function Layout({ children }) {
           aria-expanded={mobileOpen ? 'true' : 'false'}
           onClick={() => setMobileOpen(v => !v)}
           style={{
-            background: '#f6f4fa',
-            color: '#6e5084',
-            border: '1px solid #ded7ef',
+            background: 'var(--surface)',
+            color: 'var(--accent)',
+            border: '1px solid var(--accent)',
             borderRadius: 8,
             padding: '0.5rem 0.8rem',
             fontWeight: 700,
+            boxShadow: '0 4px 12px var(--shadow-accent)',
             display: 'none', // hidden on desktop; shown via CSS on mobile
           }}
         >
@@ -136,15 +138,16 @@ export default function Layout({ children }) {
             <Link href={`/register?next=${encodeURIComponent('/profile')}`} legacyBehavior>
               <a
                 style={{
-                  background: '#6e5084',
-                  color: '#fff',
+                  background: 'var(--accent)',
+                  color: 'var(--surface)',
                   padding: '0.6rem 1.2rem',
                   borderRadius: '8px',
                   fontWeight: '600',
                   textDecoration: 'none',
-                  border: 'none',
+                  border: '1px solid var(--accent)',
                   cursor: 'pointer',
                   display: 'inline-block',
+                  boxShadow: '0 8px 18px var(--shadow-accent)',
                 }}
               >
                 Join Us
@@ -160,22 +163,22 @@ export default function Layout({ children }) {
           id="mobile-menu"
           className="mobile-only hover-pop"
           style={{
-            background: '#fff',
+            background: 'var(--warm)',
             margin: '0.5rem 1rem 0',
-            border: '1px solid #eee',
+            border: '1px solid var(--border-soft)',
             borderRadius: 12,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+            boxShadow: '0 8px 24px rgba(17,17,17,0.08)',
             padding: '0.5rem',
           }}
         >
           <div style={{ display: 'grid', gap: '0.25rem' }} onClick={() => setMobileOpen(false)}>
-            <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
-            <Link href="/partners" legacyBehavior><a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Partners</a></Link>
+            <Link href="/events" legacyBehavior><a style={{ padding: '0.75rem', color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }}>Events</a></Link>
+            <Link href="/partners" legacyBehavior><a style={{ padding: '0.75rem', color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }}>Partners</a></Link>
             <Link href={isSignedIn ? "/connections" : "/sign-in?next=/connections"} legacyBehavior>
-              <a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Connections</a>
+              <a style={{ padding: '0.75rem', color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }}>Connections</a>
             </Link>
             <Link href={isSignedIn ? "/profile" : "/sign-in?next=/profile"} legacyBehavior>
-              <a style={{ padding: '0.75rem', color: '#9b8bbd', textDecoration: 'none', fontWeight: 700 }}>Profile</a>
+              <a style={{ padding: '0.75rem', color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }}>Profile</a>
             </Link>
           </div>
         </div>
@@ -192,9 +195,9 @@ export default function Layout({ children }) {
           left: 0,
           right: 0,
           bottom: 0,
-          background: '#fff',
-          borderTop: '1px solid #eee',
-          boxShadow: '0 -6px 22px rgba(0,0,0,0.08)',
+          background: 'var(--warm)',
+          borderTop: '1px solid var(--border-soft)',
+          boxShadow: '0 -6px 22px var(--shadow-accent)',
           zIndex: 60,
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
@@ -217,10 +220,10 @@ export default function Layout({ children }) {
           {/* Brand + blurb */}
           <div className="footer-col footer-brand">
             <Image
-              src="/icons/invertlogo.svg"
+              src="/icons/logo.svg"
               alt="Say Salams"
-              width={180}
-              height={60}
+              width={118}
+              height={36}
               className="logo-img logo"
               style={{ objectFit: 'contain' }}
               sizes="(max-width: 640px) 140px, 180px"
@@ -258,9 +261,9 @@ export default function Layout({ children }) {
           <span>
             © 2025 Say Salams. All rights reserved.
             {' '}·{' '}
-            <Link href="/privacy" legacyBehavior><a style={{ color: '#fff', textDecoration: 'underline' }}>Privacy Policy</a></Link>
+            <Link href="/privacy" legacyBehavior><a style={{ color: 'var(--surface)', textDecoration: 'underline' }}>Privacy Policy</a></Link>
             {' '}·{' '}
-            <Link href="/terms" legacyBehavior><a style={{ color: '#fff', textDecoration: 'underline' }}>Terms & Conditions</a></Link>
+            <Link href="/terms" legacyBehavior><a style={{ color: 'var(--surface)', textDecoration: 'underline' }}>Terms & Conditions</a></Link>
           </span>
         </div>
       </footer>

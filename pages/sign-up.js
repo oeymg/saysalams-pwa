@@ -137,7 +137,7 @@ export default function Signup() {
             maxWidth: '480px',
             backgroundColor: 'var(--surface)',
             borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(110, 80, 132, 0.15)',
+            boxShadow: '0 4px 12px var(--shadow-accent)',
             padding: '2rem',
             color: 'var(--muted)',
             lineHeight: '1.6',

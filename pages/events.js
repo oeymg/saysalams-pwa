@@ -133,8 +133,8 @@ export default function EventsPage({ events, base }) {
       <section className="full-bleed" style={{ padding: '1rem 0 0' }}>
         <div className="hero-band-inner" style={{ alignItems: 'stretch', gridTemplateColumns: '1fr' }}>
           <div style={{ display:'grid', gap:'0.5rem' }}>
-            <h1 className="hero-band-title" style={{ marginBottom: 0, color: '#6e5084' }}>Upcoming Events</h1>
-            <p className="hero-band-sub" style={{ marginTop: 0, color: '#9b8bbd' }}>Search and filter to find what suits you.</p>
+            <h1 className="hero-band-title" style={{ marginBottom: 0, color: 'var(--accent)' }}>Upcoming Events</h1>
+            <p className="hero-band-sub" style={{ marginTop: 0, color: 'var(--accent)' }}>Search and filter to find what suits you.</p>
             <form onSubmit={onSubmit} className="hero-search" action="/events" method="get">
               <input className="hero-input" type="search" name="q" placeholder="Search by title, city, category…" value={q} onChange={(e)=>setQ(e.target.value)} />
               <select value={sortBy} onChange={(e)=>onChangeSort(e.target.value)} style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--border-soft)', borderRadius:12, padding:'.6rem .8rem', fontWeight:700 }}>
@@ -176,11 +176,11 @@ export default function EventsPage({ events, base }) {
             <article
               key={ev.id}
               style={{
-                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                boxShadow: '0 2px 8px var(--shadow-accent)',
                 border: '1px solid var(--border-soft)',
                 borderRadius: '16px',
                 overflow: 'hidden',
-                background: 'var(--card)',
+                background: 'var(--surface)',
                 display: 'flex',
                 flexDirection: 'column',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
@@ -188,11 +188,11 @@ export default function EventsPage({ events, base }) {
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'scale(1.03)';
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(110, 80, 132, 0.3)';
+                e.currentTarget.style.boxShadow = '0 8px 20px var(--shadow-strong)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+                e.currentTarget.style.boxShadow = '0 2px 8px var(--shadow-accent)';
               }}
             >
               {ev.image_url && (
@@ -206,8 +206,8 @@ export default function EventsPage({ events, base }) {
                 />
               )}
               <div style={{ flex: 1, padding: '1rem' }}>
-                <h3 style={{ margin: '0 0 0.5rem 0', color: '#9b8bbd', fontWeight: 800 }} className="clamp-1">{ev.title}</h3>
-                <p style={{ marginBottom: '0.5rem', color: '#555' }}>
+                <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent)', fontWeight: 800 }} className="clamp-1">{ev.title}</h3>
+                <p style={{ marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
                   {ev.start_at
                     ? new Date(ev.start_at).toLocaleDateString('en-AU', {
                         weekday: 'short',
@@ -231,12 +231,12 @@ export default function EventsPage({ events, base }) {
                     {ev.start_at ? new Date(ev.start_at).toLocaleDateString('en-AU', { month:'short', day:'numeric' }) : 'TBA'}
                   </span>
                   {(ev.city_region || ev.venue) && (
-                    <span className="chip" style={{ background:'#ede8f7', color:'#5a3c91' }}>
+                    <span className="chip" style={{ background:'var(--surface)', color:'var(--accent)' }}>
                       {(ev.city_region || ev.venue)}
                     </span>
                   )}
                 </div>
-                <div style={{ marginBottom: '0.8rem', color: '#666', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ marginBottom: '0.8rem', color: 'var(--text-muted)', display:'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span>👍 {(typeof ev.next_going_count === 'number' ? ev.next_going_count : (ev.going_count ?? 0))} going</span>
                   {(ev.friends_going > 0 || ev.friends_interested > 0) && (
                     <span className="chip" style={{ background:'#dcfce7', color:'#065f46' }}>
@@ -248,12 +248,12 @@ export default function EventsPage({ events, base }) {
                   <a
                     href={`/event/${encodeURIComponent(ev.public_id)}`}
                     style={{
-                      background: 'var(--warm)',
-                      color: 'var(--accent)',
+                      background: 'var(--accent)',
+                      color: 'var(--surface)',
                       padding: '0.5rem 1rem',
                       borderRadius: '12px',
-                      border: '1px solid #ded7ef',
-                      boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
+                      border: '1px solid var(--accent)',
+                      boxShadow: '0 1px 0 var(--shadow-accent)',
                       textDecoration: 'none',
                       fontSize: '0.9rem',
                     }}

@@ -66,7 +66,7 @@ export default function Home({ events, base }) {
         url={base}
         title="Say Salams — Discover Muslim Events Near You"
         description="Say Salams brings Muslims together through events, connections, and community. Discover what's on, RSVP, and spread peace."
-        image="/icons/logo.png"
+        image="/icons/logo.svg"
         jsonLd={[
           {
             '@context': 'https://schema.org',
@@ -84,7 +84,7 @@ export default function Home({ events, base }) {
             '@type': 'Organization',
             name: 'Say Salams',
             url: base,
-            logo: `${base}/icons/logo.png`,
+            logo: `${base}/icons/logo.svg`,
           },
         ]}
       />
@@ -159,7 +159,7 @@ export default function Home({ events, base }) {
             textAlign: 'center',
             marginBottom: '2rem',
             fontSize: '2.2rem',
-            color: '#6e5084',
+            color: 'var(--accent)',
           }}
         >
           Our Upcoming Events
@@ -176,11 +176,11 @@ export default function Home({ events, base }) {
             <article
               key={ev.id}
               style={{
-                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                boxShadow: '0 2px 10px var(--shadow-accent)',
                 border: '1px solid var(--border-soft)',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                background: 'var(--card)',
+                background: 'var(--surface)',
                 display: 'flex',
                 flexDirection: 'column',
                 transitionDelay: `${idx * 60}ms`,
@@ -241,7 +241,7 @@ export default function Home({ events, base }) {
                     {ev.start_at ? new Date(ev.start_at).toLocaleDateString('en-AU', { month:'short', day:'numeric' }) : 'TBA'}
                   </span>
                   {(ev.city_region || ev.venue) && (
-                    <span className="chip" style={{ background:'#ede8f7', color:'#5a3c91' }}>
+                    <span className="chip" style={{ background:'var(--surface)', color:'var(--accent)' }}>
                       {(ev.city_region || ev.venue)}
                     </span>
                   )}
@@ -262,8 +262,8 @@ export default function Home({ events, base }) {
                       color: 'var(--accent)',
                       padding: '0.5rem 1rem',
                       borderRadius: '8px',
-                      border: '1px solid #ded7ef',
-                      boxShadow: '0 1px 0 rgba(0,0,0,0.02)',
+                      border: '1px solid var(--accent)',
+                      boxShadow: '0 1px 0 var(--shadow-accent)',
                       textDecoration: 'none',
                       fontSize: '0.9rem',
                       fontWeight: 700,
@@ -296,7 +296,7 @@ export default function Home({ events, base }) {
         className="hover-pop"
         data-reveal
       >
-        <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: '#6e5084', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.8rem', marginBottom: '2rem', fontWeight: '800', color: 'var(--accent)', textAlign: 'center' }}>
           Become a Partner with Say Salams
         </h2>
 

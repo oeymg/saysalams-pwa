@@ -50,16 +50,17 @@ export default function RegisterPage() {
         display: 'grid',
         placeItems: 'center',
         background: 'var(--bg)',
-        padding: '2rem',
+        padding: '1.5rem 1rem',
       }}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: 980,
+          maxWidth: 420,
           display: 'grid',
           gridTemplateColumns: '1fr',
-          gap: '1.5rem',
+          gap: '1.25rem',
+          margin: '0 auto',
         }}
       >
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -71,16 +72,19 @@ export default function RegisterPage() {
             background: 'var(--surface)',
             border: '1px solid var(--border-soft)',
             borderRadius: 16,
-            boxShadow: '0 10px 30px rgba(110, 80, 132, 0.15)',
-            padding: '1.25rem',
+            boxShadow: '0 8px 24px rgba(17,17,17,0.08)',
+            padding: '1.1rem',
             display: 'grid',
             gridTemplateColumns: '1fr',
             gap: '1.25rem',
+            width: '100%',
+            maxWidth: 420,
+            margin: '0 auto',
           }}
         >
           <div style={{ display: 'none', borderRight: '1px solid var(--border-soft)', paddingRight: '1rem' }} className="signup-left">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Image src="/logo.png" alt="Say Salams" width={180} height={60} className="logo" style={{ objectFit: 'contain' }} sizes="180px" />
+            <Image src="/icons/logo.svg" alt="Say Salams" width={180} height={60} className="logo" style={{ objectFit: 'contain' }} sizes="180px" />
             </div>
             <h1 style={{ color: 'var(--accent)', margin: '1rem 0 0.25rem' }}>Create your account</h1>
             <p style={{ color: 'var(--accent)', margin: 0 }}>Community · Connections · Celebration</p>
@@ -94,15 +98,17 @@ export default function RegisterPage() {
               <Link href={signInHref} style={{ color: 'var(--accent)', fontWeight: 700 }}>Sign in</Link>
             </p>
           </div>
-          <div style={{ display: 'grid', placeItems: 'center', padding: '1rem' }}>
-            <SignUp
-              routing="virtual"
-              signInUrl={signInHref}
-              // After Clerk sign-up, send users to our app sign-up page to finish profile
-              redirectUrl={afterUrl}
-              afterSignUpUrl={afterUrl}
-              appearance={{ variables: { colorPrimary: '#6e5084', colorBackground: 'white' } }}
-            />
+          <div style={{ display: 'grid', placeItems: 'center', padding: '0.75rem', width: '100%' }}>
+            <div style={{ width: '100%', maxWidth: 360 }}>
+              <SignUp
+                routing="virtual"
+                signInUrl={signInHref}
+                // After Clerk sign-up, send users to our app sign-up page to finish profile
+                redirectUrl={afterUrl}
+                afterSignUpUrl={afterUrl}
+                appearance={{ variables: { colorPrimary: '#111111', colorText: '#111111', colorBackground: 'white' } }}
+              />
+            </div>
           </div>
         </div>
         <style jsx>{`

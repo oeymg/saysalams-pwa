@@ -110,7 +110,7 @@ export default function ProfilePage({ user, rsvps, recordId }) {
       <Layout>
         <div style={containerStyle}>
           <div style={{ marginBottom:'0.5rem' }}>
-            <button onClick={() => router.back()} aria-label="Go back" style={{ background:'#ede8f7', color:'#5a3c91', border:'1px solid #ded7ef', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
+            <button onClick={() => router.back()} aria-label="Go back" style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--accent)', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
           </div>
           <h2>User not found</h2>
           <p>Sorry, we couldn&apos;t find that user profile.</p>
@@ -180,7 +180,7 @@ export default function ProfilePage({ user, rsvps, recordId }) {
     <Layout>
     <div style={containerStyle}>
       <div style={{ marginBottom:'0.5rem' }}>
-        <button onClick={() => router.back()} aria-label="Go back" style={{ background:'#ede8f7', color:'#5a3c91', border:'1px solid #ded7ef', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
+        <button onClick={() => router.back()} aria-label="Go back" style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--accent)', borderRadius:8, padding:'0.4rem 0.7rem', fontWeight:700, cursor:'pointer' }}>← Back</button>
       </div>
       <h1 style={{marginBottom: "1rem"}}>Profile</h1>
       <div style={{ marginBottom: '1rem' }}>

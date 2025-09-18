@@ -347,15 +347,15 @@ export default function ConnectionsPage({ me }) {
 }
 
 const secStyle = {
-  background: 'var(--card)',
+  background: 'var(--surface)',
   borderRadius: 12,
   padding: '1rem',
-  boxShadow: '0 2px 12px rgba(0,0,0,0.06)'
+  boxShadow: '0 2px 12px var(--shadow-accent)'
 };
 const h2 = { color: 'var(--accent)', margin: '0 0 0.75rem 0' };
 const list = { listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.5rem' };
 const pill = (bg, border) => ({ background: bg, border: `1px solid ${border}`, borderRadius: 8, padding: '0.6rem 0.8rem' });
-const btn = (bg) => ({ background: bg, color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 0.7rem', cursor: 'pointer', fontWeight: 600 });
+const btn = (bg) => ({ background: bg, color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 0.7rem', cursor: 'pointer', fontWeight: 600, boxShadow: '0 4px 12px var(--shadow-accent)' });
 
 // Lightweight quick profile overlay
 function QuickProfile({ data, onClose, onAction }) {
@@ -368,7 +368,7 @@ function QuickProfile({ data, onClose, onAction }) {
   };
   return (
     <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}>
-      <div onClick={(e)=>e.stopPropagation()} style={{ background:'var(--surface)', borderRadius:12, padding:'1rem', maxWidth:420, width:'100%', boxShadow:'0 10px 28px rgba(0,0,0,0.25)' }}>
+      <div onClick={(e)=>e.stopPropagation()} style={{ background:'var(--surface)', borderRadius:12, padding:'1rem', maxWidth:420, width:'100%', boxShadow:'0 10px 28px var(--shadow-strong)' }}>
         {/* Photo */}
         <div style={{ display:'flex', justifyContent:'center', marginBottom:8 }}>
           {user?.image_url ? (
@@ -408,15 +408,15 @@ function QuickProfile({ data, onClose, onAction }) {
             ) : status === 'pending-out' ? (
               <>
                 <span className="chip" style={{ background:'#fef3c7', color:'#92400e' }}>Pending</span>
-                <button onClick={() => onAction(edge.id, 'withdraw')} style={btn('#ef4444')}>Withdraw</button>
+                <button onClick={() => onAction(edge.id, 'withdraw')} style={btn('var(--danger)')}>Withdraw</button>
               </>
             ) : status === 'pending-in' ? (
               <>
-                <button onClick={() => onAction(edge.id, 'accept')} style={btn('#16a34a')}>Accept</button>
-                <button onClick={() => onAction(edge.id, 'decline')} style={btn('#ef4444')}>Decline</button>
+                <button onClick={() => onAction(edge.id, 'accept')} style={btn('var(--success)')}>Accept</button>
+                <button onClick={() => onAction(edge.id, 'decline')} style={btn('var(--danger)')}>Decline</button>
               </>
             ) : (
-              <button onClick={() => onAction(user.record_id, 'connect')} style={btn('#6e5084')}>Say Salams</button>
+              <button onClick={() => onAction(user.record_id, 'connect')} style={btn('var(--accent)')}>Say Salams</button>
             )}
           </div>
         </div>

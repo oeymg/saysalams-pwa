@@ -9,9 +9,9 @@ class MyDocument extends Document {
           <meta charSet="utf-8" />
           {/* Icons and PWA links */}
           <link rel="icon" href="/favicon.ico" />
-          <link rel="apple-touch-icon" href="/icons/logo.png" />
+          <link rel="apple-touch-icon" href="/icons/logo.svg" />
           <link rel="manifest" href="/manifest.webmanifest" />
-          <meta name="theme-color" content="#9b8bbd" />
+          <meta name="theme-color" content="#F8F4EC" />
           <meta name="color-scheme" content="light" />
           {/* Performance hints */}
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

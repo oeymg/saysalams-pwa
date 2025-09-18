@@ -229,14 +229,14 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         url={`${base}/event/${encodeURIComponent(id)}`}
         title={`${ev.title} — Say Salams`}
         description={(typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')).slice(0, 280) || 'View event details on Say Salams.'}
-        image={ev.image_url || '/icons/logo.png'}
+        image={ev.image_url || '/icons/logo.svg'}
         type="article"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'Event',
           name: ev.title,
           description: typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || ''),
-          image: ev.image_url ? [ev.image_url] : [`${base}/icons/logo.png`],
+          image: ev.image_url ? [ev.image_url] : [`${base}/icons/logo.svg`],
           url: `${base}/event/${encodeURIComponent(id)}`,
           startDate: ev.start_at || undefined,
           eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
@@ -292,7 +292,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
                 {ev.start_at ? new Date(ev.start_at).toLocaleString('en-AU') : 'TBA'}
               </span>
               {(ev.venue || ev.city_region) && (
-                <span className="chip" style={{ background: '#ede8f7', color: '#5a3c91' }}>
+                <span className="chip" style={{ background: 'var(--surface)', color: 'var(--accent)' }}>
                   {[ev.venue, ev.city_region].filter(Boolean).join(' · ')}
                 </span>
               )}
@@ -401,7 +401,7 @@ export default function EventPage({ ev, occurrences = [], occurrenceCounts = {},
         {ev.summary && (
           <div style={{ marginBottom: '1.25rem' }} data-reveal>
             <h2 style={{ marginBottom: '0.5rem', color: 'var(--accent)' }}>Event Summary</h2>
-            <p style={{ lineHeight: '1.6', color: '#2e2e2e' }}>
+            <p style={{ lineHeight: '1.6', color: 'var(--text-muted)' }}>
               {typeof ev.summary === 'string' ? ev.summary : (ev.summary?.value || '')}
             </p>
           </div>

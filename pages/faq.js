@@ -4,11 +4,11 @@ import Collapsible from '../components/Collapsible';
 export default function FAQ() {
   return (
     <Layout>
-      <section style={{ backgroundColor: '#f6f4fa', padding: '4rem 2rem', textAlign: 'center' }}>
-        <h1 style={{ color: '#6e5084', fontSize: '2.5rem', marginBottom: '0.5rem' }}>Frequently Asked Questions</h1>
+      <section style={{ backgroundColor: 'var(--surface-2)', padding: '4rem 2rem', textAlign: 'center' }}>
+        <h1 style={{ color: 'var(--accent)', fontSize: '2.5rem', marginBottom: '0.5rem' }}>Frequently Asked Questions</h1>
       </section>
-      <section style={{ backgroundColor: '#f6f4fa', padding: '1rem 1.25rem' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', color: '#333', lineHeight: '1.6' }}>
+      <section style={{ backgroundColor: 'var(--surface-2)', padding: '1rem 1.25rem' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', color: 'var(--text-muted)', lineHeight: '1.6' }}>
           <Collapsible title="What is Say Salams?">
             <p style={{ margin: 0 }}>Say Salams is a community platform that connects people through events to foster friendship, understanding, and cultural exchange.</p>
           </Collapsible>

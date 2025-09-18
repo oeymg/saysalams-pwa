@@ -10,7 +10,7 @@ export default function Partners() {
           Turn Your Idea, Organisation, or Business into a Community Hub ✨
         </h1>
 
-        <p style={{ marginBottom: '2rem', color: '#2e2e2e', lineHeight: '1.6' }}>
+        <p style={{ marginBottom: '2rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
           You can set up an event with Say Salams anytime, anywhere. Whether you&apos;re an
           individual, organisation, or business, partnering with us empowers you to build meaningful connections, showcase your unique offerings, and engage deeply with the Muslim community through impactful events.
         </p>
@@ -21,21 +21,21 @@ export default function Partners() {
               <div style={{ flex: 1, background: 'var(--surface-2)', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
                 <h3 style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}>Individuals</h3>
-                <p style={{ color: '#2e2e2e', lineHeight: '1.4' }}>
+                <p style={{ color: 'var(--text-muted)', lineHeight: '1.4' }}>
                   Run fun, educational, or creative events that bring people together and spark joy in the community.
                 </p>
               </div>
               <div style={{ flex: 1, background: 'var(--surface-2)', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🏛️</div>
                 <h3 style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}>Organisations</h3>
-                <p style={{ color: '#2e2e2e', lineHeight: '1.4' }}>
+                <p style={{ color: 'var(--text-muted)', lineHeight: '1.4' }}>
                   Engage your community through workshops, seminars, and events that foster learning and growth.
                 </p>
               </div>
               <div style={{ flex: 1, background: 'var(--surface-2)', borderRadius: '10px', padding: '1.5rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🏢</div>
                 <h3 style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}>Businesses</h3>
-                <p style={{ color: '#2e2e2e', lineHeight: '1.4' }}>
+                <p style={{ color: 'var(--text-muted)', lineHeight: '1.4' }}>
                   Boost your brand presence by hosting exclusive offers, networking events, and launch parties.
                 </p>
               </div>
@@ -45,7 +45,7 @@ export default function Partners() {
 
         <div className="host-collapsible">
           <Collapsible title="How it works">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', color: '#2e2e2e' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', color: 'var(--text-muted)' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                 <div style={{
                   minWidth: '30px',
@@ -107,7 +107,7 @@ export default function Partners() {
             target="_blank"
             rel="noreferrer"
             style={{
-              background: 'linear-gradient(90deg, var(--accent), #6e5065)',
+              background: 'linear-gradient(90deg, var(--accent), var(--accent-soft))',
               color: '#fff',
               padding: '1rem 2rem',
               borderRadius: '8px',

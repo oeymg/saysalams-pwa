@@ -234,7 +234,7 @@ function Info({ label, value }) {
   return (
     <div style={{ flex: "1 1 250px", background: "var(--surface-2)", padding: "0.75rem 1rem", borderRadius: 8 }}>
       <div style={{ color: "var(--accent)", fontWeight: 700, marginBottom: 4 }}>{label}</div>
-      <div style={{ color: "#2e2e2e" }}>{value}</div>
+      <div style={{ color: 'var(--text-muted)' }}>{value}</div>
     </div>
   );
 }
@@ -305,7 +305,7 @@ function RSVPTable({ rows, userId, onToast }) {
                   onClick={() => onSave(r.eventId)}
                   disabled={saving === r.eventId}
                   style={{
-                    background: "linear-gradient(90deg, var(--accent), #6e5065)",
+                    background: "linear-gradient(90deg, var(--accent), var(--accent-soft))",
                     color: "#fff",
                     padding: "0.45rem 0.9rem",
                     borderRadius: 8,
